@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WRAP Proposal Generator - Professional Edition</title>
+    <!-- Updated: 2025-11-19 - Added browser-based PDF and Word generation -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏆 Professional WRAP Proposal Generator</h1>
+            <p class="subtitle">ABC Insurance Agency - High Net Worth Client Proposals</p>
+        </header>
+
+        <div class="toolbar">
+            <button id="newBtn" class="btn btn-secondary">📄 New Proposal</button>
+            <button id="loadSampleBtn" class="btn btn-info" style="background: #17a2b8;">🎯 Load Sample Data</button>
+            <button id="loadBtn" class="btn btn-secondary">📂 Load Proposal</button>
+            <button id="saveBtn" class="btn btn-primary">💾 Save Proposal</button>
+            <button id="previewBtn" class="btn btn-info">👁️ Preview PDF</button>
+            <button id="generatePdfBtn" class="btn btn-success">📥 Generate PDF</button>
+            <button id="generateDocxBtn" class="btn btn-success">📄 Generate Word Doc</button>
+        </div>
+
+        <form id="proposalForm">
+            <!-- Company Branding -->
+            <section class="form-section">
+                <h2>🏢 Company Branding</h2>
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="companyName">Agency/Company Name *</label>
+                        <input type="text" id="companyName" required placeholder="ABC Insurance Agency">
+                    </div>
+                    <div class="form-group">
+                        <label for="companyPhone">Company Phone</label>
+                        <input type="tel" id="companyPhone" placeholder="(555) 123-4567">
+                    </div>
+                    <div class="form-group">
+                        <label for="companyEmail">Company Email</label>
+                        <input type="email" id="companyEmail" placeholder="info@abcinsurance.com">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="companyAddress">Company Address</label>
+                        <input type="text" id="companyAddress" placeholder="123 Main Street, Suite 100, Your City, ST 12345">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="companyWebsite">Website</label>
+                        <input type="text" id="companyWebsite" placeholder="www.abcinsurance.com">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="companyLogo">Company Logo URL (optional)</label>
+                        <input type="text" id="companyLogo" placeholder="https://yoursite.com/logo.png or leave blank">
+                        <small style="color: #666;">Tip: Upload logo to your website and paste URL here, or leave blank to use text-only header</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="brandColor">Brand Color (for PDF)</label>
+                        <input type="color" id="brandColor" value="#003366">
+                        <small style="color: #666;">Choose your agency's primary color</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Agent/Team Information -->
+            <section class="form-section">
+                <h2>👥 Your Team & Proposal Details</h2>
+                <p style="color: #666; margin-bottom: 15px;">Add your team members who will appear in the proposal</p>
+
+                <div id="teamMembers">
+                    <!-- Team member 1 -->
+                    <div class="team-member-card" data-member="1">
+                        <h4>Team Member #1 (Primary Agent)</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="teamName1">Name *</label>
+                                <input type="text" id="teamName1" required placeholder="John Smith">
+                            </div>
+                            <div class="form-group">
+                                <label for="teamTitle1">Title</label>
+                                <input type="text" id="teamTitle1" placeholder="Senior Vice President">
+                            </div>
+                            <div class="form-group">
+                                <label for="teamPhone1">Phone</label>
+                                <input type="tel" id="teamPhone1" placeholder="(239) 555-1234">
+                            </div>
+                            <div class="form-group">
+                                <label for="teamEmail1">Email</label>
+                                <input type="email" id="teamEmail1" placeholder="john@agency.com">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="teamPhoto1">Photo URL (optional)</label>
+                                <input type="text" id="teamPhoto1" placeholder="https://yoursite.com/photo.jpg or leave blank">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" id="addTeamMember" class="btn btn-secondary" style="margin-top: 15px;">➕ Add Another Team Member</button>
+
+                <div class="form-grid" style="margin-top: 25px; padding-top: 25px; border-top: 2px solid #e0e0e0;">
+                    <div class="form-group">
+                        <label for="proposalDate">Proposal Date *</label>
+                        <input type="date" id="proposalDate" required>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Client Information -->
+            <section class="form-section">
+                <h2>👤 Client Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="firstName">First Name *</label>
+                        <input type="text" id="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name *</label>
+                        <input type="text" id="lastName" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="address">Primary Address *</label>
+                        <input type="text" id="address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City *</label>
+                        <input type="text" id="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State *</label>
+                        <input type="text" id="state" value="FL" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="zip">ZIP Code *</label>
+                        <input type="text" id="zip" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Coverage Selection -->
+            <section class="form-section">
+                <h2>📦 Select Coverage Types to Include</h2>
+                <p style="color: #666; margin-bottom: 20px;">Check all coverage types you want to include in this proposal</p>
+                <div class="coverage-selector">
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="homeowners">
+                        <span class="coverage-label">🏠 Homeowners Insurance</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="condo">
+                        <span class="coverage-label">🏢 Condo Insurance</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="wind">
+                        <span class="coverage-label">💨 Wind/Hurricane Coverage</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="auto">
+                        <span class="coverage-label">🚗 Auto Insurance</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="umbrella">
+                        <span class="coverage-label">☂️ Umbrella/Excess Liability</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="watercraft">
+                        <span class="coverage-label">⛵ Watercraft Insurance</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="jewelry">
+                        <span class="coverage-label">💎 Jewelry & Valuables</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="cyber">
+                        <span class="coverage-label">🔒 Cyber Insurance</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="fineart">
+                        <span class="coverage-label">🎨 Fine Arts Insurance</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="other">
+                        <span class="coverage-label">📄 Other Coverage</span>
+                    </label>
+                </div>
+            </section>
+
+            <!-- Coverage Details Sections (Generated Dynamically) -->
+            <div id="coverageSections"></div>
+
+            <!-- Executive Summary / Notes -->
+            <section class="form-section">
+                <h2>📝 Executive Summary & Notes</h2>
+                <div class="form-group">
+                    <label for="executiveSummary">Executive Summary</label>
+                    <textarea id="executiveSummary" rows="4" placeholder="Brief overview of the proposal, key recommendations..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="notes">Additional Notes</label>
+                    <textarea id="notes" rows="5" placeholder="Additional notes, special considerations, disclaimers..."></textarea>
+                </div>
+            </section>
+
+            <!-- Premium Summary (Auto-calculated) -->
+            <section class="form-section">
+                <div id="premiumSummary" class="summary-box">
+                    <h3>💰 Premium Summary</h3>
+                    <div class="summary-content">
+                        <p style="color: #666;">Add coverages above to see premium summary</p>
+                    </div>
+                </div>
+            </section>
+        </form>
+
+        <footer>
+            <p>© 2025 SWFL Insurance Agency. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <iframe id="previewFrame"></iframe>
+        </div>
+    </div>
+
+    <!-- DOCX library for Word document generation -->
+    <script src="https://unpkg.com/docx@8.5.0/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <!-- PDF generation library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script src="coverage-templates.js"></script>
+    <script src="pdf-template.js"></script>
+    <script src="sample-data.js"></script>
+    <script src="docx-generator.js"></script>
+    <script src="renderer.js"></script>
+</body>
+</html>

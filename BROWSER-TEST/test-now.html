@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WRAP Proposal Generator - TEST IN BROWSER</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <div style="background: #ff6b6b; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2em;">
+        ⚡ INSTANT TEST VERSION - No Installation Required! ⚡
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1>🏆 Professional WRAP Proposal Generator</h1>
+            <p class="subtitle">SWFL Insurance Agency - High Net Worth Client Proposals</p>
+            <p style="margin-top: 10px; font-size: 0.9em; opacity: 0.9;">Browser Test Version - Full desktop app available after testing</p>
+        </header>
+
+        <div class="toolbar">
+            <button id="newBtn" class="btn btn-secondary">📄 New Proposal</button>
+            <button id="saveBtn" class="btn btn-primary">💾 Save Proposal (JSON)</button>
+            <button id="loadBtn" class="btn btn-primary">📂 Load Proposal</button>
+            <button id="previewBtn" class="btn btn-info">👁️ Preview PDF</button>
+            <button id="generatePdfBtn" class="btn btn-success">📥 Generate PDF</button>
+        </div>
+
+        <form id="proposalForm">
+            <!-- Agent Information -->
+            <section class="form-section">
+                <h2>📋 Agent & Proposal Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="agentName">Agent Name *</label>
+                        <input type="text" id="agentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="agentPhone">Agent Phone</label>
+                        <input type="tel" id="agentPhone" placeholder="(239) 555-1234">
+                    </div>
+                    <div class="form-group">
+                        <label for="agentEmail">Agent Email</label>
+                        <input type="email" id="agentEmail">
+                    </div>
+                    <div class="form-group">
+                        <label for="proposalDate">Proposal Date *</label>
+                        <input type="date" id="proposalDate" required>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Client Information -->
+            <section class="form-section">
+                <h2>👤 Client Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="firstName">First Name *</label>
+                        <input type="text" id="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name *</label>
+                        <input type="text" id="lastName" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="address">Primary Address *</label>
+                        <input type="text" id="address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City *</label>
+                        <input type="text" id="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State *</label>
+                        <input type="text" id="state" value="FL" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="zip">ZIP Code *</label>
+                        <input type="text" id="zip" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Coverage Selection -->
+            <section class="form-section">
+                <h2>📦 Select Coverage Types to Include</h2>
+                <p style="color: #666; margin-bottom: 20px;">Check all coverage types you want to include in this proposal</p>
+                <div class="coverage-selector">
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="homeowners">
+                        <span class="coverage-label">🏠 Homeowners Insurance</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="condo">
+                        <span class="coverage-label">🏢 Condo Insurance</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="wind">
+                        <span class="coverage-label">💨 Wind/Hurricane Coverage</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="auto">
+                        <span class="coverage-label">🚗 Auto Insurance</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="umbrella">
+                        <span class="coverage-label">☂️ Umbrella/Excess Liability</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="watercraft">
+                        <span class="coverage-label">⛵ Watercraft Insurance</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="jewelry">
+                        <span class="coverage-label">💎 Jewelry & Valuables</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="cyber">
+                        <span class="coverage-label">🔒 Cyber Insurance</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="fineart">
+                        <span class="coverage-label">🎨 Fine Arts Insurance</span>
+                    </label>
+                    <label class="coverage-checkbox">
+                        <input type="checkbox" class="coverage-toggle" data-coverage="other">
+                        <span class="coverage-label">📄 Other Coverage</span>
+                    </label>
+                </div>
+            </section>
+
+            <!-- Coverage Details Sections (Generated Dynamically) -->
+            <div id="coverageSections"></div>
+
+            <!-- Executive Summary / Notes -->
+            <section class="form-section">
+                <h2>📝 Executive Summary & Notes</h2>
+                <div class="form-group">
+                    <label for="executiveSummary">Executive Summary</label>
+                    <textarea id="executiveSummary" rows="4" placeholder="Brief overview of the proposal, key recommendations..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="notes">Additional Notes</label>
+                    <textarea id="notes" rows="5" placeholder="Additional notes, special considerations, disclaimers..."></textarea>
+                </div>
+            </section>
+
+            <!-- Premium Summary (Auto-calculated) -->
+            <section class="form-section">
+                <div id="premiumSummary" class="summary-box">
+                    <h3>💰 Premium Summary</h3>
+                    <div class="summary-content">
+                        <p style="color: #666;">Add coverages above to see premium summary</p>
+                    </div>
+                </div>
+            </section>
+        </form>
+
+        <footer>
+            <p>© 2025 SWFL Insurance Agency. All rights reserved.</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Browser Test Version - Full features available in desktop app</p>
+        </footer>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <iframe id="previewFrame"></iframe>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" accept=".json" style="display: none;">
+
+    <script src="../coverage-templates.js"></script>
+    <script src="../pdf-template.js"></script>
+    <script src="../renderer.js"></script>
+    <script>
+        // Browser-specific overrides
+        document.getElementById('loadBtn').addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+        
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    populateFormData(data);
+                    showMessage('Proposal loaded!', 'success');
+                } catch (error) {
+                    showMessage('Error loading file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        });
+        
+        // Override PDF generation for browser
+        const originalGeneratePDF = window.generatePDF;
+        window.generatePDF = async function() {
+            const form = document.getElementById('proposalForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            if (activeCoverages.size === 0) {
+                showMessage('Please select at least one coverage type', 'error');
+                return;
+            }
+            
+            const data = collectFormData();
+            const html = generateProposalHTML(data);
+            const filename = `${data.clientInfo.lastName}_WRAP_Proposal_${new Date().toISOString().split('T')[0]}.pdf`;
+            
+            showMessage('Generating PDF... This may take a moment', 'success');
+            
+            const opt = {
+                margin: 0.5,
+                filename: filename,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            
+            try {
+                await html2pdf().set(opt).from(html).save();
+                showMessage('PDF generated successfully!', 'success');
+            } catch (error) {
+                showMessage('PDF generation failed. Try the desktop app for best results.', 'error');
+            }
+        };
+    </script>
+</body>
+</html>
