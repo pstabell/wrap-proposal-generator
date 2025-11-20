@@ -432,79 +432,8 @@ async function generatePDF() {
     const data = collectFormData();
     const filename = `${data.clientInfo.lastName}_WRAP_Proposal_${new Date().toISOString().split('T')[0]}.pdf`;
 
-    try {
-        showMessage('Generating PDF... This may take a moment.', 'success');
-
-        // Create a temporary container for the PDF content
-        const tempContainer = document.createElement('div');
-        tempContainer.style.position = 'absolute';
-        tempContainer.style.left = '-9999px';
-        tempContainer.style.width = '800px';
-        tempContainer.className = 'pdf-rendering'; // Add class for PDF-specific styles
-        tempContainer.innerHTML = generateProposalHTML(data);
-        document.body.appendChild(tempContainer);
-
-        // Apply print-media styles by adding a style tag
-        const styleTag = document.createElement('style');
-        styleTag.textContent = '.pdf-rendering .cover-image { height: 163px !important; }';
-        tempContainer.appendChild(styleTag);
-
-        // Use html2canvas to convert HTML to canvas with optimized settings
-        const canvas = await html2canvas(tempContainer, {
-            scale: 1.2, // Balanced quality and file size
-            useCORS: true,
-            logging: false,
-            backgroundColor: '#ffffff',
-            imageTimeout: 0,
-            allowTaint: true,
-            removeContainer: false
-        });
-
-        // Remove temporary container
-        document.body.removeChild(tempContainer);
-
-        // Create PDF using jsPDF
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4',
-            compress: true
-        });
-
-        const imgWidth = 210; // A4 width in mm
-        const pageHeight = 297; // A4 height in mm
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        // Convert canvas to JPEG instead of PNG for smaller file size
-        const imgData = canvas.toDataURL('image/jpeg', 0.85); // 85% quality
-
-        let heightLeft = imgHeight;
-        let position = 0;
-
-        // Add first page
-        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-        heightLeft -= pageHeight;
-
-        // Add additional pages if needed
-        while (heightLeft > 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-            heightLeft -= pageHeight;
-        }
-
-        // Save the PDF
-        pdf.save(filename);
-        showMessage('PDF generated successfully!', 'success');
-
-    } catch (error) {
-        console.error('Error generating PDF:', error);
-        showMessage('Failed to generate PDF: ' + error.message, 'error');
-        // Clean up if error
-        const tempContainer = document.querySelector('[style*="-9999px"]');
-        if (tempContainer) tempContainer.remove();
-    }
+    // Use the new page-by-page generator for perfect page breaks
+    await generatePDFPageByPage(data, filename);
 }
 
 function generateProposalHTML(data) {
