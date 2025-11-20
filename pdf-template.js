@@ -494,6 +494,145 @@ function generatePDFTemplate(data) {
         </div>
     </div>
 
+    <!-- TABLE OF CONTENTS -->
+    <div class="toc-page">
+        <!-- Page Header with Logo/Company Name -->
+        <div class="page-header">
+            ${data.companyInfo.logo ?
+                `<img src="${data.companyInfo.logo}" alt="Company Logo" class="page-header-logo">` :
+                `<div class="page-header-text">${data.companyInfo.name || 'ABC Insurance Agency'}</div>`
+            }
+        </div>
+
+        <h1>Contents</h1>
+
+        <div class="toc-item">
+            <span>Welcome & General Disclaimers</span>
+            <span>3</span>
+        </div>
+        <div class="toc-item">
+            <span>About ${data.companyInfo.name || 'Our Agency'}</span>
+            <span>4</span>
+        </div>
+        <div class="toc-item">
+            <span>Your ${data.companyInfo.name || 'Agency'} Team</span>
+            <span>5</span>
+        </div>
+
+        <div class="toc-section-title">Coverage Details</div>
+        ${coverageList.map((cov, index) => `
+        <div class="toc-item">
+            <span>${cov.title}</span>
+            <span>${6 + index}</span>
+        </div>
+        `).join('')}
+
+        <div class="toc-item">
+            <span>Premium Summary</span>
+            <span>${6 + coverageList.length}</span>
+        </div>
+        <div class="toc-item">
+            <span>Recommendations & Discussion Points</span>
+            <span>${7 + coverageList.length}</span>
+        </div>
+    </div>
+
+    <!-- WELCOME & DISCLAIMERS -->
+    <div class="content-page">
+        <!-- Page Header -->
+        <div class="page-header">
+            ${data.companyInfo.logo ?
+                `<img src="${data.companyInfo.logo}" alt="Company Logo" class="page-header-logo">` :
+                `<div class="page-header-text">${data.companyInfo.name || 'ABC Insurance Agency'}</div>`
+            }
+        </div>
+
+        <h1>Welcome & General Disclaimers</h1>
+
+        <h2>Welcome</h2>
+        <p>Every day we are exposed to risk – in our businesses, our homes, in our investments, to our health. While ${data.companyInfo.name || 'we'} can't prevent all risks, we can help you identify them, develop plans to reduce or avoid them, and implement insurance and risk management programs to help you recover if you ever do suffer a loss.</p>
+
+        <p>Finding the right coverage is essential to protecting your assets. Our dedicated agents will assist you in selecting an insurance program that addresses your potential property and liability exposures. We've partnered with insurance companies that strive to provide the best possible claims service available. When appropriate, inspections are provided to determine Replacement Cost and evaluate potential areas of risk.</p>
+
+        <h2>Coverage Disclaimer and Liability Limitations</h2>
+        <p>The coverage descriptions in this summary are intended as simplified visuals to provide a general understanding, not as the actual coverages themselves. The specific coverages are detailed in your policy, and we strongly recommend referring to your policy for the complete terms and conditions. This summary does not provide any coverage, and the coverages outlined are subject to exclusions and additional terms as stated in the policy. If there are any inconsistencies between the proposal and the policy, the policy terms will prevail.</p>
+
+        <p>${data.companyInfo.name || 'Our agency'} total liability arising from any services provided on your account will not exceed one million dollars ($1,000,000). Furthermore, we will not be liable for indirect, special, incidental, consequential, or punitive damages, nor for any lost profits or economic losses related to such services.</p>
+
+        <h2>Compensation</h2>
+        <p>${data.companyInfo.name || 'Our agency'} is compensated for the services it provides to insureds by negotiated fees and insurance company commissions paid from premiums. We may also receive additional compensation from insurance companies based upon other factors that are not specific to an individual insured. We can answer additional questions you may have about our compensation structure at your request.</p>
+    </div>
+
+    <!-- ABOUT YOUR AGENCY -->
+    <div class="content-page">
+        <!-- Page Header -->
+        <div class="page-header">
+            ${data.companyInfo.logo ?
+                `<img src="${data.companyInfo.logo}" alt="Company Logo" class="page-header-logo">` :
+                `<div class="page-header-text">${data.companyInfo.name || 'ABC Insurance Agency'}</div>`
+            }
+        </div>
+
+        <h1>About ${data.companyInfo.name || 'Our Agency'}</h1>
+
+        <p><strong>${data.companyInfo.name || 'Our agency'}</strong> is dedicated to providing comprehensive insurance solutions for high net worth individuals and families. Our commitment to personalized service and expert guidance has made us a trusted partner for protecting what matters most to our clients.</p>
+
+        <h2>Our Unique Advantage</h2>
+        <p>We offer the perfect blend of personalized local service and extensive carrier relationships. Through our strategic partnerships with top-rated insurance companies, we provide clients with unparalleled coverage options and competitive pricing.</p>
+
+        <h2>Why Choose Us</h2>
+        <ul style="margin-left: 30px; line-height: 2;">
+            <li><strong>Personalized Service:</strong> We take the time to understand your unique needs, ensuring tailored solutions that fit your specific situation.</li>
+            <li><strong>Comprehensive Expertise:</strong> Our team of experienced professionals offers a wide range of services, including property, casualty, and specialty insurance coverage.</li>
+            <li><strong>Strong Carrier Relationships:</strong> We work with top-rated insurance carriers to secure the best coverage and competitive pricing for our clients.</li>
+        </ul>
+
+        <h2>Our Commitment to You</h2>
+        <p>Relationships drive everything we do. We are dedicated to connecting with you to provide the solutions and expertise needed to manage risk and protect your future. Our focus is on building lasting partnerships that support your goals and provide peace of mind.</p>
+
+        ${data.companyInfo.address || data.companyInfo.phone || data.companyInfo.email ? `
+        <div class="policy-info-box" style="margin-top: 40px;">
+            <h3 style="color: ${brandColor}; margin-bottom: 15px;">Contact Information</h3>
+            <div class="policy-info-grid">
+                ${data.companyInfo.address ? `<div><strong>Address:</strong><br>${data.companyInfo.address}</div>` : ''}
+                ${data.companyInfo.phone ? `<div><strong>Phone:</strong><br>${data.companyInfo.phone}</div>` : ''}
+                ${data.companyInfo.email ? `<div><strong>Email:</strong><br>${data.companyInfo.email}</div>` : ''}
+                ${data.companyInfo.website ? `<div><strong>Website:</strong><br>${data.companyInfo.website}</div>` : ''}
+            </div>
+        </div>
+        ` : ''}
+    </div>
+
+    <!-- YOUR TEAM -->
+    <div class="content-page">
+        <!-- Page Header -->
+        <div class="page-header">
+            ${data.companyInfo.logo ?
+                `<img src="${data.companyInfo.logo}" alt="Company Logo" class="page-header-logo">` :
+                `<div class="page-header-text">${data.companyInfo.name || 'ABC Insurance Agency'}</div>`
+            }
+        </div>
+
+        <h1>Your ${data.companyInfo.name || 'Agency'} Team</h1>
+
+        <div class="team-grid">
+            ${data.teamMembers.map(member => `
+            <div class="team-member">
+                ${member.photo ?
+                    `<img src="${member.photo}" alt="${member.name}" class="team-photo">` :
+                    `<div class="team-photo-placeholder">${member.name.charAt(0)}</div>`
+                }
+                <div class="team-name">${member.name}</div>
+                ${member.title ? `<div class="team-title">${member.title}</div>` : ''}
+                <div class="team-contact">
+                    ${member.phone ? `<div>P: ${member.phone}</div>` : ''}
+                    ${member.email ? `<div>${member.email}</div>` : ''}
+                </div>
+            </div>
+            `).join('')}
+        </div>
+    </div>
+
     ${generateCoveragePages(data, brandColor)}
 
     <!-- PREMIUM SUMMARY (Second to last page - just before Recommendations) -->
