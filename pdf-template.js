@@ -919,6 +919,66 @@ function generateCoverageDetails(coverageType, coverage, brandColor) {
         `;
     }
 
+    // Add additional interests/lien holders
+    if (coverage.additional_interests) {
+        html += `
+        <h3>Additional Interests</h3>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 4px;">
+            ${coverage.additional_interests.replace(/\n/g, '<br>')}
+        </div>
+        `;
+    }
+
+    // Add underlying requirements for umbrella
+    if (coverage.underlying_requirements) {
+        html += `
+        <h3>Underlying Policy Requirements</h3>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 4px;">
+            ${coverage.underlying_requirements.replace(/\n/g, '<br>')}
+        </div>
+        `;
+    }
+
+    // Add coverage includes for cyber
+    if (coverage.coverage_includes) {
+        html += `
+        <h3>Coverage Includes</h3>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 4px;">
+            ${coverage.coverage_includes.replace(/\n/g, '<br>')}
+        </div>
+        `;
+    }
+
+    // Add items covered for fine art
+    if (coverage.items_covered) {
+        html += `
+        <h3>Artwork & Collectibles</h3>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 4px;">
+            ${coverage.items_covered.replace(/\n/g, '<br>')}
+        </div>
+        `;
+    }
+
+    // Add coverage details for "other" coverage
+    if (coverage.coverage_details) {
+        html += `
+        <h3>Coverage Details</h3>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 4px;">
+            ${coverage.coverage_details.replace(/\n/g, '<br>')}
+        </div>
+        `;
+    }
+
+    // Add special features/highlights
+    if (coverage.special_features) {
+        html += `
+        <h3>Additional Features</h3>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 4px;">
+            ${coverage.special_features.replace(/\n/g, '<br>')}
+        </div>
+        `;
+    }
+
     return html;
 }
 

@@ -58,6 +58,13 @@ async function generatePDFPageByPage(data, filename) {
 
             // Add image to fit page
             pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, Math.min(imgHeight, pageHeight), undefined, 'FAST');
+
+            // Add page number (skip cover page - page 0)
+            if (i > 0) {
+                pdf.setFontSize(9);
+                pdf.setTextColor(128, 128, 128);
+                pdf.text(`Page ${i} of ${pages.length - 1}`, pageWidth - 20, pageHeight - 10, { align: 'right' });
+            }
         }
 
         // Clean up
