@@ -1,6 +1,8 @@
 // Word Document Generator using docx library
 async function generateDocxFile(data, filename) {
-    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, HeadingLevel, BorderStyle } = docx;
+    // Access docx from window object (works with both UMD and browser builds)
+    const docxLib = window.docx || window;
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, HeadingLevel, BorderStyle } = docxLib;
 
     // Calculate totals
     let totalCurrent = 0;
