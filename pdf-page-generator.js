@@ -35,7 +35,34 @@ async function generatePDFPageByPage(data, filename) {
         const pageWidth = 210;
         const pageHeight = 297;
 
-        // Render each page separately for perfect breaks
+        // Track actual page count for numbering (starts at 0 for cover, increments after)
+        let actualPageNum = 0;
+        let totalNonCoverPages = 0;
+
+        // First pass: count total pages including splits
+        for (let i = 0; i < pages.length; i++) {
+            const page = pages[i];
+            const canvas = await html2canvas(page, {
+                scale: 1.2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff',
+                allowTaint: true,
+                imageTimeout: 0
+            });
+            const imgHeight = (canvas.height * pageWidth) / canvas.width;
+
+            if (i === 0) {
+                // Cover page doesn't count
+                continue;
+            }
+
+            // Calculate how many PDF pages this content needs
+            const pagesNeeded = Math.ceil(imgHeight / pageHeight);
+            totalNonCoverPages += pagesNeeded;
+        }
+
+        // Second pass: render each page separately, splitting if needed
         for (let i = 0; i < pages.length; i++) {
             const page = pages[i];
 
@@ -52,18 +79,27 @@ async function generatePDFPageByPage(data, filename) {
             const imgData = canvas.toDataURL('image/jpeg', 0.85);
             const imgHeight = (canvas.height * pageWidth) / canvas.width;
 
-            if (i > 0) {
-                pdf.addPage();
-            }
+            // Calculate how many PDF pages this content needs
+            const pagesNeeded = Math.ceil(imgHeight / pageHeight);
 
-            // Add image to fit page
-            pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, Math.min(imgHeight, pageHeight), undefined, 'FAST');
+            // Split content across multiple pages if needed
+            for (let pageNum = 0; pageNum < pagesNeeded; pageNum++) {
+                if (i > 0 || pageNum > 0) {
+                    pdf.addPage();
+                }
 
-            // Add page number (skip cover page - page 0)
-            if (i > 0) {
-                pdf.setFontSize(9);
-                pdf.setTextColor(128, 128, 128);
-                pdf.text(`Page ${i} of ${pages.length - 1}`, pageWidth - 20, pageHeight - 10, { align: 'right' });
+                const yOffset = -(pageNum * pageHeight);
+
+                // Add the image, offset for multi-page content
+                pdf.addImage(imgData, 'JPEG', 0, yOffset, pageWidth, imgHeight, undefined, 'FAST');
+
+                // Add page number (skip cover page)
+                if (i > 0) {
+                    actualPageNum++;
+                    pdf.setFontSize(9);
+                    pdf.setTextColor(128, 128, 128);
+                    pdf.text(`Page ${actualPageNum} of ${totalNonCoverPages}`, pageWidth - 20, pageHeight - 10, { align: 'right' });
+                }
             }
         }
 
@@ -73,7 +109,7 @@ async function generatePDFPageByPage(data, filename) {
 
         // Save
         pdf.save(filename);
-        showMessage('PDF generated successfully with perfect page breaks!', 'success');
+        showMessage(`PDF generated successfully! ${totalNonCoverPages + 1} pages created with perfect breaks.`, 'success');
 
     } catch (error) {
         console.error('Error generating PDF:', error);
