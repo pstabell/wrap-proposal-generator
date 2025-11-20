@@ -439,55 +439,51 @@ async function generatePDF() {
         const tempContainer = document.createElement('div');
         tempContainer.style.position = 'absolute';
         tempContainer.style.left = '-9999px';
-        tempContainer.style.width = '800px';
+        tempContainer.style.width = '210mm'; // A4 width
+        tempContainer.style.padding = '10mm';
+        tempContainer.style.backgroundColor = 'white';
         tempContainer.innerHTML = generateProposalHTML(data);
         document.body.appendChild(tempContainer);
 
-        // Use html2canvas to convert HTML to canvas
-        const canvas = await html2canvas(tempContainer, {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            backgroundColor: '#ffffff'
-        });
-
-        // Remove temporary container
-        document.body.removeChild(tempContainer);
-
         // Create PDF using jsPDF
         const { jsPDF } = window.jspdf;
-        const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
-            format: 'a4'
+            format: 'a4',
+            compress: true
         });
 
-        const imgWidth = 210; // A4 width in mm
-        const pageHeight = 297; // A4 height in mm
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        let heightLeft = imgHeight;
-        let position = 0;
-
-        // Add first page
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        // Add additional pages if needed
-        while (heightLeft > 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-        }
-
-        // Save the PDF
-        pdf.save(filename);
-        showMessage('PDF generated successfully!', 'success');
+        // Use jsPDF's html method with better options
+        await pdf.html(tempContainer, {
+            callback: function(pdf) {
+                // Remove temporary container
+                document.body.removeChild(tempContainer);
+                // Save the PDF
+                pdf.save(filename);
+                showMessage('PDF generated successfully!', 'success');
+            },
+            x: 10,
+            y: 10,
+            width: 190, // A4 width minus margins
+            windowWidth: 800,
+            html2canvas: {
+                scale: 0.5, // Reduce scale to decrease file size
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff',
+                imageTimeout: 0,
+                allowTaint: true
+            },
+            autoPaging: 'text' // Better page break handling
+        });
 
     } catch (error) {
         console.error('Error generating PDF:', error);
         showMessage('Failed to generate PDF: ' + error.message, 'error');
+        // Clean up if error
+        const tempContainer = document.querySelector('[style*="-9999px"]');
+        if (tempContainer) tempContainer.remove();
     }
 }
 
