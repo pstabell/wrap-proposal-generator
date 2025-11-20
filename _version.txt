@@ -1,0 +1,3 @@
+Version: 2.0
+Updated: 2025-11-19
+Features: Browser-based PDF and Word document generation
