@@ -410,6 +410,10 @@ function generatePDFTemplate(data) {
         }
         .premium-summary-table .total-row td {
             border: none;
+            color: white !important;
+        }
+        .premium-summary-table .total-row td strong {
+            color: white !important;
         }
         .savings-positive { color: #28a745; font-weight: 700; }
         .savings-negative { color: #dc3545; font-weight: 700; }
