@@ -100,10 +100,16 @@ function generatePDFTemplate(data) {
         }
         .cover-image {
             width: 100%;
-            height: 192px;
+            height: 240px;
             object-fit: cover;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        /* PDF-only: Reduce image height for proper rendering */
+        @media print {
+            .cover-image {
+                height: 163px;
+            }
         }
         .cover-title {
             font-size: 32pt;

@@ -440,8 +440,14 @@ async function generatePDF() {
         tempContainer.style.position = 'absolute';
         tempContainer.style.left = '-9999px';
         tempContainer.style.width = '800px';
+        tempContainer.className = 'pdf-rendering'; // Add class for PDF-specific styles
         tempContainer.innerHTML = generateProposalHTML(data);
         document.body.appendChild(tempContainer);
+
+        // Apply print-media styles by adding a style tag
+        const styleTag = document.createElement('style');
+        styleTag.textContent = '.pdf-rendering .cover-image { height: 163px !important; }';
+        tempContainer.appendChild(styleTag);
 
         // Use html2canvas to convert HTML to canvas with optimized settings
         const canvas = await html2canvas(tempContainer, {
