@@ -439,11 +439,23 @@ async function generatePDF() {
         const tempContainer = document.createElement('div');
         tempContainer.style.position = 'absolute';
         tempContainer.style.left = '-9999px';
-        tempContainer.style.width = '210mm'; // A4 width
-        tempContainer.style.padding = '10mm';
-        tempContainer.style.backgroundColor = 'white';
+        tempContainer.style.width = '800px';
         tempContainer.innerHTML = generateProposalHTML(data);
         document.body.appendChild(tempContainer);
+
+        // Use html2canvas to convert HTML to canvas with optimized settings
+        const canvas = await html2canvas(tempContainer, {
+            scale: 1.2, // Balanced quality and file size
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+            imageTimeout: 0,
+            allowTaint: true,
+            removeContainer: false
+        });
+
+        // Remove temporary container
+        document.body.removeChild(tempContainer);
 
         // Create PDF using jsPDF
         const { jsPDF } = window.jspdf;
@@ -454,29 +466,31 @@ async function generatePDF() {
             compress: true
         });
 
-        // Use jsPDF's html method with better options
-        await pdf.html(tempContainer, {
-            callback: function(pdf) {
-                // Remove temporary container
-                document.body.removeChild(tempContainer);
-                // Save the PDF
-                pdf.save(filename);
-                showMessage('PDF generated successfully!', 'success');
-            },
-            x: 10,
-            y: 10,
-            width: 190, // A4 width minus margins
-            windowWidth: 800,
-            html2canvas: {
-                scale: 0.5, // Reduce scale to decrease file size
-                useCORS: true,
-                logging: false,
-                backgroundColor: '#ffffff',
-                imageTimeout: 0,
-                allowTaint: true
-            },
-            autoPaging: 'text' // Better page break handling
-        });
+        const imgWidth = 210; // A4 width in mm
+        const pageHeight = 297; // A4 height in mm
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        // Convert canvas to JPEG instead of PNG for smaller file size
+        const imgData = canvas.toDataURL('image/jpeg', 0.85); // 85% quality
+
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        // Add first page
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+        heightLeft -= pageHeight;
+
+        // Add additional pages if needed
+        while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+            heightLeft -= pageHeight;
+        }
+
+        // Save the PDF
+        pdf.save(filename);
+        showMessage('PDF generated successfully!', 'success');
 
     } catch (error) {
         console.error('Error generating PDF:', error);
