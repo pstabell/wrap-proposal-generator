@@ -494,7 +494,9 @@ function generatePDFTemplate(data) {
         </div>
     </div>
 
-    <!-- PREMIUM SUMMARY (Page 2 - Moved before coverage pages per user request) -->
+    ${generateCoveragePages(data, brandColor)}
+
+    <!-- PREMIUM SUMMARY (Second to last page - just before Recommendations) -->
     <div class="content-page">
         <!-- Page Header -->
         <div class="page-header">
@@ -530,22 +532,13 @@ function generatePDFTemplate(data) {
             </tbody>
         </table>
 
-        <div class="policy-info-box" style="margin-top: 30px;">
-            <h3 style="color: ${brandColor};">Summary</h3>
-            <div style="font-size: 14pt; margin-top: 15px;">
-                <div style="margin-bottom: 10px;"><strong>Total Expiring Premium:</strong> $${totalCurrent.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
-                <div style="margin-bottom: 10px;"><strong>Total Renewal Premium:</strong> $${totalProposed.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
-                <div style="font-size: 16pt; margin-top: 15px;">
-                    <strong>Annual ${savings >= 0 ? 'Savings' : 'Increase'}:</strong>
-                    <span class="${savings >= 0 ? 'savings-positive' : 'savings-negative'}">
-                        $${Math.abs(savings).toLocaleString('en-US', {minimumFractionDigits: 2})} (${Math.abs(savingsPercent)}%)
-                    </span>
-                </div>
+        <div style="background: ${brandColor}; color: white; padding: 25px; border-radius: 8px; margin-top: 40px;">
+            <div style="font-size: 16pt; margin-bottom: 15px;"><strong>Annual ${savings >= 0 ? 'Savings' : 'Increase'}:</strong></div>
+            <div style="font-size: 24pt; font-weight: bold;">
+                $${Math.abs(savings).toLocaleString('en-US', {minimumFractionDigits: 2})} (${Math.abs(savingsPercent)}%)
             </div>
         </div>
     </div>
-
-    ${generateCoveragePages(data, brandColor)}
 
     <!-- RECOMMENDATIONS & DISCUSSION POINTS (Final Page) -->
     <div class="content-page">
