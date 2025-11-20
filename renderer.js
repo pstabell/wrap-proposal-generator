@@ -29,6 +29,9 @@ function setupEventListeners() {
     // Add team member button
     document.getElementById('addTeamMember').addEventListener('click', addTeamMember);
 
+    // File upload handlers
+    setupFileUploadHandlers();
+
     // Modal close
     document.querySelector('.close').addEventListener('click', () => {
         document.getElementById('previewModal').style.display = 'none';
@@ -119,8 +122,12 @@ function addTeamMember() {
                 <input type="email" id="teamEmail${teamMemberCount}" placeholder="jane@agency.com">
             </div>
             <div class="form-group full-width">
-                <label for="teamPhoto${teamMemberCount}">Photo URL (optional)</label>
-                <input type="text" id="teamPhoto${teamMemberCount}" placeholder="https://yoursite.com/photo.jpg or leave blank">
+                <label for="teamPhotoFile${teamMemberCount}">Photo Upload (optional)</label>
+                <input type="file" id="teamPhotoFile${teamMemberCount}" accept="image/*" class="team-photo-upload" data-member="${teamMemberCount}">
+                <small style="color: #666;">Upload a professional headshot (PNG or JPG)</small>
+                <div id="teamPhotoPreview${teamMemberCount}" style="margin-top: 10px; display: none;">
+                    <img id="teamPhotoPreviewImg${teamMemberCount}" style="max-width: 150px; max-height: 150px; border: 1px solid #ddd; padding: 5px; border-radius: 4px;">
+                </div>
             </div>
         </div>
     `;
@@ -133,6 +140,90 @@ function removeTeamMember(memberId) {
     if (card && memberId > 1) { // Don't allow removing the primary agent
         card.remove();
     }
+}
+
+// Setup file upload handlers for logo and team photos
+function setupFileUploadHandlers() {
+    // Company logo upload
+    const logoInput = document.getElementById('companyLogoFile');
+    if (logoInput) {
+        logoInput.addEventListener('change', handleLogoUpload);
+    }
+
+    // Team photo uploads (initial member)
+    const teamPhoto1 = document.getElementById('teamPhotoFile1');
+    if (teamPhoto1) {
+        teamPhoto1.addEventListener('change', handleTeamPhotoUpload);
+    }
+
+    // Use event delegation for dynamically added team members
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('team-photo-upload')) {
+            handleTeamPhotoUpload.call(e.target, e);
+        }
+    });
+}
+
+// Handle logo file upload
+async function handleLogoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+        const base64 = await fileToBase64(file);
+
+        // Show preview
+        const preview = document.getElementById('logoPreview');
+        const previewImg = document.getElementById('logoPreviewImg');
+
+        previewImg.src = base64;
+        preview.style.display = 'block';
+
+        // Store base64 in a data attribute for later use
+        event.target.dataset.base64 = base64;
+
+    } catch (error) {
+        console.error('Error loading logo:', error);
+        showMessage('Failed to load logo image', 'error');
+    }
+}
+
+// Handle team photo upload
+async function handleTeamPhotoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const memberId = event.target.dataset.member;
+
+    try {
+        const base64 = await fileToBase64(file);
+
+        // Show preview
+        const preview = document.getElementById(`teamPhotoPreview${memberId}`);
+        const previewImg = document.getElementById(`teamPhotoPreviewImg${memberId}`);
+
+        if (preview && previewImg) {
+            previewImg.src = base64;
+            preview.style.display = 'block';
+        }
+
+        // Store base64 in a data attribute for later use
+        event.target.dataset.base64 = base64;
+
+    } catch (error) {
+        console.error('Error loading team photo:', error);
+        showMessage('Failed to load team photo', 'error');
+    }
+}
+
+// Convert file to base64 data URL
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
 }
 
 function calculateSummary() {
@@ -185,7 +276,7 @@ function collectFormData() {
             email: document.getElementById('companyEmail').value,
             address: document.getElementById('companyAddress').value,
             website: document.getElementById('companyWebsite').value,
-            logo: document.getElementById('companyLogo').value,
+            logo: document.getElementById('companyLogoFile')?.dataset.base64 || '',
             brandColor: document.getElementById('brandColor').value
         },
         teamMembers: [],
@@ -215,7 +306,7 @@ function collectFormData() {
                 title: document.getElementById(`teamTitle${memberId}`)?.value || '',
                 phone: document.getElementById(`teamPhone${memberId}`)?.value || '',
                 email: document.getElementById(`teamEmail${memberId}`)?.value || '',
-                photo: document.getElementById(`teamPhoto${memberId}`)?.value || ''
+                photo: document.getElementById(`teamPhotoFile${memberId}`)?.dataset.base64 || ''
             });
         }
     });
@@ -247,8 +338,18 @@ function populateFormData(data) {
         document.getElementById('companyEmail').value = data.companyInfo.email || '';
         document.getElementById('companyAddress').value = data.companyInfo.address || '';
         document.getElementById('companyWebsite').value = data.companyInfo.website || '';
-        document.getElementById('companyLogo').value = data.companyInfo.logo || '';
         document.getElementById('brandColor').value = data.companyInfo.brandColor || '#003366';
+
+        // Restore logo if it exists (base64 data)
+        if (data.companyInfo.logo) {
+            const logoInput = document.getElementById('companyLogoFile');
+            logoInput.dataset.base64 = data.companyInfo.logo;
+
+            const preview = document.getElementById('logoPreview');
+            const previewImg = document.getElementById('logoPreviewImg');
+            previewImg.src = data.companyInfo.logo;
+            preview.style.display = 'block';
+        }
     }
 
     // Team members
@@ -282,12 +383,27 @@ function populateFormData(data) {
                             <input type="email" id="teamEmail1" placeholder="john@agency.com" value="${member.email || ''}">
                         </div>
                         <div class="form-group full-width">
-                            <label for="teamPhoto1">Photo URL (optional)</label>
-                            <input type="text" id="teamPhoto1" placeholder="https://yoursite.com/photo.jpg or leave blank" value="${member.photo || ''}">
+                            <label for="teamPhotoFile1">Photo Upload (optional)</label>
+                            <input type="file" id="teamPhotoFile1" accept="image/*" class="team-photo-upload" data-member="1">
+                            <small style="color: #666;">Upload a professional headshot (PNG or JPG)</small>
+                            <div id="teamPhotoPreview1" style="margin-top: 10px; display: none;">
+                                <img id="teamPhotoPreviewImg1" style="max-width: 150px; max-height: 150px; border: 1px solid #ddd; padding: 5px; border-radius: 4px;">
+                            </div>
                         </div>
                     </div>
                 `;
                 document.getElementById('teamMembers').appendChild(card);
+
+                // Restore photo if it exists
+                if (member.photo) {
+                    const photoInput = document.getElementById('teamPhotoFile1');
+                    photoInput.dataset.base64 = member.photo;
+
+                    const preview = document.getElementById('teamPhotoPreview1');
+                    const previewImg = document.getElementById('teamPhotoPreviewImg1');
+                    previewImg.src = member.photo;
+                    preview.style.display = 'block';
+                }
             } else {
                 // Additional team members
                 addTeamMember();
@@ -296,7 +412,17 @@ function populateFormData(data) {
                 document.getElementById(`teamTitle${memberId}`).value = member.title || '';
                 document.getElementById(`teamPhone${memberId}`).value = member.phone || '';
                 document.getElementById(`teamEmail${memberId}`).value = member.email || '';
-                document.getElementById(`teamPhoto${memberId}`).value = member.photo || '';
+
+                // Restore photo if it exists
+                if (member.photo) {
+                    const photoInput = document.getElementById(`teamPhotoFile${memberId}`);
+                    photoInput.dataset.base64 = member.photo;
+
+                    const preview = document.getElementById(`teamPhotoPreview${memberId}`);
+                    const previewImg = document.getElementById(`teamPhotoPreviewImg${memberId}`);
+                    previewImg.src = member.photo;
+                    preview.style.display = 'block';
+                }
             }
         });
     }
