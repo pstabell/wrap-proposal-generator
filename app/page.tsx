@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { ProposalData, CoverageType, AgentInfo, ClientInfo, Coverage } from '@/types';
+import { ProposalData, CoverageType, AgentInfo, ClientInfo, Coverage, UploadedFiles } from '@/types';
 import { coverageTemplates } from '@/lib/coverage-templates';
+import { sampleProposalData } from '@/lib/sample-data';
+import FileUpload from '@/components/FileUpload';
 
 export default function ProposalGenerator() {
   const [agentInfo, setAgentInfo] = useState<AgentInfo>({
@@ -29,6 +31,17 @@ export default function ProposalGenerator() {
   const [notes, setNotes] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
 
+  // New state for agency branding
+  const [agencyLogo, setAgencyLogo] = useState<string>('');
+  const [agencyName, setAgencyName] = useState<string>('');
+  const [agentPhoto, setAgentPhoto] = useState<string>('');
+
+  // New state for file uploads
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFiles>({
+    currentDecPages: [],
+    newProposals: []
+  });
+
   const coverageTypes: { key: CoverageType; label: string }[] = [
     { key: 'homeowners', label: 'Homeowners Insurance' },
     { key: 'condo', label: 'Condo Insurance' },
@@ -41,6 +54,21 @@ export default function ProposalGenerator() {
     { key: 'fineart', label: 'Fine Arts Insurance' },
     { key: 'other', label: 'Other Coverage' }
   ];
+
+  const handleLoadSampleData = () => {
+    // Load all sample data
+    setAgencyName(sampleProposalData.agencyName || '');
+    setAgentInfo(sampleProposalData.agentInfo);
+    setClientInfo(sampleProposalData.clientInfo);
+    setProposalDate(sampleProposalData.proposalDate);
+    setExecutiveSummary(sampleProposalData.executiveSummary || '');
+    setNotes(sampleProposalData.notes || '');
+
+    // Load coverages
+    const coverageKeys = Object.keys(sampleProposalData.coverages) as CoverageType[];
+    setSelectedCoverages(new Set(coverageKeys));
+    setCoverageData(sampleProposalData.coverages as Record<CoverageType, Coverage>);
+  };
 
   const handleCoverageToggle = (coverageType: CoverageType) => {
     const newSelected = new Set(selectedCoverages);
@@ -87,7 +115,11 @@ export default function ProposalGenerator() {
         clientInfo,
         coverages: coverageData,
         executiveSummary,
-        notes
+        notes,
+        agencyLogo,
+        agencyName,
+        agentPhoto,
+        uploadedFiles
       };
 
       const response = await fetch('/api/generate-pdf', {
@@ -134,6 +166,59 @@ export default function ProposalGenerator() {
           </div>
 
           <form onSubmit={handleSubmit} className="px-6 py-8 space-y-8">
+            {/* Load Sample Data Button */}
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={handleLoadSampleData}
+                className="px-6 py-2 text-white font-semibold rounded-md shadow-md hover:opacity-90 transition-opacity"
+                style={{ backgroundColor: '#D4AF37' }}
+              >
+                Load Sample Data
+              </button>
+            </div>
+
+            {/* Agency Branding Section */}
+            <section className="bg-blue-50 p-6 rounded-lg border-2 border-blue-200">
+              <h2 className="text-2xl font-semibold mb-4" style={{ color: '#003B5C' }}>
+                Agency Branding
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <FileUpload
+                    label="Agency Logo"
+                    accept="image/*"
+                    fileType="image"
+                    onFilesSelected={(files) => setAgencyLogo(files[0] || '')}
+                    showPreview={true}
+                    maxSizeMB={5}
+                  />
+                </div>
+                <div>
+                  <FileUpload
+                    label="Agent Photo"
+                    accept="image/*"
+                    fileType="image"
+                    onFilesSelected={(files) => setAgentPhoto(files[0] || '')}
+                    showPreview={true}
+                    maxSizeMB={5}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Agency Name
+                  </label>
+                  <input
+                    type="text"
+                    value={agencyName}
+                    onChange={(e) => setAgencyName(e.target.value)}
+                    placeholder="Metro Point Insurance"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+                  />
+                </div>
+              </div>
+            </section>
+
             {/* Agent Information */}
             <section>
               <h2 className="text-2xl font-semibold mb-4" style={{ color: '#003B5C' }}>
@@ -289,6 +374,49 @@ export default function ProposalGenerator() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
                   />
                 </div>
+              </div>
+            </section>
+
+            {/* Declaration Page Upload Section */}
+            <section className="bg-yellow-50 p-6 rounded-lg border-2 border-yellow-200">
+              <h2 className="text-2xl font-semibold mb-4" style={{ color: '#003B5C' }}>
+                Upload Existing Policy Documents
+              </h2>
+              <p className="text-sm text-gray-600 mb-4">
+                Upload your client&apos;s existing policy declaration pages and new carrier proposals.
+                We&apos;ll extract the data automatically in a future update.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <FileUpload
+                    label="Current Declaration Pages (PDF)"
+                    accept=".pdf"
+                    fileType="pdf"
+                    multiple={true}
+                    onFilesSelected={(files) => setUploadedFiles({ ...uploadedFiles, currentDecPages: files })}
+                    existingFiles={uploadedFiles.currentDecPages}
+                    showPreview={false}
+                    maxSizeMB={10}
+                  />
+                </div>
+                <div>
+                  <FileUpload
+                    label="New Proposals (PDF)"
+                    accept=".pdf"
+                    fileType="pdf"
+                    multiple={true}
+                    onFilesSelected={(files) => setUploadedFiles({ ...uploadedFiles, newProposals: files })}
+                    existingFiles={uploadedFiles.newProposals}
+                    showPreview={false}
+                    maxSizeMB={10}
+                  />
+                </div>
+              </div>
+              <div className="mt-4 p-4 bg-blue-100 rounded-md">
+                <p className="text-sm text-blue-800">
+                  <strong>Note:</strong> OCR and automatic data extraction will be added in Phase 2.
+                  For now, files are stored as references with your proposal.
+                </p>
               </div>
             </section>
 

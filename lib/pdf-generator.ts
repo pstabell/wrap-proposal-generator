@@ -5,7 +5,7 @@ const PRIMARY_COLOR = '#003B5C';
 const ACCENT_COLOR = '#D4AF37';
 
 export function generateProposalHTML(data: ProposalData): string {
-  const { clientInfo, agentInfo, proposalDate, coverages, executiveSummary, notes } = data;
+  const { clientInfo, agentInfo, proposalDate, coverages, executiveSummary, notes, agencyLogo, agencyName, agentPhoto } = data;
 
   // Calculate totals
   let totalCurrentPremium = 0;
@@ -64,6 +64,13 @@ export function generateProposalHTML(data: ProposalData): string {
       color: white;
     }
 
+    .cover-logo {
+      max-width: 250px;
+      max-height: 100px;
+      margin-bottom: 30px;
+      object-fit: contain;
+    }
+
     .cover-title {
       font-size: 48px;
       font-weight: bold;
@@ -109,12 +116,37 @@ export function generateProposalHTML(data: ProposalData): string {
       transform: translateX(-50%);
       font-size: 16px;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .agent-photo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid ${ACCENT_COLOR};
+      margin-bottom: 10px;
     }
 
     .header {
       border-bottom: 3px solid ${PRIMARY_COLOR};
       padding-bottom: 20px;
       margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-content {
+      flex: 1;
+    }
+
+    .header-logo {
+      max-width: 150px;
+      max-height: 60px;
+      object-fit: contain;
     }
 
     .header h1 {
@@ -126,6 +158,13 @@ export function generateProposalHTML(data: ProposalData): string {
     .header .date {
       color: #666;
       font-size: 14px;
+    }
+
+    .header .agency-name {
+      color: ${ACCENT_COLOR};
+      font-size: 14px;
+      font-weight: bold;
+      margin-top: 5px;
     }
 
     .section {
@@ -330,6 +369,8 @@ export function generateProposalHTML(data: ProposalData): string {
 
   <!-- Cover Page -->
   <div class="page cover-page">
+    ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="cover-logo" />` : ''}
+
     <div class="cover-title">WRAP PROPOSAL</div>
     <div class="cover-subtitle">Wealth Risk Analysis & Protection</div>
 
@@ -350,17 +391,25 @@ export function generateProposalHTML(data: ProposalData): string {
     </div>
 
     <div class="cover-agent">
-      Prepared by: ${agentInfo.name}<br>
-      ${agentInfo.phone ? `${agentInfo.phone}` : ''}
-      ${agentInfo.email ? ` | ${agentInfo.email}` : ''}
+      ${agentPhoto ? `<img src="${agentPhoto}" alt="Agent Photo" class="agent-photo" />` : ''}
+      <div>
+        Prepared by: ${agentInfo.name}<br>
+        ${agentInfo.phone ? `${agentInfo.phone}` : ''}
+        ${agentInfo.email ? ` | ${agentInfo.email}` : ''}
+        ${agencyName ? `<br>${agencyName}` : ''}
+      </div>
     </div>
   </div>
 
   <!-- Executive Summary Page -->
   <div class="page">
     <div class="header">
-      <h1>Executive Summary</h1>
-      <div class="date">${formatDate(proposalDate)}</div>
+      <div class="header-content">
+        <h1>Executive Summary</h1>
+        <div class="date">${formatDate(proposalDate)}</div>
+        ${agencyName ? `<div class="agency-name">${agencyName}</div>` : ''}
+      </div>
+      ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
     </div>
 
     ${executiveSummary ? `
@@ -429,7 +478,7 @@ export function generateProposalHTML(data: ProposalData): string {
     ` : ''}
 
     <div class="footer">
-      Metro Point Technology | WRAP Proposal | Page 2
+      ${agencyName || 'Metro Point Technology'} | WRAP Proposal | Page 2
     </div>
   </div>
 
@@ -441,8 +490,12 @@ export function generateProposalHTML(data: ProposalData): string {
     return `
       <div class="page">
         <div class="header">
-          <h1>${template.title.replace(/[^\w\s]/g, '')}</h1>
-          <div class="date">${formatDate(proposalDate)}</div>
+          <div class="header-content">
+            <h1>${template.title.replace(/[^\w\s]/g, '')}</h1>
+            <div class="date">${formatDate(proposalDate)}</div>
+            ${agencyName ? `<div class="agency-name">${agencyName}</div>` : ''}
+          </div>
+          ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
         </div>
 
         <div class="coverage-detail">
@@ -482,7 +535,7 @@ export function generateProposalHTML(data: ProposalData): string {
         </div>
 
         <div class="footer">
-          Metro Point Technology | ${template.title.replace(/[^\w\s]/g, '')} | ${clientInfo.lastName}
+          ${agencyName || 'Metro Point Technology'} | ${template.title.replace(/[^\w\s]/g, '')} | ${clientInfo.lastName}
         </div>
       </div>
     `;

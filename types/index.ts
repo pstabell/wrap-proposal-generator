@@ -36,6 +36,11 @@ export interface Coverage {
   proposed_carrier: string;
 }
 
+export interface UploadedFiles {
+  currentDecPages: string[];
+  newProposals: string[];
+}
+
 export interface ProposalData {
   proposalDate: string;
   clientInfo: ClientInfo;
@@ -45,6 +50,10 @@ export interface ProposalData {
   };
   executiveSummary?: string;
   notes?: string;
+  agencyLogo?: string;
+  agencyName?: string;
+  agentPhoto?: string;
+  uploadedFiles?: UploadedFiles;
 }
 
 export type CoverageType =
