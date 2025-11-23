@@ -34,16 +34,19 @@ export async function POST(request: NextRequest) {
 
     // Launch browser with appropriate configuration
     const browser = await puppeteer.launch({
-      args: chromium.args,
+      args: process.env.NODE_ENV === 'production'
+        ? chromium.args
+        : ['--no-sandbox', '--disable-setuid-sandbox'],
       defaultViewport: chromium.defaultViewport,
       executablePath: process.env.NODE_ENV === 'production'
-        ? await chromium.executablePath()
+        ? await chromium.executablePath('/tmp')
         : process.platform === 'win32'
         ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
         : process.platform === 'darwin'
         ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
         : '/usr/bin/google-chrome',
-      headless: chromium.headless,
+      headless: process.env.NODE_ENV === 'production' ? chromium.headless : true,
+      ignoreHTTPSErrors: true,
     });
 
     const page = await browser.newPage();
