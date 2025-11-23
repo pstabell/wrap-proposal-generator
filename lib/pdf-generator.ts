@@ -783,11 +783,17 @@ export function generateProposalHTML(data: ProposalData): string {
   <div class="page cover-page">
     ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="cover-logo" />` : ''}
 
-    <!-- Stock images placeholder -->
+    <!-- Luxury lifestyle images -->
     <div class="cover-images">
-      <div class="cover-image-item" style="background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);"></div>
-      <div class="cover-image-item" style="background: linear-gradient(135deg, #003B5C 0%, #0077BE 100%);"></div>
-      <div class="cover-image-item" style="background: linear-gradient(135deg, #666 0%, #999 100%);"></div>
+      <div class="cover-image-item">
+        <img src="https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=400&h=300&fit=crop" alt="Private Jet" style="width: 100%; height: 100%; object-fit: cover;" />
+      </div>
+      <div class="cover-image-item">
+        <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=300&fit=crop" alt="Luxury Estate" style="width: 100%; height: 100%; object-fit: cover;" />
+      </div>
+      <div class="cover-image-item">
+        <img src="https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=400&h=300&fit=crop" alt="Luxury Yacht" style="width: 100%; height: 100%; object-fit: cover;" />
+      </div>
     </div>
 
     <div class="cover-title">PRIVATE CLIENT INSURANCE PROPOSAL</div>
