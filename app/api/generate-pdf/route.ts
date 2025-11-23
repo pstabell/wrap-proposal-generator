@@ -1,14 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ProposalData } from '@/types';
-import { generateProposalHTML } from '@/lib/pdf-generator';
-import puppeteer from 'puppeteer-core';
-import chromium from '@sparticuz/chromium';
-
-// Configure chromium for Vercel serverless environment
-if (process.env.NODE_ENV === 'production') {
-  chromium.setHeadlessMode = true;
-  chromium.setGraphicsMode = false;
-}
+import { generateProposalPDF } from '@/lib/pdf-generator-react';
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,50 +21,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate HTML from proposal data
-    const html = generateProposalHTML(proposalData);
-
-    // Launch browser with appropriate configuration
-    const browser = await puppeteer.launch({
-      args: process.env.NODE_ENV === 'production'
-        ? chromium.args
-        : ['--no-sandbox', '--disable-setuid-sandbox'],
-      defaultViewport: chromium.defaultViewport,
-      executablePath: process.env.NODE_ENV === 'production'
-        ? await chromium.executablePath('/tmp')
-        : process.platform === 'win32'
-        ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
-        : process.platform === 'darwin'
-        ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-        : '/usr/bin/google-chrome',
-      headless: process.env.NODE_ENV === 'production' ? chromium.headless : true,
-      ignoreHTTPSErrors: true,
-    });
-
-    const page = await browser.newPage();
-
-    // Set content and wait for any images/fonts to load
-    await page.setContent(html, {
-      waitUntil: 'networkidle0',
-    });
-
-    // Generate PDF with proper settings
-    const pdf = await page.pdf({
-      format: 'Letter',
-      printBackground: true,
-      margin: {
-        top: '0',
-        right: '0',
-        bottom: '0',
-        left: '0',
-      },
-      preferCSSPageSize: true,
-    });
-
-    await browser.close();
+    // Generate PDF using React PDF
+    const pdfBuffer = await generateProposalPDF(proposalData);
 
     // Return PDF as response
-    return new NextResponse(Buffer.from(pdf), {
+    return new NextResponse(pdfBuffer as any, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
