@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
-});
-
 export async function POST(request: NextRequest) {
   try {
+    // Check if API key is configured
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'ANTHROPIC_API_KEY environment variable is not configured. Please add it to your Vercel environment variables.' },
+        { status: 500 }
+      );
+    }
+
     const { pdfUrls } = await request.json();
 
     if (!pdfUrls || !Array.isArray(pdfUrls) || pdfUrls.length === 0) {
@@ -15,6 +20,11 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Initialize Anthropic client with the API key
+    const anthropic = new Anthropic({
+      apiKey: apiKey,
+    });
 
     // For now, we'll use a simpler approach: fetch PDF as base64 and send to Claude
     // Fetch the first PDF
