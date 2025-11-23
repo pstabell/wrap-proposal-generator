@@ -4,9 +4,11 @@ import { generateProposalHTML } from '@/lib/pdf-generator';
 import puppeteer from 'puppeteer-core';
 import chromium from '@sparticuz/chromium';
 
-// Configure chromium for Vercel
-chromium.setHeadlessMode = true;
-chromium.setGraphicsMode = false;
+// Configure chromium for Vercel serverless environment
+if (process.env.NODE_ENV === 'production') {
+  chromium.setHeadlessMode = true;
+  chromium.setGraphicsMode = false;
+}
 
 export async function POST(request: NextRequest) {
   try {
