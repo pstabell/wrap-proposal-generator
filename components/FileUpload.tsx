@@ -25,6 +25,7 @@ export default function FileUpload({
 }: FileUploadProps) {
   const [files, setFiles] = useState<{ name: string; size: number; data?: string }[]>([]);
   const [error, setError] = useState<string>('');
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const formatFileSize = (bytes: number): string => {
@@ -40,50 +41,75 @@ export default function FileUpload({
     if (!selectedFiles || selectedFiles.length === 0) return;
 
     setError('');
+    setUploading(true);
     const fileArray: { name: string; size: number; data?: string }[] = [];
     const fileDataArray: string[] = [];
 
-    for (let i = 0; i < selectedFiles.length; i++) {
-      const file = selectedFiles[i];
+    try {
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
 
-      // Check file size
-      const fileSizeMB = file.size / (1024 * 1024);
-      if (fileSizeMB > maxSizeMB) {
-        setError(`File "${file.name}" exceeds ${maxSizeMB}MB limit`);
-        continue;
-      }
-
-      // Read file
-      const reader = new FileReader();
-      const fileData = await new Promise<string>((resolve, reject) => {
-        reader.onload = (event) => {
-          if (event.target?.result) {
-            resolve(event.target.result as string);
-          } else {
-            reject('Failed to read file');
-          }
-        };
-        reader.onerror = () => reject('Error reading file');
+        // Check file size
+        const fileSizeMB = file.size / (1024 * 1024);
+        if (fileSizeMB > maxSizeMB) {
+          setError(`File "${file.name}" exceeds ${maxSizeMB}MB limit`);
+          continue;
+        }
 
         if (fileType === 'image') {
-          reader.readAsDataURL(file);
+          // For images, read as data URL for preview
+          const reader = new FileReader();
+          const fileData = await new Promise<string>((resolve, reject) => {
+            reader.onload = (event) => {
+              if (event.target?.result) {
+                resolve(event.target.result as string);
+              } else {
+                reject('Failed to read file');
+              }
+            };
+            reader.onerror = () => reject('Error reading file');
+            reader.readAsDataURL(file);
+          });
+
+          fileArray.push({
+            name: file.name,
+            size: file.size,
+            data: fileData
+          });
+          fileDataArray.push(fileData);
         } else {
-          // For PDFs, store file name reference for now
-          resolve(file.name);
+          // For PDFs, upload to Vercel Blob
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const uploadResponse = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!uploadResponse.ok) {
+            const errorData = await uploadResponse.json();
+            throw new Error(errorData.error || 'Failed to upload file');
+          }
+
+          const uploadData = await uploadResponse.json();
+
+          fileArray.push({
+            name: file.name,
+            size: file.size,
+            data: uploadData.url
+          });
+          fileDataArray.push(uploadData.url);
         }
-      });
+      }
 
-      fileArray.push({
-        name: file.name,
-        size: file.size,
-        data: fileType === 'image' ? fileData : undefined
-      });
-
-      fileDataArray.push(fileType === 'image' ? fileData : file.name);
+      setFiles(multiple ? [...files, ...fileArray] : fileArray);
+      onFilesSelected(multiple ? [...existingFiles, ...fileDataArray] : fileDataArray);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to upload files');
+    } finally {
+      setUploading(false);
     }
-
-    setFiles(multiple ? [...files, ...fileArray] : fileArray);
-    onFilesSelected(multiple ? [...existingFiles, ...fileDataArray] : fileDataArray);
   };
 
   const handleRemoveFile = (index: number) => {
@@ -103,8 +129,8 @@ export default function FileUpload({
       </label>
 
       <div
-        onClick={handleClick}
-        className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors"
+        onClick={uploading ? undefined : handleClick}
+        className={`border-2 border-dashed border-gray-300 rounded-lg p-6 text-center ${uploading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:border-blue-500 hover:bg-blue-50'} transition-colors`}
       >
         <input
           ref={fileInputRef}
@@ -113,28 +139,41 @@ export default function FileUpload({
           multiple={multiple}
           onChange={handleFileChange}
           className="hidden"
+          disabled={uploading}
         />
 
-        <svg
-          className="mx-auto h-12 w-12 text-gray-400"
-          stroke="currentColor"
-          fill="none"
-          viewBox="0 0 48 48"
-        >
-          <path
-            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        {uploading ? (
+          <div className="flex flex-col items-center">
+            <svg className="animate-spin h-12 w-12 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p className="mt-2 text-sm text-gray-600 font-medium">Uploading...</p>
+          </div>
+        ) : (
+          <>
+            <svg
+              className="mx-auto h-12 w-12 text-gray-400"
+              stroke="currentColor"
+              fill="none"
+              viewBox="0 0 48 48"
+            >
+              <path
+                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
 
-        <p className="mt-2 text-sm text-gray-600">
-          <span className="font-medium text-blue-600">Click to upload</span> or drag and drop
-        </p>
-        <p className="mt-1 text-xs text-gray-500">
-          {fileType === 'image' ? 'PNG, JPG, GIF up to' : 'PDF files up to'} {maxSizeMB}MB
-        </p>
+            <p className="mt-2 text-sm text-gray-600">
+              <span className="font-medium text-blue-600">Click to upload</span> or drag and drop
+            </p>
+            <p className="mt-1 text-xs text-gray-500">
+              {fileType === 'image' ? 'PNG, JPG, GIF up to' : 'PDF files up to'} {maxSizeMB}MB
+            </p>
+          </>
+        )}
       </div>
 
       {error && (

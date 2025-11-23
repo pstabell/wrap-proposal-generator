@@ -61,11 +61,14 @@ export function generateProposalHTML(data: ProposalData): string {
 
     .page {
       width: 8.5in;
-      min-height: 11in;
+      height: 11in;
+      max-height: 11in;
       padding: 0.75in;
       background: white;
       page-break-after: always;
+      page-break-inside: avoid;
       position: relative;
+      overflow: hidden;
     }
 
     .page:last-child {
@@ -285,6 +288,7 @@ export function generateProposalHTML(data: ProposalData): string {
       border-radius: 8px;
       padding: 25px;
       margin-bottom: 30px;
+      page-break-inside: avoid;
     }
 
     .coverage-title {
@@ -362,13 +366,13 @@ export function generateProposalHTML(data: ProposalData): string {
 
     .footer {
       position: absolute;
-      bottom: 30px;
+      bottom: 20px;
       left: 0.75in;
       right: 0.75in;
       text-align: center;
       color: #999;
-      font-size: 11px;
-      padding-top: 15px;
+      font-size: 10px;
+      padding-top: 10px;
       border-top: 1px solid #ddd;
     }
 

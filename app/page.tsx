@@ -378,13 +378,13 @@ export default function ProposalGenerator() {
             </section>
 
             {/* Declaration Page Upload Section */}
-            <section className="bg-yellow-50 p-6 rounded-lg border-2 border-yellow-200">
+            <section className="bg-green-50 p-6 rounded-lg border-2 border-green-200">
               <h2 className="text-2xl font-semibold mb-4" style={{ color: '#003B5C' }}>
                 Upload Existing Policy Documents
               </h2>
               <p className="text-sm text-gray-600 mb-4">
                 Upload your client&apos;s existing policy declaration pages and new carrier proposals.
-                We&apos;ll extract the data automatically in a future update.
+                Files are securely stored and attached to your proposal.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -412,10 +412,12 @@ export default function ProposalGenerator() {
                   />
                 </div>
               </div>
-              <div className="mt-4 p-4 bg-blue-100 rounded-md">
-                <p className="text-sm text-blue-800">
-                  <strong>Note:</strong> OCR and automatic data extraction will be added in Phase 2.
-                  For now, files are stored as references with your proposal.
+              <div className="mt-4 p-4 bg-green-100 rounded-md">
+                <p className="text-sm text-green-800">
+                  <strong>✓ Files uploaded successfully!</strong> Your documents are securely stored in Vercel Blob Storage and will be attached to your proposal.
+                </p>
+                <p className="text-xs text-green-700 mt-2">
+                  OCR and automatic data extraction will be added in a future update.
                 </p>
               </div>
             </section>
