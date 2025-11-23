@@ -38,7 +38,6 @@ export async function POST(request: NextRequest) {
         source: html,
         format: 'Letter',
         margin: '0',
-        print_background: true,
         landscape: false,
       }),
     });
