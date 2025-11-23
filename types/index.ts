@@ -26,6 +26,9 @@ export interface AgentInfo {
   name: string;
   phone?: string;
   email?: string;
+  title?: string;
+  address?: string;
+  website?: string;
 }
 
 export interface Coverage {
