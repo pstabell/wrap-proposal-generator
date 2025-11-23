@@ -1102,7 +1102,7 @@ export function generateProposalHTML(data: ProposalData): string {
                 ${coverage.endorsements ? 'Coverage Endorsements' : 'Additional Features'}
               </h3>
               <ul style="list-style: none; padding: 0;">
-                ${(coverage.endorsements || coverage.additional_features || '').split('\n').filter(line => line.trim()).map(item => `
+                ${String(coverage.endorsements || coverage.additional_features || '').split('\n').filter(line => line.trim()).map(item => `
                   <li style="padding: 8px 0; padding-left: 25px; position: relative; line-height: 1.6;">
                     <span style="position: absolute; left: 0; color: ${ACCENT_COLOR};">✓</span>
                     ${item.trim()}
