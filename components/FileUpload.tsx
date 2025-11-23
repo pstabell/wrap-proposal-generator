@@ -188,15 +188,21 @@ export default function FileUpload({
           {files.map((file, index) => (
             <div
               key={index}
-              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+              className="flex items-center justify-between p-3 bg-white rounded-lg border-2 border-green-200 shadow-sm"
             >
               <div className="flex items-center space-x-3 flex-1">
-                {fileType === 'image' && showPreview && file.data && (
+                {fileType === 'image' && showPreview && file.data ? (
                   <img
                     src={file.data}
                     alt={file.name}
                     className="w-12 h-12 object-cover rounded"
                   />
+                ) : (
+                  <div className="w-12 h-12 bg-red-100 rounded flex items-center justify-center">
+                    <svg className="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                    </svg>
+                  </div>
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 truncate">
@@ -205,12 +211,23 @@ export default function FileUpload({
                   <p className="text-xs text-gray-500">
                     {formatFileSize(file.size)}
                   </p>
+                  {fileType === 'pdf' && file.data && (
+                    <a
+                      href={file.data}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-blue-600 hover:underline"
+                    >
+                      View PDF
+                    </a>
+                  )}
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => handleRemoveFile(index)}
-                className="ml-4 text-red-600 hover:text-red-800"
+                className="ml-4 text-red-600 hover:text-red-800 transition-colors"
+                title="Remove file"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path

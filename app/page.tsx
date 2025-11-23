@@ -30,6 +30,8 @@ export default function ProposalGenerator() {
   const [executiveSummary, setExecutiveSummary] = useState('');
   const [notes, setNotes] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [extractionError, setExtractionError] = useState<string>('');
 
   // New state for agency branding
   const [agencyLogo, setAgencyLogo] = useState<string>('');
@@ -102,6 +104,76 @@ export default function ProposalGenerator() {
         [fieldId]: value
       }
     });
+  };
+
+  const handleExtractData = async () => {
+    setIsExtracting(true);
+    setExtractionError('');
+
+    try {
+      const allPdfUrls = [...uploadedFiles.currentDecPages, ...uploadedFiles.newProposals];
+
+      if (allPdfUrls.length === 0) {
+        setExtractionError('No PDFs uploaded. Please upload policy documents first.');
+        return;
+      }
+
+      const response = await fetch('/api/extract-pdf-data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ pdfUrls: allPdfUrls })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to extract data');
+      }
+
+      const { data } = await response.json();
+
+      // Populate client info if extracted
+      if (data.clientInfo) {
+        setClientInfo({
+          ...clientInfo,
+          ...Object.fromEntries(
+            Object.entries(data.clientInfo).filter(([_, v]) => v !== '')
+          )
+        });
+      }
+
+      // Populate coverages if extracted
+      if (data.coverages && Array.isArray(data.coverages)) {
+        const newCoverageData = { ...coverageData };
+        const newSelectedCoverages = new Set(selectedCoverages);
+
+        data.coverages.forEach((coverage: any) => {
+          if (coverage.type) {
+            const coverageType = coverage.type as CoverageType;
+            newSelectedCoverages.add(coverageType);
+
+            // Merge with existing coverage data
+            newCoverageData[coverageType] = {
+              ...newCoverageData[coverageType],
+              ...Object.fromEntries(
+                Object.entries(coverage).filter(([k, v]) => k !== 'type' && v !== '')
+              )
+            };
+          }
+        });
+
+        setSelectedCoverages(newSelectedCoverages);
+        setCoverageData(newCoverageData);
+      }
+
+      alert('Data extracted successfully! Form fields have been populated.');
+    } catch (error) {
+      console.error('Error extracting data:', error);
+      setExtractionError(error instanceof Error ? error.message : 'Failed to extract data');
+    } finally {
+      setIsExtracting(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -378,13 +450,13 @@ export default function ProposalGenerator() {
             </section>
 
             {/* Declaration Page Upload Section */}
-            <section className="bg-green-50 p-6 rounded-lg border-2 border-green-200">
+            <section className="bg-blue-50 p-6 rounded-lg border-2 border-blue-200">
               <h2 className="text-2xl font-semibold mb-4" style={{ color: '#003B5C' }}>
-                Upload Existing Policy Documents
+                Upload Policy Documents (Optional)
               </h2>
               <p className="text-sm text-gray-600 mb-4">
                 Upload your client&apos;s existing policy declaration pages and new carrier proposals.
-                Files are securely stored and attached to your proposal.
+                We&apos;ll automatically extract and populate the form fields below.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -412,14 +484,42 @@ export default function ProposalGenerator() {
                   />
                 </div>
               </div>
-              <div className="mt-4 p-4 bg-green-100 rounded-md">
-                <p className="text-sm text-green-800">
-                  <strong>✓ Files uploaded successfully!</strong> Your documents are securely stored in Vercel Blob Storage and will be attached to your proposal.
-                </p>
-                <p className="text-xs text-green-700 mt-2">
-                  OCR and automatic data extraction will be added in a future update.
-                </p>
-              </div>
+              {(uploadedFiles.currentDecPages.length > 0 || uploadedFiles.newProposals.length > 0) && (
+                <div className="mt-4 space-y-3">
+                  <div className="p-4 bg-blue-100 rounded-md">
+                    <p className="text-sm text-blue-800">
+                      <strong>📄 {uploadedFiles.currentDecPages.length + uploadedFiles.newProposals.length} file(s) uploaded successfully!</strong>
+                    </p>
+                    <p className="text-xs text-blue-700 mt-2">
+                      Click &quot;Extract Data&quot; to automatically populate form fields from your PDFs.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleExtractData}
+                    disabled={isExtracting}
+                    className="w-full px-6 py-3 text-white font-semibold rounded-md shadow-md hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ backgroundColor: '#D4AF37' }}
+                  >
+                    {isExtracting ? (
+                      <span className="flex items-center justify-center">
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Extracting Data from PDF...
+                      </span>
+                    ) : (
+                      '🤖 Extract Data from PDFs'
+                    )}
+                  </button>
+                  {extractionError && (
+                    <div className="p-3 bg-red-100 border border-red-300 rounded-md">
+                      <p className="text-sm text-red-800">{extractionError}</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </section>
 
             {/* Coverage Selection */}
