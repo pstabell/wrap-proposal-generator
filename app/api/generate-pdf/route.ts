@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ProposalData } from '@/types';
 import { generateProposalHTML } from '@/lib/pdf-generator';
-import playwright from 'playwright-aws-lambda';
+
+// PDFShift API configuration
+const PDFSHIFT_API_KEY = process.env.PDFSHIFT_API_KEY || 'api_xxxxxxxxxxxxxxxxxxxxxxxx';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,35 +24,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate HTML from proposal data using your existing comprehensive template
+    // Generate comprehensive HTML from proposal data
     const html = generateProposalHTML(proposalData);
 
-    // Launch browser with Playwright (optimized for AWS Lambda/Vercel)
-    const browser = await playwright.launchChromium();
-    const page = await browser.newPage();
-
-    // Set content and wait for any images/fonts to load
-    await page.setContent(html, {
-      waitUntil: 'networkidle',
-    });
-
-    // Generate PDF with proper settings for multi-page proposal
-    const pdf = await page.pdf({
-      format: 'Letter',
-      printBackground: true,
-      margin: {
-        top: '0',
-        right: '0',
-        bottom: '0',
-        left: '0',
+    // Use PDFShift API to convert HTML to PDF
+    const pdfshiftResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${Buffer.from(`api:${PDFSHIFT_API_KEY}`).toString('base64')}`,
+        'Content-Type': 'application/json',
       },
-      preferCSSPageSize: true,
+      body: JSON.stringify({
+        source: html,
+        format: 'Letter',
+        margin: '0',
+        print_background: true,
+        landscape: false,
+      }),
     });
 
-    await browser.close();
+    if (!pdfshiftResponse.ok) {
+      const errorText = await pdfshiftResponse.text();
+      console.error('PDFShift API error:', errorText);
+      throw new Error(`PDFShift API error: ${pdfshiftResponse.status} - ${errorText}`);
+    }
 
-    // Return PDF as response (cast to any to handle Buffer type)
-    return new NextResponse(pdf as any, {
+    const pdfBuffer = await pdfshiftResponse.arrayBuffer();
+
+    // Return PDF as response
+    return new NextResponse(pdfBuffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',

@@ -12,8 +12,6 @@
     "@vercel/blob": "^2.0.0",
     "next": "16.0.3",
     "pdf-lib": "^1.17.1",
-    "playwright-aws-lambda": "^0.11.0",
-    "playwright-core": "^1.56.1",
     "react": "19.2.0",
     "react-dom": "19.2.0"
   },
