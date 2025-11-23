@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ProposalData } from '@/types';
-import { generateProposalPDF } from '@/lib/pdf-generator-react';
+import { generateProposalHTML } from '@/lib/pdf-generator';
+import playwright from 'playwright-aws-lambda';
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,11 +22,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate PDF using React PDF
-    const pdfBuffer = await generateProposalPDF(proposalData);
+    // Generate HTML from proposal data using your existing comprehensive template
+    const html = generateProposalHTML(proposalData);
 
-    // Return PDF as response
-    return new NextResponse(pdfBuffer as any, {
+    // Launch browser with Playwright (optimized for AWS Lambda/Vercel)
+    const browser = await playwright.launchChromium();
+    const page = await browser.newPage();
+
+    // Set content and wait for any images/fonts to load
+    await page.setContent(html, {
+      waitUntil: 'networkidle',
+    });
+
+    // Generate PDF with proper settings for multi-page proposal
+    const pdf = await page.pdf({
+      format: 'Letter',
+      printBackground: true,
+      margin: {
+        top: '0',
+        right: '0',
+        bottom: '0',
+        left: '0',
+      },
+      preferCSSPageSize: true,
+    });
+
+    await browser.close();
+
+    // Return PDF as response (cast to any to handle Buffer type)
+    return new NextResponse(pdf as any, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
