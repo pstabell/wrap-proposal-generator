@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     // Launch browser with appropriate configuration
     const browser = await puppeteer.launch({
-      args: chromium.args,
+      args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
       defaultViewport: chromium.defaultViewport,
       executablePath: process.env.NODE_ENV === 'production'
         ? await chromium.executablePath()
@@ -41,8 +41,7 @@ export async function POST(request: NextRequest) {
         : process.platform === 'darwin'
         ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
         : '/usr/bin/google-chrome',
-      headless: chromium.headless,
-      ignoreHTTPSErrors: true,
+      headless: true,
     });
 
     const page = await browser.newPage();
