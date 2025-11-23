@@ -4,6 +4,20 @@ import { coverageTemplates } from './coverage-templates';
 const PRIMARY_COLOR = '#003B5C';
 const ACCENT_COLOR = '#D4AF37';
 
+// Coverage type icons mapping
+const COVERAGE_ICONS: Record<CoverageType, string> = {
+  homeowners: '🏠',
+  condo: '🏢',
+  wind: '💨',
+  auto: '🚗',
+  umbrella: '☂️',
+  watercraft: '⛵',
+  jewelry: '💎',
+  cyber: '🔒',
+  fineart: '🎨',
+  other: '📄'
+};
+
 export function generateProposalHTML(data: ProposalData): string {
   const { clientInfo, agentInfo, proposalDate, coverages, executiveSummary, notes, agencyLogo, agencyName, agentPhoto } = data;
 
@@ -22,6 +36,9 @@ export function generateProposalHTML(data: ProposalData): string {
   const savingsPercentage = totalCurrentPremium > 0
     ? ((savingsAmount / totalCurrentPremium) * 100).toFixed(2)
     : '0.00';
+
+  // Get coverage entries as array for table of contents
+  const coverageEntries = Object.entries(coverages) as [CoverageType, typeof coverages[CoverageType]][];
 
   return `
 <!DOCTYPE html>
@@ -354,6 +371,400 @@ export function generateProposalHTML(data: ProposalData): string {
       border-top: 1px solid #ddd;
     }
 
+    /* Table of Contents Styles */
+    .toc-section {
+      margin-bottom: 25px;
+    }
+
+    .toc-title {
+      color: ${PRIMARY_COLOR};
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 3px solid ${PRIMARY_COLOR};
+    }
+
+    .toc-list {
+      list-style: none;
+      margin: 20px 0;
+    }
+
+    .toc-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 15px;
+      border-bottom: 1px solid #eee;
+      font-size: 16px;
+      align-items: center;
+    }
+
+    .toc-item:hover {
+      background: #f9f9f9;
+    }
+
+    .toc-section-header {
+      color: ${PRIMARY_COLOR};
+      font-weight: bold;
+      font-size: 18px;
+      margin: 25px 0 15px 0;
+      padding-left: 10px;
+      border-left: 4px solid ${ACCENT_COLOR};
+    }
+
+    .toc-icon {
+      margin-right: 10px;
+      font-size: 20px;
+    }
+
+    .toc-page-num {
+      color: ${ACCENT_COLOR};
+      font-weight: bold;
+      min-width: 30px;
+      text-align: right;
+    }
+
+    /* Welcome & Disclaimers Styles */
+    .disclaimer-box {
+      background: #f9f9f9;
+      border-left: 4px solid ${PRIMARY_COLOR};
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+
+    .disclaimer-box h3 {
+      color: ${PRIMARY_COLOR};
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .disclaimer-box p {
+      line-height: 1.8;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    /* About Agency Styles */
+    .about-section {
+      margin: 30px 0;
+    }
+
+    .about-section h3 {
+      color: ${PRIMARY_COLOR};
+      font-size: 22px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid ${ACCENT_COLOR};
+    }
+
+    .about-section p, .about-section ul {
+      line-height: 1.8;
+      font-size: 15px;
+      margin-bottom: 15px;
+    }
+
+    .about-section ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .about-section li {
+      padding: 8px 0;
+      padding-left: 25px;
+      position: relative;
+    }
+
+    .about-section li:before {
+      content: "•";
+      color: ${ACCENT_COLOR};
+      font-weight: bold;
+      font-size: 20px;
+      position: absolute;
+      left: 0;
+      top: 5px;
+    }
+
+    .contact-box {
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      border: 2px solid ${PRIMARY_COLOR};
+      border-radius: 8px;
+      padding: 25px;
+      margin-top: 30px;
+    }
+
+    .contact-box h3 {
+      color: ${PRIMARY_COLOR};
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .contact-box p {
+      margin: 8px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .contact-box strong {
+      color: ${PRIMARY_COLOR};
+      display: inline-block;
+      min-width: 80px;
+    }
+
+    /* Team Page Styles */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 30px;
+      margin: 30px 0;
+    }
+
+    .team-member {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .team-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid ${PRIMARY_COLOR};
+      margin: 0 auto 15px;
+      display: block;
+    }
+
+    .team-name {
+      color: ${PRIMARY_COLOR};
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .team-title {
+      color: #666;
+      font-size: 15px;
+      font-style: italic;
+      margin-bottom: 15px;
+    }
+
+    .team-contact {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    /* Premium Summary Table Styles */
+    .premium-summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .premium-summary-table thead th {
+      background: ${PRIMARY_COLOR};
+      color: white;
+      padding: 15px;
+      text-align: left;
+      font-size: 14px;
+      font-weight: bold;
+      border-right: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .premium-summary-table tbody td {
+      padding: 15px;
+      border: 1px solid #ddd;
+      font-size: 15px;
+    }
+
+    .premium-summary-table .icon-cell {
+      text-align: center;
+      font-size: 24px;
+      width: 60px;
+    }
+
+    .premium-summary-table .totals-row {
+      background: #f9f9f9;
+      font-weight: bold;
+      border-top: 3px solid ${PRIMARY_COLOR};
+    }
+
+    .summary-highlight-box {
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      border: 3px solid ${PRIMARY_COLOR};
+      border-radius: 8px;
+      padding: 25px;
+      margin: 30px 0;
+      text-align: center;
+    }
+
+    .summary-highlight-box .summary-label {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .summary-highlight-box .summary-value {
+      font-size: 32px;
+      font-weight: bold;
+      color: ${PRIMARY_COLOR};
+      margin: 5px 0;
+    }
+
+    .summary-highlight-box .summary-savings {
+      font-size: 36px;
+      font-weight: bold;
+      color: #2e7d32;
+      margin: 10px 0;
+    }
+
+    .summary-highlight-box .summary-percentage {
+      font-size: 24px;
+      color: #2e7d32;
+    }
+
+    /* Recommendations Styles */
+    .recommendation-item {
+      background: white;
+      border-left: 4px solid ${ACCENT_COLOR};
+      padding: 15px 20px;
+      margin: 15px 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    .executive-summary-box {
+      background: ${PRIMARY_COLOR};
+      color: white;
+      padding: 30px;
+      border-radius: 8px;
+      margin: 30px 0;
+    }
+
+    .executive-summary-box h3 {
+      color: ${ACCENT_COLOR};
+      font-size: 22px;
+      margin-bottom: 15px;
+    }
+
+    .executive-summary-box p {
+      line-height: 1.8;
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+
+    .executive-summary-box ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 15px 0;
+    }
+
+    .executive-summary-box li {
+      padding: 8px 0;
+      padding-left: 25px;
+      position: relative;
+    }
+
+    .executive-summary-box li:before {
+      content: "-";
+      color: ${ACCENT_COLOR};
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+    }
+
+    /* Cover Page Images */
+    .cover-images {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 40px 0;
+      flex-wrap: wrap;
+    }
+
+    .cover-image-item {
+      width: 200px;
+      height: 150px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .cover-image-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cover-prepared-for {
+      background: rgba(255,255,255,0.15);
+      padding: 30px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 10px;
+      margin: 20px;
+      display: inline-block;
+    }
+
+    .cover-prepared-label {
+      font-size: 14px;
+      color: ${ACCENT_COLOR};
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .cover-prepared-name {
+      font-size: 32px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .cover-presented-box {
+      background: rgba(255,255,255,0.15);
+      padding: 25px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 10px;
+      margin: 15px 20px;
+      text-align: left;
+    }
+
+    /* Coverage Details Table Styles */
+    .coverage-details-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .coverage-details-table th {
+      padding: 12px;
+      text-align: left;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      background: ${PRIMARY_COLOR};
+      color: white;
+    }
+
+    .coverage-details-table td {
+      padding: 12px;
+      border: 1px solid #ddd;
+    }
+
+    .coverage-details-table .description-cell {
+      font-weight: bold;
+      background: #f9f9f9;
+      width: 40%;
+    }
+
+    .coverage-details-table .value-cell {
+      white-space: pre-wrap;
+    }
+
     @media print {
       .page {
         margin: 0;
@@ -367,179 +778,488 @@ export function generateProposalHTML(data: ProposalData): string {
 </head>
 <body>
 
-  <!-- Cover Page -->
+  <!-- Page 1: Cover Page -->
   <div class="page cover-page">
     ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="cover-logo" />` : ''}
 
-    <div class="cover-title">WRAP PROPOSAL</div>
-    <div class="cover-subtitle">Wealth Risk Analysis & Protection</div>
+    <!-- Stock images placeholder -->
+    <div class="cover-images">
+      <div class="cover-image-item" style="background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);"></div>
+      <div class="cover-image-item" style="background: linear-gradient(135deg, #003B5C 0%, #0077BE 100%);"></div>
+      <div class="cover-image-item" style="background: linear-gradient(135deg, #666 0%, #999 100%);"></div>
+    </div>
 
-    <div class="cover-client-info">
-      <div class="cover-client-name">
+    <div class="cover-title">PRIVATE CLIENT INSURANCE PROPOSAL</div>
+
+    <!-- Prepared For Box -->
+    <div class="cover-prepared-for">
+      <div class="cover-prepared-label">Prepared For</div>
+      <div class="cover-prepared-name">
         ${clientInfo.firstName} ${clientInfo.lastName}
-      </div>
-      <div class="cover-client-address">
-        ${clientInfo.address}<br>
-        ${clientInfo.city}, ${clientInfo.state} ${clientInfo.zip}
-        ${clientInfo.email ? `<br>${clientInfo.email}` : ''}
-        ${clientInfo.phone ? `<br>${clientInfo.phone}` : ''}
       </div>
     </div>
 
-    <div class="cover-date">
-      Proposal Date: ${formatDate(proposalDate)}
+    <!-- Presented By Box -->
+    <div class="cover-presented-box">
+      <div class="cover-prepared-label">Presented By</div>
+      <div style="font-size: 24px; font-weight: bold; color: white; margin-bottom: 5px;">
+        ${agentInfo.name}
+      </div>
+      <div style="font-size: 14px; color: ${ACCENT_COLOR};">
+        ${agentInfo.title || 'Insurance Advisor'}
+      </div>
+    </div>
+
+    <div class="cover-presented-box">
+      <div class="cover-prepared-label">Date</div>
+      <div style="font-size: 20px; font-weight: bold; color: white;">
+        ${formatDate(proposalDate)}
+      </div>
     </div>
 
     <div class="cover-agent">
       ${agentPhoto ? `<img src="${agentPhoto}" alt="Agent Photo" class="agent-photo" />` : ''}
       <div>
-        Prepared by: ${agentInfo.name}<br>
+        ${agentInfo.name}<br>
         ${agentInfo.phone ? `${agentInfo.phone}` : ''}
         ${agentInfo.email ? ` | ${agentInfo.email}` : ''}
-        ${agencyName ? `<br>${agencyName}` : ''}
+        ${agencyName ? `<br>${agencyName || 'Metro Point Insurance'}` : 'Metro Point Insurance'}
       </div>
     </div>
   </div>
 
-  <!-- Executive Summary Page -->
+  <!-- Page 2: Table of Contents -->
   <div class="page">
     <div class="header">
       <div class="header-content">
-        <h1>Executive Summary</h1>
+        <h1>Contents</h1>
         <div class="date">${formatDate(proposalDate)}</div>
-        ${agencyName ? `<div class="agency-name">${agencyName}</div>` : ''}
+        ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
       </div>
       ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
     </div>
 
-    ${executiveSummary ? `
-      <div class="summary-box">
-        <h3>Overview</h3>
-        <p>${executiveSummary.replace(/\n/g, '<br>')}</p>
-      </div>
-    ` : ''}
+    <div class="toc-section">
+      <ul class="toc-list">
+        <li class="toc-item">
+          <span>Welcome & General Disclaimers</span>
+          <span class="toc-page-num">3</span>
+        </li>
+        <li class="toc-item">
+          <span>About ${agencyName || 'Metro Point Insurance'}</span>
+          <span class="toc-page-num">4</span>
+        </li>
+        <li class="toc-item">
+          <span>Your ${agencyName || 'Metro Point Insurance'} Team</span>
+          <span class="toc-page-num">5</span>
+        </li>
+      </ul>
 
-    <div class="section">
-      <h2 class="section-title">Coverage Summary</h2>
-      <table class="totals-table">
-        <thead>
-          <tr>
-            <th>Coverage Type</th>
-            <th>Current Premium</th>
-            <th>Proposed Premium</th>
-            <th>Difference</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${Object.entries(coverages).map(([type, coverage]) => {
-            const current = parseFloat(coverage.current_premium?.toString() || '0');
-            const proposed = parseFloat(coverage.proposed_premium?.toString() || '0');
-            const diff = current - proposed;
-            const coverageType = type as CoverageType;
-            const template = coverageTemplates[coverageType];
+      <div class="toc-section-header">Coverage Details</div>
+      <ul class="toc-list">
+        ${coverageEntries.map(([type, _coverage], index) => {
+          const template = coverageTemplates[type];
+          const icon = COVERAGE_ICONS[type] || '📄';
+          const pageNum = 6 + index;
+          return `
+            <li class="toc-item">
+              <span><span class="toc-icon">${icon}</span>${template.title.replace(/[^\w\s]/g, '')}</span>
+              <span class="toc-page-num">${pageNum}</span>
+            </li>
+          `;
+        }).join('')}
+      </ul>
 
-            return `
-              <tr>
-                <td>${template.title.replace(/[^\w\s]/g, '')}</td>
-                <td>$${current.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                <td>$${proposed.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                <td style="color: ${diff >= 0 ? '#2e7d32' : '#c62828'}">
-                  ${diff >= 0 ? '-' : '+'}$${Math.abs(diff).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </td>
-              </tr>
-            `;
-          }).join('')}
-          <tr class="total-row">
-            <td>TOTAL ANNUAL PREMIUM</td>
-            <td>$${totalCurrentPremium.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-            <td>$${totalProposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-            <td style="color: ${savingsAmount >= 0 ? '#2e7d32' : '#c62828'}">
-              ${savingsAmount >= 0 ? '-' : '+'}$${Math.abs(savingsAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </td>
-          </tr>
-          ${savingsAmount !== 0 ? `
-            <tr class="savings-row">
-              <td colspan="4" style="text-align: center;">
-                ${savingsAmount > 0 ? 'TOTAL ANNUAL SAVINGS' : 'TOTAL ANNUAL INCREASE'}:
-                $${Math.abs(savingsAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                (${Math.abs(parseFloat(savingsPercentage))}%)
-              </td>
-            </tr>
-          ` : ''}
-        </tbody>
-      </table>
+      <ul class="toc-list" style="margin-top: 30px;">
+        <li class="toc-item">
+          <span>Premium Summary</span>
+          <span class="toc-page-num">${6 + coverageEntries.length}</span>
+        </li>
+        <li class="toc-item">
+          <span>Recommendations & Discussion Points</span>
+          <span class="toc-page-num">${7 + coverageEntries.length}</span>
+        </li>
+      </ul>
     </div>
 
-    ${notes ? `
-      <div class="notes-section">
-        <h4>Additional Notes</h4>
-        <p>${notes.replace(/\n/g, '<br>')}</p>
+    <div class="footer">
+      ${agencyName || 'Metro Point Insurance'} | WRAP Proposal | Page 2
+    </div>
+  </div>
+
+  <!-- Page 3: Welcome & General Disclaimers -->
+  <div class="page">
+    <div class="header">
+      <div class="header-content">
+        <h1>Welcome</h1>
+        <div class="date">${formatDate(proposalDate)}</div>
+        ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
       </div>
-    ` : ''}
+      ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
+    </div>
+
+    <div class="disclaimer-box">
+      <h3>Welcome</h3>
+      <p>Dear ${clientInfo.firstName} ${clientInfo.lastName},</p>
+      <p>Thank you for the opportunity to present this comprehensive insurance proposal. We have carefully reviewed your current coverage and identified opportunities to enhance your protection while potentially reducing costs.</p>
+      <p>This proposal reflects our commitment to providing you with the highest level of service and the most competitive options available in the marketplace. Our team has leveraged our relationships with leading carriers to secure quotes that offer superior coverage at competitive premiums.</p>
+      <p>We look forward to discussing this proposal with you and answering any questions you may have.</p>
+    </div>
+
+    <div class="disclaimer-box">
+      <h3>Coverage Disclaimer and Liability Limitations</h3>
+      <p>This proposal is provided for informational purposes only and does not constitute a binding contract of insurance. All coverage is subject to the terms, conditions, exclusions, and limitations of the actual policy documents.</p>
+      <p>The information presented is based on the information you have provided to us. It is important that all information is accurate and complete. Any material misrepresentation or omission may affect coverage or premium.</p>
+      <p>${agencyName || 'Metro Point Insurance'} acts as your agent in presenting this proposal. We do not assume any liability for coverage gaps, claim denials, or other issues that may arise from the policies presented. We strongly recommend that you review all policy documents carefully and consult with legal and financial advisors as appropriate.</p>
+      <p>Premium quotes are subject to underwriting approval and may change based on final underwriting review, inspection results, or changes in the information provided.</p>
+    </div>
+
+    <div class="disclaimer-box">
+      <h3>Compensation</h3>
+      <p>${agencyName || 'Metro Point Insurance'} is compensated through commissions paid by insurance carriers for policies placed. Commission rates vary by carrier and coverage type but typically range from 10% to 15% of the premium.</p>
+      <p>Our compensation does not affect the premium you pay. Premiums are set by the insurance carriers based on their underwriting guidelines and rate filings.</p>
+      <p>We may also receive contingent commissions or bonuses based on overall volume and loss performance with certain carriers. These arrangements do not influence our recommendations, which are based solely on providing you with the best coverage at the most competitive price.</p>
+    </div>
 
     <div class="footer">
-      ${agencyName || 'Metro Point Technology'} | WRAP Proposal | Page 2
+      ${agencyName || 'Metro Point Insurance'} | WRAP Proposal | Page 3
+    </div>
+  </div>
+
+  <!-- Page 4: About Agency -->
+  <div class="page">
+    <div class="header">
+      <div class="header-content">
+        <h1>About ${agencyName || 'Metro Point Insurance'}</h1>
+        <div class="date">${formatDate(proposalDate)}</div>
+        ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+      </div>
+      ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
+    </div>
+
+    <div class="about-section">
+      <p>${agencyName || 'Metro Point Insurance'} is a leading independent insurance agency specializing in high-net-worth personal insurance and risk management. With decades of combined experience, our team brings deep expertise in protecting the unique assets and lifestyles of affluent individuals and families.</p>
+    </div>
+
+    <div class="about-section">
+      <h3>Our Unique Advantage</h3>
+      <p>As an independent agency, we work with multiple top-rated insurance carriers, allowing us to provide you with the best coverage at the most competitive price. Unlike captive agents who represent only one company, we have the flexibility to shop the market on your behalf and negotiate the best terms.</p>
+    </div>
+
+    <div class="about-section">
+      <h3>Why Choose Us</h3>
+      <ul>
+        <li>Independent representation with access to multiple A-rated carriers</li>
+        <li>Specialized expertise in high-net-worth personal insurance</li>
+        <li>Personalized service with dedicated account management</li>
+        <li>Comprehensive risk assessment and coverage analysis</li>
+        <li>Proactive policy reviews and market updates</li>
+        <li>Claims advocacy and support when you need it most</li>
+        <li>Strong carrier relationships ensuring competitive pricing</li>
+      </ul>
+    </div>
+
+    <div class="about-section">
+      <h3>Our Commitment to You</h3>
+      <p>We are committed to providing you with exceptional service, expert advice, and comprehensive protection for your assets. Our team takes the time to understand your unique needs and works diligently to ensure you have the right coverage in place.</p>
+      <p>We believe in building long-term relationships based on trust, transparency, and results. Your success is our success, and we are here to support you every step of the way.</p>
+    </div>
+
+    <div class="contact-box">
+      <h3>Contact Information</h3>
+      <p><strong>Address:</strong> ${agentInfo.address || '123 Main Street, Suite 100'}</p>
+      <p><strong>Phone:</strong> ${agentInfo.phone || '(555) 123-4567'}</p>
+      <p><strong>Email:</strong> ${agentInfo.email || 'info@agency.com'}</p>
+      <p><strong>Website:</strong> ${agentInfo.website || 'www.agency.com'}</p>
+    </div>
+
+    <div class="footer">
+      ${agencyName || 'Metro Point Insurance'} | WRAP Proposal | Page 4
+    </div>
+  </div>
+
+  <!-- Page 5: Team Page -->
+  <div class="page">
+    <div class="header">
+      <div class="header-content">
+        <h1>Your ${agencyName || 'Metro Point Insurance'} Team</h1>
+        <div class="date">${formatDate(proposalDate)}</div>
+        ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+      </div>
+      ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
+    </div>
+
+    <div class="team-grid">
+      <div class="team-member">
+        ${agentPhoto ? `<img src="${agentPhoto}" alt="${agentInfo.name}" class="team-photo" />` : `
+          <div class="team-photo" style="background: linear-gradient(135deg, ${PRIMARY_COLOR} 0%, #004466 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; font-weight: bold;">
+            ${agentInfo.name.split(' ').map(n => n[0]).join('')}
+          </div>
+        `}
+        <div class="team-name">${agentInfo.name}</div>
+        <div class="team-title">${agentInfo.title || 'Insurance Advisor'}</div>
+        <div class="team-contact">
+          ${agentInfo.phone ? `<div>${agentInfo.phone}</div>` : ''}
+          ${agentInfo.email ? `<div>${agentInfo.email}</div>` : ''}
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      ${agencyName || 'Metro Point Insurance'} | WRAP Proposal | Page 5
     </div>
   </div>
 
   <!-- Coverage Detail Pages -->
-  ${Object.entries(coverages).map(([type, coverage]) => {
+  ${Object.entries(coverages).map(([type, coverage], index) => {
     const coverageType = type as CoverageType;
     const template = coverageTemplates[coverageType];
+    const icon = COVERAGE_ICONS[coverageType] || '📄';
+    const pageNum = 6 + index;
 
     return `
       <div class="page">
         <div class="header">
           <div class="header-content">
-            <h1>${template.title.replace(/[^\w\s]/g, '')}</h1>
+            <h1>${icon} ${template.title.replace(/[^\w\s]/g, '')}</h1>
             <div class="date">${formatDate(proposalDate)}</div>
-            ${agencyName ? `<div class="agency-name">${agencyName}</div>` : ''}
+            ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
           </div>
           ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
         </div>
 
-        <div class="coverage-detail">
-          <div class="coverage-title">Coverage Details</div>
-
-          <div class="coverage-grid">
-            ${template.fields.map(field => {
-              const value = coverage[field.id];
-              if (!value) return '';
-
-              const isTextArea = field.type === 'textarea';
-
-              return `
-                <div class="coverage-item ${isTextArea ? 'full-width' : ''}">
-                  <div class="coverage-label">${field.label}</div>
-                  <div class="coverage-value">${value}</div>
+        <!-- Policy Info Box with Premium -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 30px;">
+          <div style="background: #e3f2fd; border: 2px solid ${PRIMARY_COLOR}; border-radius: 8px; padding: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+              ${coverage.policy_number ? `
+                <div>
+                  <div style="font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Policy Number</div>
+                  <div style="font-size: 16px; color: #333;">${coverage.policy_number}</div>
                 </div>
-              `;
-            }).join('')}
+              ` : ''}
+              <div>
+                <div style="font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Carrier</div>
+                <div style="font-size: 16px; color: #333;">${coverage.proposed_carrier}</div>
+              </div>
+              ${coverage.policy_term ? `
+                <div>
+                  <div style="font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Policy Term</div>
+                  <div style="font-size: 16px; color: #333;">${coverage.policy_term}</div>
+                </div>
+              ` : ''}
+              ${coverage.effective_date ? `
+                <div>
+                  <div style="font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Effective Date</div>
+                  <div style="font-size: 16px; color: #333;">${coverage.effective_date}</div>
+                </div>
+              ` : ''}
+            </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px;">
+          <!-- Large Premium Box -->
+          <div class="premium-highlight" style="display: flex; flex-direction: column; justify-content: center; min-height: 120px;">
+            <div class="label">Annual Premium</div>
+            <div class="value" style="font-size: 32px;">$${parseFloat(coverage.proposed_premium.toString()).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             ${coverage.current_premium ? `
-              <div class="premium-highlight" style="background: #666;">
-                <div class="label">Current/Expiring Premium</div>
-                <div class="value">$${parseFloat(coverage.current_premium.toString()).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                ${coverage.current_carrier ? `<div style="font-size: 14px; margin-top: 5px;">${coverage.current_carrier}</div>` : ''}
+              <div style="font-size: 14px; margin-top: 10px; color: rgba(255,255,255,0.9);">
+                Previous: $${parseFloat(coverage.current_premium.toString()).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
             ` : ''}
-
-            <div class="premium-highlight">
-              <div class="label">Proposed/Renewal Premium</div>
-              <div class="value">$${parseFloat(coverage.proposed_premium.toString()).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-              <div style="font-size: 14px; margin-top: 5px;">${coverage.proposed_carrier}</div>
-            </div>
           </div>
         </div>
 
+        <!-- Coverage Details Table -->
+        <div class="coverage-detail">
+          <div class="coverage-title">Coverage Details</div>
+
+          <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+            <thead>
+              <tr style="background: ${PRIMARY_COLOR}; color: white;">
+                <th style="padding: 12px; text-align: left; font-size: 14px; border: 1px solid #ddd;">Description</th>
+                <th style="padding: 12px; text-align: left; font-size: 14px; border: 1px solid #ddd;">Limits & Deductibles</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${template.fields.map(field => {
+                const value = coverage[field.id];
+                if (!value || field.id === 'policy_number' || field.id === 'proposed_carrier' || field.id === 'current_carrier' || field.id === 'policy_term' || field.id === 'effective_date' || field.id === 'proposed_premium' || field.id === 'current_premium') return '';
+
+                return `
+                  <tr>
+                    <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold; background: #f9f9f9; width: 40%;">${field.label}</td>
+                    <td style="padding: 12px; border: 1px solid #ddd; white-space: pre-wrap;">${value}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+
+          <!-- Coverage Endorsements Section -->
+          ${coverage.endorsements || coverage.additional_features ? `
+            <div style="margin-top: 25px;">
+              <h3 style="color: ${PRIMARY_COLOR}; font-size: 18px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid ${ACCENT_COLOR};">
+                ${coverage.endorsements ? 'Coverage Endorsements' : 'Additional Features'}
+              </h3>
+              <ul style="list-style: none; padding: 0;">
+                ${(coverage.endorsements || coverage.additional_features || '').split('\n').filter(line => line.trim()).map(item => `
+                  <li style="padding: 8px 0; padding-left: 25px; position: relative; line-height: 1.6;">
+                    <span style="position: absolute; left: 0; color: ${ACCENT_COLOR};">✓</span>
+                    ${item.trim()}
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+          ` : ''}
+        </div>
+
         <div class="footer">
-          ${agencyName || 'Metro Point Technology'} | ${template.title.replace(/[^\w\s]/g, '')} | ${clientInfo.lastName}
+          ${agencyName || 'Metro Point Insurance'} | ${template.title.replace(/[^\w\s]/g, '')} | Page ${pageNum}
         </div>
       </div>
     `;
   }).join('')}
+
+  <!-- Premium Summary Page -->
+  <div class="page">
+    <div class="header">
+      <div class="header-content">
+        <h1>Premium Summary</h1>
+        <div class="date">${formatDate(proposalDate)}</div>
+        ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+      </div>
+      ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
+    </div>
+
+    <table class="premium-summary-table">
+      <thead>
+        <tr>
+          <th style="width: 60px;"></th>
+          <th>Lines of Business</th>
+          <th style="text-align: right;">Expiring Premium</th>
+          <th style="text-align: right;">Renewal Premium</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${coverageEntries.map(([type, coverage]) => {
+          const template = coverageTemplates[type];
+          const icon = COVERAGE_ICONS[type] || '📄';
+          const current = parseFloat(coverage.current_premium?.toString() || '0');
+          const proposed = parseFloat(coverage.proposed_premium?.toString() || '0');
+
+          return `
+            <tr>
+              <td class="icon-cell">${icon}</td>
+              <td>${template.title.replace(/[^\w\s]/g, '')}</td>
+              <td style="text-align: right;">${current > 0 ? '$' + current.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'N/A'}</td>
+              <td style="text-align: right;">$${proposed.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            </tr>
+          `;
+        }).join('')}
+        <tr class="totals-row">
+          <td></td>
+          <td><strong>TOTAL</strong></td>
+          <td style="text-align: right;"><strong>$${totalCurrentPremium.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></td>
+          <td style="text-align: right;"><strong>$${totalProposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="summary-highlight-box">
+      <div class="summary-label">Total Expiring Premium</div>
+      <div class="summary-value">$${totalCurrentPremium.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+
+      <div class="summary-label" style="margin-top: 20px;">Total Renewal Premium</div>
+      <div class="summary-value">$${totalProposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+
+      ${savingsAmount !== 0 ? `
+        <div class="summary-label" style="margin-top: 20px;">${savingsAmount > 0 ? 'Annual Savings' : 'Annual Increase'}</div>
+        <div class="summary-savings">
+          ${savingsAmount > 0 ? '-' : '+'}$${Math.abs(savingsAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </div>
+        <div class="summary-percentage">
+          (${savingsAmount > 0 ? '-' : '+'}${Math.abs(parseFloat(savingsPercentage))}%)
+        </div>
+      ` : ''}
+    </div>
+
+    <div class="footer">
+      ${agencyName || 'Metro Point Insurance'} | Premium Summary | Page ${6 + coverageEntries.length}
+    </div>
+  </div>
+
+  <!-- Recommendations & Discussion Points -->
+  <div class="page">
+    <div class="header">
+      <div class="header-content">
+        <h1>Recommendations & Discussion Points</h1>
+        <div class="date">${formatDate(proposalDate)}</div>
+        ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+      </div>
+      ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">Key Recommendations</h2>
+
+      ${notes ? `
+        ${notes.split('\n').filter(line => line.trim()).map(note => `
+          <div class="recommendation-item">${note}</div>
+        `).join('')}
+      ` : `
+        <div class="recommendation-item">
+          Review all coverage limits to ensure they align with your current asset values and potential exposures.
+        </div>
+        <div class="recommendation-item">
+          Consider scheduling an annual policy review to account for any changes in your assets, lifestyle, or risk profile.
+        </div>
+        <div class="recommendation-item">
+          Verify that all properties, vehicles, and valuable items are properly listed and covered under the appropriate policies.
+        </div>
+        <div class="recommendation-item">
+          Ensure adequate liability protection through umbrella coverage to protect your wealth from catastrophic claims.
+        </div>
+        <div class="recommendation-item">
+          Maintain detailed inventories and appraisals for high-value items such as jewelry, art, and collectibles.
+        </div>
+      `}
+    </div>
+
+    <div class="executive-summary-box">
+      <h3>Executive Summary</h3>
+
+      ${executiveSummary ? `
+        <p>${executiveSummary.replace(/\n/g, '<br>')}</p>
+      ` : `
+        <ul>
+          <li>Comprehensive coverage across all lines of business with leading A-rated carriers</li>
+          <li>Competitive premiums reflecting our strong carrier relationships and market expertise</li>
+          <li>Enhanced protection with updated policy limits and endorsements</li>
+          <li>Dedicated service team committed to your ongoing protection and satisfaction</li>
+          <li>Annual policy reviews to ensure your coverage evolves with your needs</li>
+        </ul>
+        <p style="margin-top: 20px;">
+          We recommend accepting this proposal to secure superior coverage at competitive rates. Our team is ready to assist with binding coverage and ensuring a smooth transition.
+        </p>
+      `}
+    </div>
+
+    ${executiveSummary ? '' : `
+      <div style="margin-top: 30px; padding: 20px; background: #f9f9f9; border-left: 4px solid ${PRIMARY_COLOR}; border-radius: 4px;">
+        <h4 style="color: ${PRIMARY_COLOR}; margin-bottom: 10px;">Next Steps</h4>
+        <p style="line-height: 1.8;">
+          Please review this proposal carefully and contact us with any questions. We are happy to discuss any aspect of the coverage or make adjustments as needed. Once you are ready to proceed, we will work quickly to bind coverage and provide you with your policy documents.
+        </p>
+        <p style="margin-top: 15px; line-height: 1.8;">
+          Thank you for the opportunity to serve your insurance needs. We look forward to protecting what matters most to you.
+        </p>
+      </div>
+    `}
+
+    <div class="footer">
+      ${agencyName || 'Metro Point Insurance'} | Recommendations | Page ${7 + coverageEntries.length}
+    </div>
+  </div>
 
 </body>
 </html>
