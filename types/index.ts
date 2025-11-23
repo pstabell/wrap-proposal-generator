@@ -29,7 +29,7 @@ export interface AgentInfo {
 }
 
 export interface Coverage {
-  [key: string]: string | number;
+  [key: string]: string | number | undefined;
   current_premium: string;
   proposed_premium: string;
   current_carrier?: string;
