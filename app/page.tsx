@@ -154,12 +154,14 @@ export default function ProposalGenerator() {
             newSelectedCoverages.add(coverageType);
 
             // Merge with existing coverage data
+            const filteredCoverage = Object.fromEntries(
+              Object.entries(coverage).filter(([k, v]) => k !== 'type' && v !== '')
+            ) as Partial<Coverage>;
+
             newCoverageData[coverageType] = {
               ...newCoverageData[coverageType],
-              ...Object.fromEntries(
-                Object.entries(coverage).filter(([k, v]) => k !== 'type' && v !== '')
-              )
-            };
+              ...filteredCoverage
+            } as Coverage;
           }
         });
 
