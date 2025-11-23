@@ -1,6 +1,7 @@
 import { ProposalData, CoverageType } from '@/types';
 import { coverageTemplates } from './coverage-templates';
 
+// Metro Point Insurance branding colors
 const PRIMARY_COLOR = '#003B5C';
 const ACCENT_COLOR = '#D4AF37';
 
