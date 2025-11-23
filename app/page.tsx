@@ -149,8 +149,7 @@ export default function ProposalGenerator() {
                     required
                     value={agentInfo.name}
                     onChange={(e) => setAgentInfo({ ...agentInfo, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
-                    style={{ focusRingColor: '#003B5C' }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
                   />
                 </div>
                 <div>
