@@ -47,6 +47,11 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
 <head>
   <meta charset="UTF-8">
   <style>
+    @page {
+      size: Letter;
+      margin: 0.5in 0.5in 0.6in 0.5in;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -1025,7 +1030,7 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
     return `
       <!-- Coverage ${template.title} - Header -->
       <div style="page-break-before: always;">
-        <div class="header" style="margin-bottom: 15px;">
+        <div class="header" style="margin-bottom: 15px; border-bottom: 2px solid ${PRIMARY_COLOR}; padding-bottom: 10px;">
           <div class="header-content">
             <h1>${icon} ${template.title.replace(/[^\w\s]/g, '')}</h1>
             <div class="date">${formatDate(proposalDate)}</div>
