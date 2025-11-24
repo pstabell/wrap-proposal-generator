@@ -156,7 +156,7 @@ RULES:
       }
     }
 
-    // Merge coverages by type, combining current and proposed data
+    // Merge coverages by type, intelligently combining current and proposed data
     const coveragesByType: Record<string, any> = {};
 
     for (const data of allExtractedData) {
@@ -167,13 +167,30 @@ RULES:
               coveragesByType[coverage.type] = {};
             }
 
+            // Determine if this is current or proposed data based on which fields are filled
+            const isCurrent = coverage.current_carrier || coverage.current_premium;
+            const isProposed = coverage.proposed_carrier || coverage.proposed_premium;
+
             // Merge this coverage with existing data for this type
             for (const [key, value] of Object.entries(coverage)) {
               if (value && value !== '') {
-                // Special handling: don't overwrite current_* with proposed_* or vice versa
-                if (!coveragesByType[coverage.type][key] ||
-                    coveragesByType[coverage.type][key] === '') {
-                  coveragesByType[coverage.type][key] = value;
+                const existing = coveragesByType[coverage.type][key];
+
+                // Always allow current_* and proposed_* fields (never overwrite)
+                if (key.startsWith('current_') || key.startsWith('proposed_')) {
+                  if (!existing || existing === '') {
+                    coveragesByType[coverage.type][key] = value;
+                  }
+                }
+                // For coverage details (dwelling, deductibles, etc), prefer values from proposed doc
+                // Only use current doc values if no proposed doc exists yet
+                else {
+                  if (!existing || existing === '') {
+                    coveragesByType[coverage.type][key] = value;
+                  } else if (isProposed) {
+                    // If this is from a proposed doc, overwrite any existing value
+                    coveragesByType[coverage.type][key] = value;
+                  }
                 }
               }
             }
