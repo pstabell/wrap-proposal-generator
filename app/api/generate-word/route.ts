@@ -170,14 +170,6 @@ export async function POST(request: NextRequest) {
         children: [new TextRun({ text: 'PRIVATE CLIENT INSURANCE PROPOSAL', size: 56, bold: true, color: PRIMARY_COLOR })],
         alignment: AlignmentType.CENTER,
         spacing: { before: 600, after: 400 },
-        border: {
-          bottom: {
-            color: ACCENT_COLOR,
-            space: 1,
-            style: BorderStyle.SINGLE,
-            size: 24,
-          },
-        },
       }),
       new Paragraph({
         children: [
@@ -234,14 +226,6 @@ export async function POST(request: NextRequest) {
       new Paragraph({
         children: [new TextRun({ text: 'Contents', size: 48, bold: true, color: PRIMARY_COLOR })],
         spacing: { before: 200, after: 500 },
-        border: {
-          bottom: {
-            color: ACCENT_COLOR,
-            space: 1,
-            style: BorderStyle.SINGLE,
-            size: 24,
-          },
-        },
       })
     );
 
@@ -287,14 +271,6 @@ export async function POST(request: NextRequest) {
       new Paragraph({
         children: [new TextRun({ text: 'Welcome', size: 48, bold: true, color: PRIMARY_COLOR })],
         spacing: { before: 200, after: 400 },
-        border: {
-          bottom: {
-            color: ACCENT_COLOR,
-            space: 1,
-            style: BorderStyle.SINGLE,
-            size: 24,
-          },
-        },
       }),
       new Paragraph({
         children: [new TextRun({ text: `Dear ${proposalData.clientInfo.firstName} ${proposalData.clientInfo.lastName},`, size: 30, bold: true })],
@@ -395,14 +371,6 @@ export async function POST(request: NextRequest) {
       new Paragraph({
         children: [new TextRun({ text: `About ${proposalData.agencyName || 'Metro Point Insurance'}`, size: 48, bold: true, color: PRIMARY_COLOR })],
         spacing: { before: 200, after: 400 },
-        border: {
-          bottom: {
-            color: ACCENT_COLOR,
-            space: 1,
-            style: BorderStyle.SINGLE,
-            size: 24,
-          },
-        },
       }),
       new Paragraph({
         children: [new TextRun({
@@ -517,14 +485,6 @@ export async function POST(request: NextRequest) {
       new Paragraph({
         children: [new TextRun({ text: `Your ${proposalData.agencyName || 'Metro Point Insurance'} Team`, size: 48, bold: true, color: PRIMARY_COLOR })],
         spacing: { before: 200, after: 400 },
-        border: {
-          bottom: {
-            color: ACCENT_COLOR,
-            space: 1,
-            style: BorderStyle.SINGLE,
-            size: 24,
-          },
-        },
       })
     );
 
@@ -583,14 +543,6 @@ export async function POST(request: NextRequest) {
         new Paragraph({
           children: [new TextRun({ text: title, size: 52, bold: true, color: PRIMARY_COLOR })],
           spacing: { before: 200, after: 400 },
-          border: {
-            bottom: {
-              color: ACCENT_COLOR,
-              space: 1,
-              style: BorderStyle.SINGLE,
-              size: 24,
-            },
-          },
         })
       );
 
@@ -605,14 +557,14 @@ export async function POST(request: NextRequest) {
                   children: [
                     new Paragraph({
                       children: [
-                        new TextRun({ text: 'Annual Premium: ', size: 36, bold: true, color: 'FFFFFF' }),
-                        new TextRun({ text: `$${proposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 52, bold: true, color: 'FFFFFF' }),
+                        new TextRun({ text: 'Annual Premium: ', size: 36, bold: true, color: PRIMARY_COLOR }),
+                        new TextRun({ text: `$${proposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 52, bold: true, color: PRIMARY_COLOR }),
                       ],
                       alignment: AlignmentType.CENTER,
                       spacing: { before: 300, after: 300 },
                     }),
                   ],
-                  shading: { fill: PRIMARY_COLOR, type: ShadingType.SOLID },
+                  shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
                   verticalAlign: VerticalAlign.CENTER,
                 }),
               ],
@@ -778,14 +730,6 @@ export async function POST(request: NextRequest) {
       new Paragraph({
         children: [new TextRun({ text: 'Premium Summary', size: 52, bold: true, color: PRIMARY_COLOR })],
         spacing: { before: 200, after: 450 },
-        border: {
-          bottom: {
-            color: ACCENT_COLOR,
-            space: 1,
-            style: BorderStyle.SINGLE,
-            size: 24,
-          },
-        },
       })
     );
 
@@ -794,8 +738,8 @@ export async function POST(request: NextRequest) {
       new TableRow({
         children: [
           new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: 'Coverage Type', bold: true, size: 28, color: 'FFFFFF' })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
-            shading: { fill: PRIMARY_COLOR, type: ShadingType.SOLID, color: PRIMARY_COLOR },
+            children: [new Paragraph({ children: [new TextRun({ text: 'Coverage Type', bold: true, size: 28, color: PRIMARY_COLOR })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
+            shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
             verticalAlign: VerticalAlign.CENTER,
             borders: {
               top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
@@ -805,8 +749,8 @@ export async function POST(request: NextRequest) {
             },
           }),
           new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: 'Expiring Premium', bold: true, size: 28, color: 'FFFFFF' })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
-            shading: { fill: PRIMARY_COLOR, type: ShadingType.SOLID, color: PRIMARY_COLOR },
+            children: [new Paragraph({ children: [new TextRun({ text: 'Expiring Premium', bold: true, size: 28, color: PRIMARY_COLOR })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
+            shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
             verticalAlign: VerticalAlign.CENTER,
             borders: {
               top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
@@ -816,8 +760,8 @@ export async function POST(request: NextRequest) {
             },
           }),
           new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: 'Renewal Premium', bold: true, size: 28, color: 'FFFFFF' })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
-            shading: { fill: PRIMARY_COLOR, type: ShadingType.SOLID, color: PRIMARY_COLOR },
+            children: [new Paragraph({ children: [new TextRun({ text: 'Renewal Premium', bold: true, size: 28, color: PRIMARY_COLOR })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
+            shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
             verticalAlign: VerticalAlign.CENTER,
             borders: {
               top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
@@ -1019,14 +963,6 @@ export async function POST(request: NextRequest) {
       new Paragraph({
         children: [new TextRun({ text: 'Recommendations & Discussion Points', size: 52, bold: true, color: PRIMARY_COLOR })],
         spacing: { before: 200, after: 450 },
-        border: {
-          bottom: {
-            color: ACCENT_COLOR,
-            space: 1,
-            style: BorderStyle.SINGLE,
-            size: 24,
-          },
-        },
       })
     );
 
