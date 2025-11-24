@@ -12,11 +12,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { pdfUrls } = await request.json();
+    const { pdfFiles } = await request.json();
 
-    if (!pdfUrls || !Array.isArray(pdfUrls) || pdfUrls.length === 0) {
+    if (!pdfFiles || !Array.isArray(pdfFiles) || pdfFiles.length === 0) {
       return NextResponse.json(
-        { error: 'No PDF URLs provided' },
+        { error: 'No PDF files provided' },
         { status: 400 }
       );
     }
@@ -29,7 +29,8 @@ export async function POST(request: NextRequest) {
     // Process all PDFs and merge the results
     const allExtractedData: any[] = [];
 
-    for (const pdfUrl of pdfUrls) {
+    for (const pdfFile of pdfFiles) {
+      const { url: pdfUrl, type: documentType } = pdfFile;
       const pdfResponse = await fetch(pdfUrl);
 
       if (!pdfResponse.ok) {
@@ -58,15 +59,13 @@ export async function POST(request: NextRequest) {
             },
             {
               type: 'text',
-              text: `You are extracting data from insurance policy documents. This could be either:
-1. A CURRENT/EXPIRING policy declaration page (showing existing coverage with the current carrier)
-2. A NEW/PROPOSED quote or proposal (showing new coverage being offered by a proposed carrier)
+              text: `You are extracting data from an insurance ${documentType === 'current' ? 'CURRENT/EXPIRING POLICY DECLARATION PAGE' : 'NEW PROPOSED QUOTE/PROPOSAL'}.
 
-CRITICAL: Pay close attention to document type and do NOT mix up current vs proposed data!
+CRITICAL INSTRUCTION - THIS DOCUMENT IS: ${documentType.toUpperCase()}
 
-Look for these indicators:
-- Declaration pages, "Dec Page", "Policy Period", "Renewal" = CURRENT policy (use current_carrier, current_premium)
-- Quotes, "Quote", "Proposal", "Estimated Premium" = PROPOSED policy (use proposed_carrier, proposed_premium)
+${documentType === 'current'
+  ? '- This is a CURRENT/EXPIRING policy declaration page\n- Extract the carrier name → use current_carrier\n- Extract the premium → use current_premium\n- Leave proposed_carrier and proposed_premium EMPTY'
+  : '- This is a NEW/PROPOSED quote or proposal\n- Extract the carrier name → use proposed_carrier\n- Extract the premium → use proposed_premium\n- Leave current_carrier and current_premium EMPTY'}
 
 Extract ALL of the following fields if present. Return ONLY valid JSON with no additional text or markdown.
 
@@ -107,8 +106,6 @@ Extract ALL of the following fields if present. Return ONLY valid JSON with no a
 }
 
 RULES:
-- If this is a CURRENT/EXPIRING policy: fill current_carrier and current_premium, leave proposed fields empty
-- If this is a PROPOSED/NEW quote: fill proposed_carrier and proposed_premium, leave current fields empty
 - Extract carrier name from company logo, letterhead, or "Carrier:", "Company:", "Insurer:" fields
 - For premiums, extract the total annual premium amount (numbers only, no $ or commas)
 - For deductibles, include both the percentage and dollar amount if shown (e.g., "2% ($121,091)")

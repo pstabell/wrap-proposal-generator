@@ -111,9 +111,11 @@ export default function ProposalGenerator() {
     setExtractionError('');
 
     try {
-      const allPdfUrls = [...uploadedFiles.currentDecPages, ...uploadedFiles.newProposals];
+      const currentDecUrls = uploadedFiles.currentDecPages.map(url => ({ url, type: 'current' }));
+      const proposedUrls = uploadedFiles.newProposals.map(url => ({ url, type: 'proposed' }));
+      const allPdfFiles = [...currentDecUrls, ...proposedUrls];
 
-      if (allPdfUrls.length === 0) {
+      if (allPdfFiles.length === 0) {
         setExtractionError('No PDFs uploaded. Please upload policy documents first.');
         return;
       }
@@ -123,7 +125,7 @@ export default function ProposalGenerator() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ pdfUrls: allPdfUrls })
+        body: JSON.stringify({ pdfFiles: allPdfFiles })
       });
 
       if (!response.ok) {
