@@ -1045,40 +1045,40 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
           </div>
 
           <!-- Policy Info Box with Premium -->
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 30px;">
-          <div style="background: #e3f2fd; border: 2px solid ${PRIMARY_COLOR}; border-radius: 8px; padding: 20px;">
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 20px;">
+          <div style="background: #e3f2fd; border: 2px solid ${PRIMARY_COLOR}; border-radius: 6px; padding: 12px;">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
               ${coverage.policy_number ? `
                 <div>
-                  <div style="font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Policy Number</div>
-                  <div style="font-size: 16px; color: #333;">${coverage.policy_number}</div>
+                  <div style="font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Policy Number</div>
+                  <div style="font-size: 14px; color: #333;">${coverage.policy_number}</div>
                 </div>
               ` : ''}
               <div>
-                <div style="font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Carrier</div>
-                <div style="font-size: 16px; color: #333;">${coverage.proposed_carrier}</div>
+                <div style="font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Carrier</div>
+                <div style="font-size: 14px; color: #333;">${coverage.proposed_carrier}</div>
               </div>
               ${coverage.policy_term ? `
                 <div>
-                  <div style="font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Policy Term</div>
-                  <div style="font-size: 16px; color: #333;">${coverage.policy_term}</div>
+                  <div style="font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Policy Term</div>
+                  <div style="font-size: 14px; color: #333;">${coverage.policy_term}</div>
                 </div>
               ` : ''}
               ${coverage.effective_date ? `
                 <div>
-                  <div style="font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Effective Date</div>
-                  <div style="font-size: 16px; color: #333;">${coverage.effective_date}</div>
+                  <div style="font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Effective Date</div>
+                  <div style="font-size: 14px; color: #333;">${coverage.effective_date}</div>
                 </div>
               ` : ''}
             </div>
           </div>
 
           <!-- Large Premium Box -->
-          <div class="premium-highlight" style="display: flex; flex-direction: column; justify-content: center; min-height: 120px;">
-            <div class="label">Annual Premium</div>
-            <div class="value" style="font-size: 32px;">$${parseFloat(coverage.proposed_premium.toString()).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+          <div class="premium-highlight" style="display: flex; flex-direction: column; justify-content: center; min-height: 100px;">
+            <div class="label" style="font-size: 12px;">Annual Premium</div>
+            <div class="value" style="font-size: 28px;">$${parseFloat(coverage.proposed_premium.toString()).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             ${coverage.current_premium ? `
-              <div style="font-size: 14px; margin-top: 10px; color: rgba(255,255,255,0.9);">
+              <div style="font-size: 12px; margin-top: 8px; color: rgba(255,255,255,0.9);">
                 Previous: $${parseFloat(coverage.current_premium.toString()).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
             ` : ''}
@@ -1086,14 +1086,14 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
         </div>
 
         <!-- Coverage Details Table -->
-        <div class="coverage-detail">
-          <div class="coverage-title">Coverage Details</div>
+        <div class="coverage-detail" style="margin-bottom: 15px;">
+          <div class="coverage-title" style="font-size: 18px; margin-bottom: 15px;">Coverage Details</div>
 
-          <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+          <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
             <thead>
               <tr style="background: ${PRIMARY_COLOR}; color: white;">
-                <th style="padding: 12px; text-align: left; font-size: 14px; border: 1px solid #ddd;">Description</th>
-                <th style="padding: 12px; text-align: left; font-size: 14px; border: 1px solid #ddd;">Limits & Deductibles</th>
+                <th style="padding: 8px; text-align: left; font-size: 12px; border: 1px solid #ddd;">Description</th>
+                <th style="padding: 8px; text-align: left; font-size: 12px; border: 1px solid #ddd;">Limits & Deductibles</th>
               </tr>
             </thead>
             <tbody>
@@ -1103,8 +1103,8 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
 
                 return `
                   <tr>
-                    <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold; background: #f9f9f9; width: 40%;">${field.label}</td>
-                    <td style="padding: 12px; border: 1px solid #ddd; white-space: pre-wrap;">${value}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold; background: #f9f9f9; width: 40%; font-size: 12px;">${field.label}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; white-space: pre-wrap; font-size: 12px;">${value}</td>
                   </tr>
                 `;
               }).join('')}
@@ -1113,13 +1113,13 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
 
           <!-- Coverage Endorsements Section -->
           ${coverage.endorsements || coverage.additional_features ? `
-            <div style="margin-top: 25px;">
-              <h3 style="color: ${PRIMARY_COLOR}; font-size: 18px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid ${ACCENT_COLOR};">
+            <div style="margin-top: 15px;">
+              <h3 style="color: ${PRIMARY_COLOR}; font-size: 16px; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 2px solid ${ACCENT_COLOR};">
                 ${coverage.endorsements ? 'Coverage Endorsements' : 'Additional Features'}
               </h3>
-              <ul style="list-style: none; padding: 0;">
+              <ul style="list-style: none; padding: 0; margin: 0;">
                 ${String(coverage.endorsements || coverage.additional_features || '').split('\n').filter(line => line.trim()).map(item => `
-                  <li style="padding: 8px 0; padding-left: 25px; position: relative; line-height: 1.6;">
+                  <li style="padding: 5px 0; padding-left: 20px; position: relative; line-height: 1.4; font-size: 12px;">
                     <span style="position: absolute; left: 0; color: ${ACCENT_COLOR};">✓</span>
                     ${item.trim()}
                   </li>
