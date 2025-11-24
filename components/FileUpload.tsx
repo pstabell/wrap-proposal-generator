@@ -122,6 +122,37 @@ export default function FileUpload({
     fileInputRef.current?.click();
   };
 
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (uploading) return;
+
+    const droppedFiles = e.dataTransfer.files;
+    if (droppedFiles && droppedFiles.length > 0) {
+      // Create a synthetic event to pass to handleFileChange
+      const syntheticEvent = {
+        target: { files: droppedFiles }
+      } as React.ChangeEvent<HTMLInputElement>;
+      handleFileChange(syntheticEvent);
+    }
+  };
+
   return (
     <div className="space-y-3">
       <label className="block text-sm font-medium text-gray-700">
@@ -130,6 +161,10 @@ export default function FileUpload({
 
       <div
         onClick={uploading ? undefined : handleClick}
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
         className={`border-2 border-dashed border-gray-300 rounded-lg p-6 text-center ${uploading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:border-blue-500 hover:bg-blue-50'} transition-colors`}
       >
         <input
