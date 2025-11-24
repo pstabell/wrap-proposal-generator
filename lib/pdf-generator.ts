@@ -804,22 +804,9 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
 
   <!-- Page 1: Cover Page -->
   <div class="page" style="background: white !important; background-color: white !important; background-image: none !important; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0.5in; height: 10.5in; box-sizing: border-box;">
-    ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" style="max-width: 200px; max-height: 80px; margin-bottom: 15px; object-fit: contain;" />` : ''}
+    ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" style="max-width: 200px; max-height: 100px; margin-bottom: 30px; margin-top: 20px; object-fit: contain;" />` : ''}
 
-    <!-- Luxury lifestyle images -->
-    <div style="display: flex; justify-content: center; gap: 12px; margin: 15px 0; flex-wrap: wrap;">
-      <div style="width: 160px; height: 100px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.2); flex-shrink: 0;">
-        <img src="${baseUrl}/miami-mansion.jpg" alt="Luxury Estate" style="width: 100%; height: 100%; object-fit: cover;" />
-      </div>
-      <div style="width: 160px; height: 100px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.2); flex-shrink: 0;">
-        <img src="${baseUrl}/yacht.jpg" alt="Luxury Yacht" style="width: 100%; height: 100%; object-fit: cover;" />
-      </div>
-      <div style="width: 160px; height: 100px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.2); flex-shrink: 0;">
-        <img src="${baseUrl}/g700-jet.jpg" alt="G700 Private Jet" style="width: 100%; height: 100%; object-fit: cover;" />
-      </div>
-    </div>
-
-    <div style="font-size: 32px; font-weight: bold; margin: 15px 0; letter-spacing: 1px; color: ${PRIMARY_COLOR};">PRIVATE CLIENT INSURANCE PROPOSAL</div>
+    <div style="font-size: 36px; font-weight: bold; margin: 30px 0; letter-spacing: 1px; color: ${PRIMARY_COLOR};">PRIVATE CLIENT INSURANCE PROPOSAL</div>
 
     <!-- Prepared For Box -->
     <div style="background: #f9f9f9; padding: 15px 25px; border: 2px solid ${PRIMARY_COLOR}; border-radius: 10px; margin: 10px; display: inline-block;">
