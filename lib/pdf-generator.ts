@@ -460,21 +460,21 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
 
     /* About Agency Styles */
     .about-section {
-      margin: 20px 0;
+      margin: 12px 0;
     }
 
     .about-section h3 {
       color: ${PRIMARY_COLOR};
-      font-size: 20px;
-      margin-bottom: 12px;
-      padding-bottom: 8px;
+      font-size: 16px;
+      margin-bottom: 8px;
+      padding-bottom: 5px;
       border-bottom: 2px solid ${ACCENT_COLOR};
     }
 
     .about-section p, .about-section ul {
-      line-height: 1.6;
-      font-size: 14px;
-      margin-bottom: 12px;
+      line-height: 1.5;
+      font-size: 13px;
+      margin-bottom: 8px;
     }
 
     .about-section ul {
@@ -501,21 +501,21 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
     .contact-box {
       background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
       border: 2px solid ${PRIMARY_COLOR};
-      border-radius: 8px;
-      padding: 25px;
-      margin-top: 30px;
+      border-radius: 6px;
+      padding: 15px;
+      margin-top: 15px;
     }
 
     .contact-box h3 {
       color: ${PRIMARY_COLOR};
-      font-size: 20px;
-      margin-bottom: 15px;
+      font-size: 16px;
+      margin-bottom: 10px;
     }
 
     .contact-box p {
-      margin: 8px 0;
-      font-size: 14px;
-      line-height: 1.6;
+      margin: 6px 0;
+      font-size: 13px;
+      line-height: 1.5;
     }
 
     .contact-box strong {
@@ -953,7 +953,7 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
 
     <div class="about-section">
       <h3>Our Unique Advantage</h3>
-      <p>As an independent agency, we work with multiple top-rated insurance carriers, allowing us to provide you with the best coverage at the most competitive price. Unlike captive agents who represent only one company, we have the flexibility to shop the market on your behalf and negotiate the best terms.</p>
+      <p>As an independent agency, we work with multiple top-rated insurance carriers, providing you with the best coverage at competitive prices. We have the flexibility to shop the market on your behalf and negotiate optimal terms.</p>
     </div>
 
     <div class="about-section">
@@ -963,16 +963,8 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
         <li>Specialized expertise in high-net-worth personal insurance</li>
         <li>Personalized service with dedicated account management</li>
         <li>Comprehensive risk assessment and coverage analysis</li>
-        <li>Proactive policy reviews and market updates</li>
         <li>Claims advocacy and support when you need it most</li>
-        <li>Strong carrier relationships ensuring competitive pricing</li>
       </ul>
-    </div>
-
-    <div class="about-section">
-      <h3>Our Commitment to You</h3>
-      <p>We are committed to providing you with exceptional service, expert advice, and comprehensive protection for your assets. Our team takes the time to understand your unique needs and works diligently to ensure you have the right coverage in place.</p>
-      <p>We believe in building long-term relationships based on trust, transparency, and results. Your success is our success, and we are here to support you every step of the way.</p>
     </div>
 
     <div class="contact-box">
