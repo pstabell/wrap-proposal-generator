@@ -19,7 +19,7 @@ const COVERAGE_ICONS: Record<CoverageType, string> = {
   other: '📄'
 };
 
-export function generateProposalHTML(data: ProposalData): string {
+export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): string {
   const { clientInfo, agentInfo, proposalDate, coverages, executiveSummary, notes, agencyLogo, agencyName, agentPhoto } = data;
 
   // Calculate totals
@@ -61,15 +61,15 @@ export function generateProposalHTML(data: ProposalData): string {
 
     .page {
       width: 8.5in;
-      height: 11in;
-      padding: 0.5in;
+      min-height: 10in;
+      max-height: 10.5in;
+      padding: 0.5in 0.5in 0.6in 0.5in;
       background: white;
       page-break-after: always;
       page-break-inside: avoid;
       position: relative;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
       box-sizing: border-box;
     }
 
@@ -382,10 +382,8 @@ export function generateProposalHTML(data: ProposalData): string {
 
     .page-content {
       flex: 1 1 auto;
-      overflow: hidden;
       display: flex;
       flex-direction: column;
-      min-height: 0;
     }
 
     /* Table of Contents Styles */
@@ -615,8 +613,8 @@ export function generateProposalHTML(data: ProposalData): string {
       background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
       border: 3px solid ${PRIMARY_COLOR};
       border-radius: 8px;
-      padding: 25px;
-      margin: 30px 0;
+      padding: 20px;
+      margin: 20px 0 10px 0;
       text-align: center;
     }
 
@@ -805,19 +803,19 @@ export function generateProposalHTML(data: ProposalData): string {
 <body>
 
   <!-- Page 1: Cover Page -->
-  <div class="page" style="background: white !important; background-color: white !important; background-image: none !important; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0.5in; height: 11in; overflow: hidden; box-sizing: border-box;">
+  <div class="page" style="background: white !important; background-color: white !important; background-image: none !important; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0.5in; height: 10.5in; box-sizing: border-box;">
     ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" style="max-width: 200px; max-height: 80px; margin-bottom: 15px; object-fit: contain;" />` : ''}
 
     <!-- Luxury lifestyle images -->
     <div style="display: flex; justify-content: center; gap: 12px; margin: 15px 0; flex-wrap: wrap;">
       <div style="width: 160px; height: 100px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.2); flex-shrink: 0;">
-        <img src="/miami-mansion.jpg" alt="Luxury Estate" style="width: 100%; height: 100%; object-fit: cover;" />
+        <img src="${baseUrl}/miami-mansion.jpg" alt="Luxury Estate" style="width: 100%; height: 100%; object-fit: cover;" />
       </div>
       <div style="width: 160px; height: 100px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.2); flex-shrink: 0;">
-        <img src="/yacht.jpg" alt="Luxury Yacht" style="width: 100%; height: 100%; object-fit: cover;" />
+        <img src="${baseUrl}/yacht.jpg" alt="Luxury Yacht" style="width: 100%; height: 100%; object-fit: cover;" />
       </div>
       <div style="width: 160px; height: 100px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.2); flex-shrink: 0;">
-        <img src="/g700-jet.jpg" alt="G700 Private Jet" style="width: 100%; height: 100%; object-fit: cover;" />
+        <img src="${baseUrl}/g700-jet.jpg" alt="G700 Private Jet" style="width: 100%; height: 100%; object-fit: cover;" />
       </div>
     </div>
 
@@ -1202,11 +1200,11 @@ export function generateProposalHTML(data: ProposalData): string {
       <div class="summary-label">Total Expiring Premium</div>
       <div class="summary-value">$${totalCurrentPremium.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
 
-      <div class="summary-label" style="margin-top: 20px;">Total Renewal Premium</div>
+      <div class="summary-label" style="margin-top: 12px;">Total Renewal Premium</div>
       <div class="summary-value">$${totalProposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
 
       ${savingsAmount !== 0 ? `
-        <div class="summary-label" style="margin-top: 20px;">${savingsAmount > 0 ? 'Annual Savings' : 'Annual Increase'}</div>
+        <div class="summary-label" style="margin-top: 12px;">${savingsAmount > 0 ? 'Annual Savings' : 'Annual Increase'}</div>
         <div class="summary-savings">
           ${savingsAmount > 0 ? '-' : '+'}$${Math.abs(savingsAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </div>

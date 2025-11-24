@@ -24,8 +24,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get base URL from request headers or environment
+    const host = request.headers.get('host') || process.env.VERCEL_URL || 'localhost:3000';
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const baseUrl = `${protocol}://${host}`;
+
     // Generate comprehensive HTML from proposal data
-    const html = generateProposalHTML(proposalData);
+    const html = generateProposalHTML(proposalData, baseUrl);
 
     // Use PDFShift API to convert HTML to PDF
     const pdfshiftResponse = await fetch('https://api.pdfshift.io/v3/convert/pdf', {
