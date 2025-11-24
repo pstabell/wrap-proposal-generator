@@ -157,8 +157,8 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
 
     .header {
       border-bottom: 3px solid ${PRIMARY_COLOR};
-      padding-bottom: 15px;
-      margin-bottom: 20px;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -290,11 +290,9 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
     .coverage-detail {
       background: white;
       border: 2px solid ${PRIMARY_COLOR};
-      border-radius: 8px;
-      padding: 25px;
-      margin-bottom: 20px;
-      page-break-inside: avoid;
-      break-inside: avoid;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 15px;
     }
 
     .coverage-title {
