@@ -49,7 +49,7 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
   <style>
     @page {
       size: Letter;
-      margin: 1in 0.5in 1in 0.5in;
+      margin: 0;
     }
 
     * {
@@ -761,6 +761,12 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
       color: ${PRIMARY_COLOR};
     }
 
+    /* Coverage Page Container */
+    .coverage-page-container {
+      padding: 1in 0.5in;
+      box-sizing: border-box;
+    }
+
     /* Coverage Details Table Styles */
     .coverage-details-table {
       width: 100%;
@@ -1029,7 +1035,7 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
 
     return `
       <!-- Coverage ${template.title} - Header -->
-      <div style="page-break-before: always;">
+      <div style="page-break-before: always;" class="coverage-page-container">
         <div class="header" style="margin-bottom: 15px; border-bottom: 2px solid ${PRIMARY_COLOR}; padding-bottom: 10px;">
           <div class="header-content">
             <h1>${icon} ${template.title.replace(/[^\w\s]/g, '')}</h1>
