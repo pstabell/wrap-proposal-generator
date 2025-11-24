@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
     const buffer = await Packer.toBuffer(doc);
 
     // Return Word document as response
-    return new NextResponse(buffer, {
+    return new NextResponse(Buffer.from(buffer), {
       status: 200,
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -160,7 +160,7 @@ function generateCoverageSections(data: ProposalData): Paragraph[] {
             bold: true,
           }),
           new TextRun({
-            text: coverage.policy_number || 'N/A',
+            text: coverage.policy_number?.toString() || 'N/A',
           }),
         ],
         spacing: { after: 100 },
@@ -253,15 +253,15 @@ function createPremiumSummaryTable(
     new TableRow({
       children: [
         new TableCell({
-          children: [new Paragraph({ text: 'Coverage Type', bold: true })],
+          children: [new Paragraph({ children: [new TextRun({ text: 'Coverage Type', bold: true })] })],
           width: { size: 40, type: WidthType.PERCENTAGE },
         }),
         new TableCell({
-          children: [new Paragraph({ text: 'Current Premium', bold: true, alignment: AlignmentType.RIGHT })],
+          children: [new Paragraph({ children: [new TextRun({ text: 'Current Premium', bold: true })], alignment: AlignmentType.RIGHT })],
           width: { size: 30, type: WidthType.PERCENTAGE },
         }),
         new TableCell({
-          children: [new Paragraph({ text: 'Proposed Premium', bold: true, alignment: AlignmentType.RIGHT })],
+          children: [new Paragraph({ children: [new TextRun({ text: 'Proposed Premium', bold: true })], alignment: AlignmentType.RIGHT })],
           width: { size: 30, type: WidthType.PERCENTAGE },
         }),
       ],
@@ -305,13 +305,12 @@ function createPremiumSummaryTable(
     new TableRow({
       children: [
         new TableCell({
-          children: [new Paragraph({ text: 'TOTAL', bold: true })],
+          children: [new Paragraph({ children: [new TextRun({ text: 'TOTAL', bold: true })] })],
         }),
         new TableCell({
           children: [
             new Paragraph({
-              text: `$${totalCurrent.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
-              bold: true,
+              children: [new TextRun({ text: `$${totalCurrent.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true })],
               alignment: AlignmentType.RIGHT,
             }),
           ],
@@ -319,8 +318,7 @@ function createPremiumSummaryTable(
         new TableCell({
           children: [
             new Paragraph({
-              text: `$${totalProposed.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
-              bold: true,
+              children: [new TextRun({ text: `$${totalProposed.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true })],
               alignment: AlignmentType.RIGHT,
             }),
           ],
