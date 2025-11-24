@@ -180,6 +180,54 @@ export default function ProposalGenerator() {
     }
   };
 
+  const handleGenerateWord = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsGenerating(true);
+
+    try {
+      const proposalData: ProposalData = {
+        proposalDate,
+        agentInfo,
+        clientInfo,
+        coverages: coverageData,
+        executiveSummary,
+        notes,
+        agencyLogo,
+        agencyName,
+        agentPhoto,
+        uploadedFiles
+      };
+
+      const response = await fetch('/api/generate-word', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(proposalData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate Word document');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `WRAP_Proposal_${clientInfo.lastName}_${proposalDate}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error generating Word document:', error);
+      alert(`Error: ${error instanceof Error ? error.message : 'Failed to generate Word document'}`);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsGenerating(true);
@@ -625,15 +673,25 @@ export default function ProposalGenerator() {
               />
             </section>
 
-            {/* Submit Button */}
-            <div className="flex justify-center pt-6">
+            {/* Submit Buttons */}
+            <div className="flex justify-center gap-4 pt-6">
               <button
                 type="submit"
                 disabled={isGenerating || selectedCoverages.size === 0}
                 className="px-8 py-3 text-white font-semibold rounded-md shadow-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ backgroundColor: '#003B5C' }}
               >
-                {isGenerating ? 'Generating PDF...' : 'Generate Proposal PDF'}
+                {isGenerating ? 'Generating PDF...' : 'Generate PDF Proposal'}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleGenerateWord}
+                disabled={isGenerating || selectedCoverages.size === 0}
+                className="px-8 py-3 text-white font-semibold rounded-md shadow-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ backgroundColor: '#D4AF37' }}
+              >
+                {isGenerating ? 'Generating Word...' : 'Generate Word Document'}
               </button>
             </div>
           </form>
