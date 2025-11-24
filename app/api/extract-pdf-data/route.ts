@@ -110,6 +110,10 @@ RULES:
 - Extract carrier name from company logo, letterhead, or "Carrier:", "Company:", "Insurer:" fields
 - For premiums, extract the total annual premium amount (numbers only, no $ or commas)
 - For deductibles, include both the percentage and dollar amount if shown (e.g., "2% ($121,091)")
+- For property address in coverage: Look for "Insured Location", "Property Address", "Risk Address", etc.
+  - If it says "Same as address shown under insured" or "Same as mailing address", use the insured's mailing address from clientInfo
+  - If a specific property address is shown, use that address
+  - Format as full address string (street, city, state zip)
 - Leave fields empty ("") if not found in the document.`,
             },
           ],
@@ -181,6 +185,24 @@ RULES:
 
     // Convert merged coverages back to array
     mergedData.coverages = Object.values(coveragesByType);
+
+    // Post-process: If property address is missing or says "same as", use client address
+    if (mergedData.clientInfo && mergedData.coverages) {
+      const clientAddress = [
+        mergedData.clientInfo.address,
+        mergedData.clientInfo.city,
+        mergedData.clientInfo.state,
+        mergedData.clientInfo.zip
+      ].filter(Boolean).join(', ');
+
+      for (const coverage of mergedData.coverages) {
+        if (!coverage.address || coverage.address === '' ||
+            coverage.address.toLowerCase().includes('same as') ||
+            coverage.address.toLowerCase().includes('same address')) {
+          coverage.address = clientAddress;
+        }
+      }
+    }
 
     return NextResponse.json({
       success: true,
