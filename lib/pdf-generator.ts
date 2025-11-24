@@ -1023,16 +1023,16 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
     const pageNum = 6 + index;
 
     return `
-      <div class="page">
-        <div class="page-content">
-          <div class="header">
-            <div class="header-content">
-              <h1>${icon} ${template.title.replace(/[^\w\s]/g, '')}</h1>
-              <div class="date">${formatDate(proposalDate)}</div>
-              ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
-            </div>
-            ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
+      <!-- Coverage ${template.title} - Header -->
+      <div style="page-break-before: always;">
+        <div class="header" style="margin-bottom: 15px;">
+          <div class="header-content">
+            <h1>${icon} ${template.title.replace(/[^\w\s]/g, '')}</h1>
+            <div class="date">${formatDate(proposalDate)}</div>
+            ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
           </div>
+          ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
+        </div>
 
           <!-- Policy Info Box with Premium -->
         <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 20px;">
@@ -1117,11 +1117,6 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
               </ul>
             </div>
           ` : ''}
-        </div>
-        </div>
-
-        <div class="footer">
-          ${agencyName || 'Metro Point Insurance'} | ${template.title.replace(/[^\w\s]/g, '')} | Page ${pageNum}
         </div>
       </div>
     `;
