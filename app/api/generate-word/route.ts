@@ -1,22 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, convertInchesToTwip, ShadingType, VerticalAlign } from 'docx';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, convertInchesToTwip, ShadingType, VerticalAlign, ImageRun } from 'docx';
 import { ProposalData, CoverageType } from '@/types';
 
 const PRIMARY_COLOR = '003B5C';
 const ACCENT_COLOR = 'D4AF37';
+const LIGHT_BLUE = 'E3F2FD';
+const GREEN = '2E7D32';
+const RED = 'C62828';
 
 const COVERAGE_TITLES: Record<CoverageType, string> = {
-  homeowners: '🏠 Homeowners Insurance',
-  condo: '🏢 Condo Insurance',
-  wind: '💨 Wind Insurance',
-  auto: '🚗 Auto Insurance',
-  umbrella: '☂️ Umbrella Insurance',
-  watercraft: '⛵ Watercraft Insurance',
-  jewelry: '💎 Jewelry Insurance',
-  cyber: '🔒 Cyber Insurance',
-  fineart: '🎨 Fine Art Insurance',
-  other: '📄 Other Coverage',
+  homeowners: 'Homeowners Insurance',
+  condo: 'Condo Insurance',
+  wind: 'Wind Insurance',
+  auto: 'Auto Insurance',
+  umbrella: 'Umbrella Insurance',
+  watercraft: 'Watercraft Insurance',
+  jewelry: 'Jewelry Insurance',
+  cyber: 'Cyber Insurance',
+  fineart: 'Fine Art Insurance',
+  other: 'Other Coverage',
 };
+
+// Helper function to fetch images from URLs and convert to buffer
+async function fetchImageAsBuffer(url: string): Promise<Buffer | null> {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    const arrayBuffer = await response.arrayBuffer();
+    return Buffer.from(arrayBuffer);
+  } catch (error) {
+    console.error('Error fetching image:', error);
+    return null;
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -57,52 +73,152 @@ export async function POST(request: NextRequest) {
     const sections: any[] = [];
 
     // ===== COVER PAGE =====
+
+    // Add agency logo if available
+    if (proposalData.agencyLogo) {
+      const logoBuffer = await fetchImageAsBuffer(proposalData.agencyLogo);
+      if (logoBuffer) {
+        sections.push(
+          new Paragraph({
+            children: [
+              new ImageRun({
+                data: logoBuffer,
+                transformation: {
+                  width: 200,
+                  height: 80,
+                },
+              }),
+            ],
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 400, after: 200 },
+          })
+        );
+      }
+    }
+
+    // Add 3 uploaded images in a bordered table if available
+    if (proposalData.uploadedFiles?.currentDecPages && proposalData.uploadedFiles.currentDecPages.length > 0) {
+      const imageBuffers: Buffer[] = [];
+      const imagesToShow = proposalData.uploadedFiles.currentDecPages.slice(0, 3);
+
+      for (const imageUrl of imagesToShow) {
+        const buffer = await fetchImageAsBuffer(imageUrl);
+        if (buffer) {
+          imageBuffers.push(buffer);
+        }
+      }
+
+      if (imageBuffers.length > 0) {
+        const imageCells: TableCell[] = [];
+
+        imageBuffers.forEach(buffer => {
+          imageCells.push(
+            new TableCell({
+              children: [
+                new Paragraph({
+                  children: [
+                    new ImageRun({
+                      data: buffer,
+                      transformation: {
+                        width: 150,
+                        height: 150,
+                      },
+                    }),
+                  ],
+                  alignment: AlignmentType.CENTER,
+                  spacing: { before: 100, after: 100 },
+                }),
+              ],
+              verticalAlign: VerticalAlign.CENTER,
+              margins: {
+                top: convertInchesToTwip(0.1),
+                bottom: convertInchesToTwip(0.1),
+                left: convertInchesToTwip(0.1),
+                right: convertInchesToTwip(0.1),
+              },
+            })
+          );
+        });
+
+        sections.push(
+          new Table({
+            rows: [
+              new TableRow({
+                children: imageCells,
+              }),
+            ],
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            borders: {
+              top: { style: BorderStyle.SINGLE, size: 6, color: PRIMARY_COLOR },
+              bottom: { style: BorderStyle.SINGLE, size: 6, color: PRIMARY_COLOR },
+              left: { style: BorderStyle.SINGLE, size: 6, color: PRIMARY_COLOR },
+              right: { style: BorderStyle.SINGLE, size: 6, color: PRIMARY_COLOR },
+              insideHorizontal: { style: BorderStyle.SINGLE, size: 3, color: PRIMARY_COLOR },
+              insideVertical: { style: BorderStyle.SINGLE, size: 3, color: PRIMARY_COLOR },
+            },
+          }),
+          new Paragraph({
+            text: '',
+            spacing: { after: 400 },
+          })
+        );
+      }
+    }
+
     sections.push(
       new Paragraph({
-        children: [new TextRun({ text: 'PRIVATE CLIENT INSURANCE PROPOSAL', size: 48, bold: true, color: PRIMARY_COLOR })],
+        children: [new TextRun({ text: 'PRIVATE CLIENT INSURANCE PROPOSAL', size: 56, bold: true, color: PRIMARY_COLOR })],
         alignment: AlignmentType.CENTER,
-        spacing: { before: 800, after: 400 },
+        spacing: { before: 600, after: 400 },
+        border: {
+          bottom: {
+            color: ACCENT_COLOR,
+            space: 1,
+            style: BorderStyle.SINGLE,
+            size: 24,
+          },
+        },
       }),
       new Paragraph({
         children: [
-          new TextRun({ text: 'Prepared For', size: 18, color: ACCENT_COLOR, allCaps: true }),
+          new TextRun({ text: 'Prepared For', size: 28, color: ACCENT_COLOR, allCaps: true, bold: true }),
         ],
         alignment: AlignmentType.CENTER,
-        spacing: { after: 100 },
+        spacing: { before: 400, after: 150 },
       }),
       new Paragraph({
         children: [
-          new TextRun({ text: `${proposalData.clientInfo.firstName} ${proposalData.clientInfo.lastName}`, size: 32, bold: true, color: PRIMARY_COLOR }),
+          new TextRun({ text: `${proposalData.clientInfo.firstName} ${proposalData.clientInfo.lastName}`, size: 40, bold: true, color: PRIMARY_COLOR }),
         ],
         alignment: AlignmentType.CENTER,
-        spacing: { after: 300 },
+        spacing: { after: 400 },
       }),
       new Paragraph({
         children: [
-          new TextRun({ text: 'Presented By', size: 18, color: ACCENT_COLOR, allCaps: true }),
+          new TextRun({ text: 'Presented By', size: 28, color: ACCENT_COLOR, allCaps: true, bold: true }),
         ],
         alignment: AlignmentType.CENTER,
-        spacing: { after: 100 },
+        spacing: { after: 150 },
       }),
       new Paragraph({
         children: [
-          new TextRun({ text: proposalData.agentInfo.name, size: 28, bold: true, color: PRIMARY_COLOR }),
+          new TextRun({ text: proposalData.agentInfo.name, size: 36, bold: true, color: PRIMARY_COLOR }),
         ],
         alignment: AlignmentType.CENTER,
-        spacing: { after: 200 },
+        spacing: { after: 400 },
       }),
       new Paragraph({
         children: [
-          new TextRun({ text: 'Date', size: 18, color: ACCENT_COLOR, allCaps: true }),
+          new TextRun({ text: 'Date', size: 28, color: ACCENT_COLOR, allCaps: true, bold: true }),
         ],
         alignment: AlignmentType.CENTER,
-        spacing: { after: 100 },
+        spacing: { after: 150 },
       }),
       new Paragraph({
         children: [
           new TextRun({
             text: new Date(proposalData.proposalDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-            size: 24,
+            size: 32,
             bold: true,
             color: PRIMARY_COLOR
           }),
@@ -116,8 +232,16 @@ export async function POST(request: NextRequest) {
     // ===== TABLE OF CONTENTS =====
     sections.push(
       new Paragraph({
-        children: [new TextRun({ text: 'Contents', size: 32, bold: true, color: PRIMARY_COLOR })],
-        spacing: { after: 400 },
+        children: [new TextRun({ text: 'Contents', size: 48, bold: true, color: PRIMARY_COLOR })],
+        spacing: { before: 200, after: 500 },
+        border: {
+          bottom: {
+            color: ACCENT_COLOR,
+            space: 1,
+            style: BorderStyle.SINGLE,
+            size: 24,
+          },
+        },
       })
     );
 
@@ -131,7 +255,7 @@ export async function POST(request: NextRequest) {
 
     coverageEntries.forEach(([type]) => {
       const title = COVERAGE_TITLES[type as CoverageType] || 'Coverage';
-      tocItems.push({ title: title.replace(/[^\w\s]/g, ''), page: pageNum++ });
+      tocItems.push({ title, page: pageNum++ });
     });
 
     tocItems.push(
@@ -143,11 +267,11 @@ export async function POST(request: NextRequest) {
       sections.push(
         new Paragraph({
           children: [
-            new TextRun({ text: item.title, size: 22 }),
-            new TextRun({ text: '\t', size: 22 }),
-            new TextRun({ text: item.page.toString(), size: 22 }),
+            new TextRun({ text: item.title, size: 30, bold: true }),
+            new TextRun({ text: '\t', size: 30 }),
+            new TextRun({ text: item.page.toString(), size: 30, bold: true }),
           ],
-          spacing: { after: 150 },
+          spacing: { before: 150, after: 200 },
           tabStops: [{
             type: 'right',
             position: convertInchesToTwip(6.5),
@@ -161,48 +285,107 @@ export async function POST(request: NextRequest) {
     // ===== WELCOME PAGE =====
     sections.push(
       new Paragraph({
-        children: [new TextRun({ text: 'Welcome', size: 32, bold: true, color: PRIMARY_COLOR })],
-        spacing: { after: 300 },
+        children: [new TextRun({ text: 'Welcome', size: 48, bold: true, color: PRIMARY_COLOR })],
+        spacing: { before: 200, after: 400 },
+        border: {
+          bottom: {
+            color: ACCENT_COLOR,
+            space: 1,
+            style: BorderStyle.SINGLE,
+            size: 24,
+          },
+        },
       }),
       new Paragraph({
-        children: [new TextRun({ text: `Dear ${proposalData.clientInfo.firstName} ${proposalData.clientInfo.lastName},`, size: 22 })],
-        spacing: { after: 200 },
+        children: [new TextRun({ text: `Dear ${proposalData.clientInfo.firstName} ${proposalData.clientInfo.lastName},`, size: 30, bold: true })],
+        spacing: { before: 300, after: 250 },
       }),
       new Paragraph({
-        text: 'Thank you for the opportunity to present this comprehensive insurance proposal. We have carefully reviewed your current coverage and identified opportunities to enhance your protection while potentially reducing costs.',
-        spacing: { after: 200 },
+        children: [new TextRun({
+          text: 'Thank you for the opportunity to present this comprehensive insurance proposal. We have carefully reviewed your current coverage and identified opportunities to enhance your protection while potentially reducing costs.',
+          size: 28
+        })],
+        spacing: { before: 150, after: 250 },
       }),
       new Paragraph({
-        text: 'This proposal reflects our commitment to providing you with the highest level of service and the most competitive options available in the marketplace. Our team has leveraged our relationships with leading carriers to secure quotes that offer superior coverage at competitive premiums.',
-        spacing: { after: 200 },
+        children: [new TextRun({
+          text: 'This proposal reflects our commitment to providing you with the highest level of service and the most competitive options available in the marketplace. Our team has leveraged our relationships with leading carriers to secure quotes that offer superior coverage at competitive premiums.',
+          size: 28
+        })],
+        spacing: { before: 150, after: 250 },
       }),
       new Paragraph({
-        text: 'We look forward to discussing this proposal with you and answering any questions you may have.',
-        spacing: { after: 400 },
+        children: [new TextRun({
+          text: 'We look forward to discussing this proposal with you and answering any questions you may have.',
+          size: 28
+        })],
+        spacing: { before: 150, after: 450 },
+      })
+    );
+
+    // Important Disclaimer in premium shaded box
+    sections.push(
+      new Paragraph({
+        children: [new TextRun({ text: 'Important Disclaimer', size: 34, bold: true, color: PRIMARY_COLOR })],
+        spacing: { before: 300, after: 250 },
+      }),
+      new Table({
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [new TextRun({
+                      text: 'Premium quotes are subject to underwriting approval and may change based on final underwriting review, inspection results, or changes in the information provided. All coverage is subject to the terms, conditions, and exclusions of the insurance policy as issued by the carrier.',
+                      size: 28
+                    })],
+                    spacing: { before: 250, after: 250 },
+                  }),
+                ],
+                shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
+                borders: {
+                  left: { style: BorderStyle.SINGLE, size: 16, color: PRIMARY_COLOR },
+                  top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                  bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                  right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                },
+                margins: {
+                  top: convertInchesToTwip(0.2),
+                  bottom: convertInchesToTwip(0.2),
+                  left: convertInchesToTwip(0.3),
+                  right: convertInchesToTwip(0.3),
+                },
+              }),
+            ],
+          }),
+        ],
+        width: { size: 100, type: WidthType.PERCENTAGE },
       }),
       new Paragraph({
-        children: [new TextRun({ text: 'Important Disclaimer', size: 24, bold: true, color: PRIMARY_COLOR })],
-        spacing: { before: 400, after: 200 },
+        children: [new TextRun({ text: 'Compensation', size: 34, bold: true, color: PRIMARY_COLOR })],
+        spacing: { before: 450, after: 250 },
       }),
       new Paragraph({
-        text: 'Premium quotes are subject to underwriting approval and may change based on final underwriting review, inspection results, or changes in the information provided.',
-        spacing: { after: 400 },
+        children: [new TextRun({
+          text: `${proposalData.agencyName || 'Metro Point Insurance'} is compensated through commissions paid by insurance carriers for policies placed. Commission rates vary by carrier and coverage type but typically range from 10% to 15% of the premium.`,
+          size: 28
+        })],
+        spacing: { before: 150, after: 250 },
       }),
       new Paragraph({
-        children: [new TextRun({ text: 'Compensation', size: 24, bold: true, color: PRIMARY_COLOR })],
-        spacing: { after: 200 },
+        children: [new TextRun({
+          text: 'Our compensation does not affect the premium you pay. Premiums are set by the insurance carriers based on their underwriting guidelines and rate filings.',
+          size: 28
+        })],
+        spacing: { before: 150, after: 250 },
       }),
       new Paragraph({
-        text: `${proposalData.agencyName || 'Metro Point Insurance'} is compensated through commissions paid by insurance carriers for policies placed. Commission rates vary by carrier and coverage type but typically range from 10% to 15% of the premium.`,
-        spacing: { after: 200 },
-      }),
-      new Paragraph({
-        text: 'Our compensation does not affect the premium you pay. Premiums are set by the insurance carriers based on their underwriting guidelines and rate filings.',
-        spacing: { after: 200 },
-      }),
-      new Paragraph({
-        text: 'We may also receive contingent commissions or bonuses based on overall volume and loss performance with certain carriers. These arrangements do not influence our recommendations, which are based solely on providing you with the best coverage at the most competitive price.',
-        spacing: { after: 200 },
+        children: [new TextRun({
+          text: 'We may also receive contingent commissions or bonuses based on overall volume and loss performance with certain carriers. These arrangements do not influence our recommendations, which are based solely on providing you with the best coverage at the most competitive price.',
+          size: 28
+        })],
+        spacing: { before: 150, after: 250 },
       }),
       new Paragraph({ text: '', pageBreakBefore: true })
     );
@@ -210,62 +393,121 @@ export async function POST(request: NextRequest) {
     // ===== ABOUT AGENCY PAGE =====
     sections.push(
       new Paragraph({
-        children: [new TextRun({ text: `About ${proposalData.agencyName || 'Metro Point Insurance'}`, size: 32, bold: true, color: PRIMARY_COLOR })],
-        spacing: { after: 300 },
+        children: [new TextRun({ text: `About ${proposalData.agencyName || 'Metro Point Insurance'}`, size: 48, bold: true, color: PRIMARY_COLOR })],
+        spacing: { before: 200, after: 400 },
+        border: {
+          bottom: {
+            color: ACCENT_COLOR,
+            space: 1,
+            style: BorderStyle.SINGLE,
+            size: 24,
+          },
+        },
       }),
       new Paragraph({
-        text: `${proposalData.agencyName || 'Metro Point Insurance'} is a leading independent insurance agency specializing in high-net-worth personal insurance and risk management. With decades of combined experience, our team brings deep expertise in protecting the unique assets and lifestyles of affluent individuals and families.`,
-        spacing: { after: 300 },
+        children: [new TextRun({
+          text: `${proposalData.agencyName || 'Metro Point Insurance'} is a leading independent insurance agency specializing in high-net-worth personal insurance and risk management. With decades of combined experience, our team brings deep expertise in protecting the unique assets and lifestyles of affluent individuals and families.`,
+          size: 28
+        })],
+        spacing: { before: 300, after: 400 },
       }),
       new Paragraph({
-        children: [new TextRun({ text: 'Our Unique Advantage', size: 24, bold: true, color: PRIMARY_COLOR })],
-        spacing: { after: 200 },
+        children: [new TextRun({ text: 'Our Unique Advantage', size: 36, bold: true, color: PRIMARY_COLOR })],
+        spacing: { before: 300, after: 250 },
       }),
       new Paragraph({
-        text: 'As an independent agency, we work with multiple top-rated insurance carriers, providing you with the best coverage at competitive prices. We have the flexibility to shop the market on your behalf and negotiate optimal terms.',
-        spacing: { after: 300 },
+        children: [new TextRun({
+          text: 'As an independent agency, we work with multiple top-rated insurance carriers, providing you with the best coverage at competitive prices. We have the flexibility to shop the market on your behalf and negotiate optimal terms.',
+          size: 28
+        })],
+        spacing: { before: 150, after: 400 },
       }),
       new Paragraph({
-        children: [new TextRun({ text: 'Why Choose Us', size: 24, bold: true, color: PRIMARY_COLOR })],
-        spacing: { after: 200 },
-      }),
-      new Paragraph({
-        text: '• Independent representation with access to multiple A-rated carriers',
-        spacing: { after: 100 },
-      }),
-      new Paragraph({
-        text: '• Specialized expertise in high-net-worth personal insurance',
-        spacing: { after: 100 },
-      }),
-      new Paragraph({
-        text: '• Personalized service with dedicated account management',
-        spacing: { after: 100 },
-      }),
-      new Paragraph({
-        text: '• Comprehensive risk assessment and coverage analysis',
-        spacing: { after: 100 },
-      }),
-      new Paragraph({
-        text: '• Claims advocacy and support when you need it most',
-        spacing: { after: 400 },
-      }),
-      new Paragraph({
-        children: [new TextRun({ text: 'Contact Information', size: 24, bold: true, color: PRIMARY_COLOR })],
-        spacing: { after: 200 },
+        children: [new TextRun({ text: 'Why Choose Us', size: 36, bold: true, color: PRIMARY_COLOR })],
+        spacing: { before: 300, after: 250 },
       }),
       new Paragraph({
         children: [
-          new TextRun({ text: 'Phone: ', bold: true }),
-          new TextRun({ text: proposalData.agentInfo.phone || '(555) 123-4567' }),
+          new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
+          new TextRun({ text: 'Independent representation with access to multiple A-rated carriers', size: 28 }),
         ],
-        spacing: { after: 100 },
+        spacing: { before: 150, after: 200 },
       }),
       new Paragraph({
         children: [
-          new TextRun({ text: 'Email: ', bold: true }),
-          new TextRun({ text: proposalData.agentInfo.email || 'info@agency.com' }),
+          new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
+          new TextRun({ text: 'Specialized expertise in high-net-worth personal insurance', size: 28 }),
         ],
-        spacing: { after: 100 },
+        spacing: { before: 150, after: 200 },
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
+          new TextRun({ text: 'Personalized service with dedicated account management', size: 28 }),
+        ],
+        spacing: { before: 150, after: 200 },
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
+          new TextRun({ text: 'Comprehensive risk assessment and coverage analysis', size: 28 }),
+        ],
+        spacing: { before: 150, after: 200 },
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
+          new TextRun({ text: 'Claims advocacy and support when you need it most', size: 28 }),
+        ],
+        spacing: { before: 150, after: 450 },
+      })
+    );
+
+    // Contact Information in premium shaded box
+    sections.push(
+      new Paragraph({
+        children: [new TextRun({ text: 'Contact Information', size: 36, bold: true, color: PRIMARY_COLOR })],
+        spacing: { before: 300, after: 250 },
+      }),
+      new Table({
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({ text: 'Phone: ', bold: true, size: 28 }),
+                      new TextRun({ text: proposalData.agentInfo.phone || '(555) 123-4567', size: 28 }),
+                    ],
+                    spacing: { before: 150, after: 150 },
+                  }),
+                  new Paragraph({
+                    children: [
+                      new TextRun({ text: 'Email: ', bold: true, size: 28 }),
+                      new TextRun({ text: proposalData.agentInfo.email || 'info@agency.com', size: 28 }),
+                    ],
+                    spacing: { before: 150, after: 150 },
+                  }),
+                ],
+                shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
+                borders: {
+                  top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                  bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                  left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                  right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                },
+                margins: {
+                  top: convertInchesToTwip(0.2),
+                  bottom: convertInchesToTwip(0.2),
+                  left: convertInchesToTwip(0.3),
+                  right: convertInchesToTwip(0.3),
+                },
+              }),
+            ],
+          }),
+        ],
+        width: { size: 100, type: WidthType.PERCENTAGE },
       }),
       new Paragraph({ text: '', pageBreakBefore: true })
     );
@@ -273,24 +515,61 @@ export async function POST(request: NextRequest) {
     // ===== TEAM PAGE =====
     sections.push(
       new Paragraph({
-        children: [new TextRun({ text: `Your ${proposalData.agencyName || 'Metro Point Insurance'} Team`, size: 32, bold: true, color: PRIMARY_COLOR })],
+        children: [new TextRun({ text: `Your ${proposalData.agencyName || 'Metro Point Insurance'} Team`, size: 48, bold: true, color: PRIMARY_COLOR })],
+        spacing: { before: 200, after: 400 },
+        border: {
+          bottom: {
+            color: ACCENT_COLOR,
+            space: 1,
+            style: BorderStyle.SINGLE,
+            size: 24,
+          },
+        },
+      })
+    );
+
+    // Add agent photo if available
+    if (proposalData.agentInfo.photo) {
+      const agentPhotoBuffer = await fetchImageAsBuffer(proposalData.agentInfo.photo);
+      if (agentPhotoBuffer) {
+        sections.push(
+          new Paragraph({
+            children: [
+              new ImageRun({
+                data: agentPhotoBuffer,
+                transformation: {
+                  width: 150,
+                  height: 150,
+                },
+              }),
+            ],
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 300, after: 300 },
+          })
+        );
+      }
+    }
+
+    sections.push(
+      new Paragraph({
+        children: [new TextRun({ text: proposalData.agentInfo.name, size: 38, bold: true, color: PRIMARY_COLOR })],
+        alignment: AlignmentType.CENTER,
+        spacing: { before: 300, after: 150 },
+      }),
+      new Paragraph({
+        children: [new TextRun({ text: proposalData.agentInfo.title || 'Insurance Advisor', size: 30, color: ACCENT_COLOR, bold: true })],
+        alignment: AlignmentType.CENTER,
         spacing: { after: 300 },
       }),
       new Paragraph({
-        children: [new TextRun({ text: proposalData.agentInfo.name, size: 28, bold: true, color: PRIMARY_COLOR })],
-        spacing: { after: 100 },
+        children: [new TextRun({ text: proposalData.agentInfo.phone || '', size: 28 })],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 150 },
       }),
       new Paragraph({
-        children: [new TextRun({ text: proposalData.agentInfo.title || 'Insurance Advisor', size: 22, color: ACCENT_COLOR })],
-        spacing: { after: 200 },
-      }),
-      new Paragraph({
-        children: [new TextRun({ text: proposalData.agentInfo.phone || '', size: 20 })],
-        spacing: { after: 100 },
-      }),
-      new Paragraph({
-        children: [new TextRun({ text: proposalData.agentInfo.email || '', size: 20 })],
-        spacing: { after: 100 },
+        children: [new TextRun({ text: proposalData.agentInfo.email || '', size: 28 })],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 300 },
       }),
       new Paragraph({ text: '', pageBreakBefore: true })
     );
@@ -302,84 +581,194 @@ export async function POST(request: NextRequest) {
 
       sections.push(
         new Paragraph({
-          children: [new TextRun({ text: title, size: 32, bold: true, color: PRIMARY_COLOR })],
-          spacing: { after: 300 },
+          children: [new TextRun({ text: title, size: 52, bold: true, color: PRIMARY_COLOR })],
+          spacing: { before: 200, after: 400 },
+          border: {
+            bottom: {
+              color: ACCENT_COLOR,
+              space: 1,
+              style: BorderStyle.SINGLE,
+              size: 24,
+            },
+          },
+        })
+      );
+
+      // Premium in prominent colored box
+      const proposedPremium = parseFloat(coverage.proposed_premium?.toString() || '0');
+      sections.push(
+        new Table({
+          rows: [
+            new TableRow({
+              children: [
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: 'Annual Premium: ', size: 36, bold: true, color: 'FFFFFF' }),
+                        new TextRun({ text: `$${proposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 52, bold: true, color: 'FFFFFF' }),
+                      ],
+                      alignment: AlignmentType.CENTER,
+                      spacing: { before: 300, after: 300 },
+                    }),
+                  ],
+                  shading: { fill: PRIMARY_COLOR, type: ShadingType.SOLID },
+                  verticalAlign: VerticalAlign.CENTER,
+                }),
+              ],
+            }),
+          ],
+          width: { size: 100, type: WidthType.PERCENTAGE },
+          margins: {
+            top: convertInchesToTwip(0.2),
+            bottom: convertInchesToTwip(0.2),
+          },
         }),
         new Paragraph({
-          children: [
-            new TextRun({ text: 'Annual Premium: ', size: 28, bold: true, color: PRIMARY_COLOR }),
-            new TextRun({ text: `$${parseFloat(coverage.proposed_premium?.toString() || '0').toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 28, bold: true, color: PRIMARY_COLOR }),
-          ],
-          spacing: { after: 300 },
+          text: '',
+          spacing: { after: 400 },
         })
       );
 
-      // Policy info
+      // Coverage details in professional two-column table
+      const coverageRows: TableRow[] = [];
+
+      // Helper function to add a table row
+      const addTableRow = (label: string, value: string) => {
+        coverageRows.push(
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, size: 26 })], spacing: { before: 150, after: 150 } })],
+                shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
+                width: { size: 40, type: WidthType.PERCENTAGE },
+                borders: {
+                  top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                  bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                  left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                  right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                },
+                margins: {
+                  top: convertInchesToTwip(0.15),
+                  bottom: convertInchesToTwip(0.15),
+                  left: convertInchesToTwip(0.2),
+                  right: convertInchesToTwip(0.2),
+                },
+              }),
+              new TableCell({
+                children: [new Paragraph({ children: [new TextRun({ text: value, size: 26 })], spacing: { before: 150, after: 150 } })],
+                width: { size: 60, type: WidthType.PERCENTAGE },
+                borders: {
+                  top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                  bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                  left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                  right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                },
+                margins: {
+                  top: convertInchesToTwip(0.15),
+                  bottom: convertInchesToTwip(0.15),
+                  left: convertInchesToTwip(0.2),
+                  right: convertInchesToTwip(0.2),
+                },
+              }),
+            ],
+          })
+        );
+      };
+
+      // Policy Number
       if (coverage.policy_number) {
-        sections.push(
-          new Paragraph({
-            children: [
-              new TextRun({ text: 'Policy Number: ', bold: true }),
-              new TextRun({ text: coverage.policy_number?.toString() || 'N/A' }),
-            ],
-            spacing: { after: 100 },
-          })
-        );
+        addTableRow('Policy Number', coverage.policy_number?.toString() || 'N/A');
       }
 
-      sections.push(
-        new Paragraph({
-          children: [
-            new TextRun({ text: 'Carrier: ', bold: true }),
-            new TextRun({ text: coverage.proposed_carrier || 'N/A' }),
-          ],
-          spacing: { after: 100 },
-        })
-      );
+      // Carrier
+      if (coverage.proposed_carrier) {
+        addTableRow('Carrier', coverage.proposed_carrier);
+      }
 
+      // Policy Term
       if (coverage.policy_term) {
+        addTableRow('Policy Term', coverage.policy_term?.toString() || 'N/A');
+      }
+
+      // Coverage-specific fields based on type
+      if (coverageType === 'homeowners' || coverageType === 'condo') {
+        if (coverage.property_address) addTableRow('Property Address', coverage.property_address.toString());
+        if (coverage.dwelling_coverage) addTableRow('Dwelling Coverage', coverage.dwelling_coverage.toString());
+        if (coverage.other_structures) addTableRow('Other Structures', coverage.other_structures.toString());
+        if (coverage.personal_property) addTableRow('Personal Property', coverage.personal_property.toString());
+        if (coverage.loss_of_use) addTableRow('Loss of Use', coverage.loss_of_use.toString());
+        if (coverage.personal_liability) addTableRow('Personal Liability', coverage.personal_liability.toString());
+        if (coverage.medical_payments) addTableRow('Medical Payments to Others', coverage.medical_payments.toString());
+        if (coverage.deductible) addTableRow('Deductible (Other Perils)', coverage.deductible.toString());
+        if (coverage.hurricane_deductible) addTableRow('Hurricane Deductible', coverage.hurricane_deductible.toString());
+        if (coverage.wind_deductible) addTableRow('Wind Deductible', coverage.wind_deductible.toString());
+        if (coverage.water_backup) addTableRow('Water Backup Coverage', coverage.water_backup.toString());
+        if (coverage.equipment_breakdown) addTableRow('Equipment Breakdown', coverage.equipment_breakdown.toString());
+        if (coverage.identity_theft) addTableRow('Identity Theft', coverage.identity_theft.toString());
+        if (coverage.endorsements) addTableRow('Endorsements', coverage.endorsements.toString());
+      } else if (coverageType === 'auto') {
+        if (coverage.vehicles) addTableRow('Vehicles', coverage.vehicles.toString());
+        if (coverage.liability_limits) addTableRow('Liability Limits', coverage.liability_limits.toString());
+        if (coverage.uninsured_motorist) addTableRow('Uninsured Motorist', coverage.uninsured_motorist.toString());
+        if (coverage.pip_coverage) addTableRow('PIP Coverage', coverage.pip_coverage.toString());
+        if (coverage.additional_pip) addTableRow('Additional PIP', coverage.additional_pip.toString());
+        if (coverage.rental_reimbursement) addTableRow('Rental Reimbursement', coverage.rental_reimbursement.toString());
+        if (coverage.full_glass_coverage) addTableRow('Full Glass Coverage', coverage.full_glass_coverage.toString());
+        if (coverage.towing_labor) addTableRow('Towing & Labor', coverage.towing_labor.toString());
+        if (coverage.comprehensive_deductible) addTableRow('Comprehensive Deductible', coverage.comprehensive_deductible.toString());
+        if (coverage.collision_deductible) addTableRow('Collision Deductible', coverage.collision_deductible.toString());
+        if (coverage.drivers_listed) addTableRow('Drivers Listed', coverage.drivers_listed.toString());
+        if (coverage.additional_interests) addTableRow('Additional Interests', coverage.additional_interests.toString());
+      } else if (coverageType === 'umbrella') {
+        if (coverage.liability_limit) addTableRow('Liability Limit', coverage.liability_limit.toString());
+        if (coverage.underlying_auto_limit) addTableRow('Underlying Auto Limit', coverage.underlying_auto_limit.toString());
+        if (coverage.underlying_home_limit) addTableRow('Underlying Home Limit', coverage.underlying_home_limit.toString());
+      } else if (coverageType === 'watercraft') {
+        if (coverage.vessel_type) addTableRow('Vessel Type', coverage.vessel_type.toString());
+        if (coverage.vessel_value) addTableRow('Vessel Value', coverage.vessel_value.toString());
+        if (coverage.liability_coverage) addTableRow('Liability Coverage', coverage.liability_coverage.toString());
+        if (coverage.physical_damage) addTableRow('Physical Damage', coverage.physical_damage.toString());
+        if (coverage.deductible) addTableRow('Deductible', coverage.deductible.toString());
+      } else if (coverageType === 'jewelry') {
+        if (coverage.items_scheduled) addTableRow('Items Scheduled', coverage.items_scheduled.toString());
+        if (coverage.total_value) addTableRow('Total Value', coverage.total_value.toString());
+        if (coverage.deductible) addTableRow('Deductible', coverage.deductible.toString());
+      } else {
+        // For other coverage types, add all fields dynamically
+        Object.entries(coverage).forEach(([key, value]) => {
+          if (
+            value &&
+            key !== 'policy_number' &&
+            key !== 'proposed_carrier' &&
+            key !== 'current_carrier' &&
+            key !== 'proposed_premium' &&
+            key !== 'current_premium' &&
+            key !== 'policy_term' &&
+            key !== 'effective_date'
+          ) {
+            const label = key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+            addTableRow(label, value.toString());
+          }
+        });
+      }
+
+      if (coverageRows.length > 0) {
         sections.push(
           new Paragraph({
-            children: [
-              new TextRun({ text: 'Policy Term: ', bold: true }),
-              new TextRun({ text: coverage.policy_term?.toString() || 'N/A' }),
-            ],
-            spacing: { after: 100 },
+            children: [new TextRun({ text: 'Coverage Details', size: 38, bold: true, color: PRIMARY_COLOR })],
+            spacing: { before: 300, after: 250 },
+          }),
+          new Table({
+            rows: coverageRows,
+            width: { size: 100, type: WidthType.PERCENTAGE },
+          }),
+          new Paragraph({
+            text: '',
+            spacing: { after: 200 },
           })
         );
       }
-
-      sections.push(
-        new Paragraph({
-          children: [new TextRun({ text: 'Coverage Details', size: 24, bold: true, color: PRIMARY_COLOR })],
-          spacing: { before: 300, after: 200 },
-        })
-      );
-
-      // Add all coverage fields
-      Object.entries(coverage).forEach(([key, value]) => {
-        if (
-          value &&
-          key !== 'policy_number' &&
-          key !== 'proposed_carrier' &&
-          key !== 'current_carrier' &&
-          key !== 'proposed_premium' &&
-          key !== 'current_premium' &&
-          key !== 'policy_term' &&
-          key !== 'effective_date'
-        ) {
-          const label = key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-          sections.push(
-            new Paragraph({
-              children: [
-                new TextRun({ text: `${label}: `, bold: true }),
-                new TextRun({ text: value.toString() }),
-              ],
-              spacing: { after: 100 },
-            })
-          );
-        }
-      });
 
       sections.push(new Paragraph({ text: '', pageBreakBefore: true }));
     });
@@ -387,8 +776,16 @@ export async function POST(request: NextRequest) {
     // ===== PREMIUM SUMMARY PAGE =====
     sections.push(
       new Paragraph({
-        children: [new TextRun({ text: 'Premium Summary', size: 32, bold: true, color: PRIMARY_COLOR })],
-        spacing: { after: 400 },
+        children: [new TextRun({ text: 'Premium Summary', size: 52, bold: true, color: PRIMARY_COLOR })],
+        spacing: { before: 200, after: 450 },
+        border: {
+          bottom: {
+            color: ACCENT_COLOR,
+            space: 1,
+            style: BorderStyle.SINGLE,
+            size: 24,
+          },
+        },
       })
     );
 
@@ -397,19 +794,37 @@ export async function POST(request: NextRequest) {
       new TableRow({
         children: [
           new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: 'Coverage Type', bold: true })], alignment: AlignmentType.CENTER })],
+            children: [new Paragraph({ children: [new TextRun({ text: 'Coverage Type', bold: true, size: 28, color: 'FFFFFF' })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
             shading: { fill: PRIMARY_COLOR, type: ShadingType.SOLID, color: PRIMARY_COLOR },
             verticalAlign: VerticalAlign.CENTER,
+            borders: {
+              top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+              bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+              left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+              right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+            },
           }),
           new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: 'Expiring Premium', bold: true, color: 'FFFFFF' })], alignment: AlignmentType.RIGHT })],
+            children: [new Paragraph({ children: [new TextRun({ text: 'Expiring Premium', bold: true, size: 28, color: 'FFFFFF' })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
             shading: { fill: PRIMARY_COLOR, type: ShadingType.SOLID, color: PRIMARY_COLOR },
             verticalAlign: VerticalAlign.CENTER,
+            borders: {
+              top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+              bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+              left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+              right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+            },
           }),
           new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: 'Renewal Premium', bold: true, color: 'FFFFFF' })], alignment: AlignmentType.RIGHT })],
+            children: [new Paragraph({ children: [new TextRun({ text: 'Renewal Premium', bold: true, size: 28, color: 'FFFFFF' })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
             shading: { fill: PRIMARY_COLOR, type: ShadingType.SOLID, color: PRIMARY_COLOR },
             verticalAlign: VerticalAlign.CENTER,
+            borders: {
+              top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+              bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+              left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+              right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+            },
           }),
         ],
       }),
@@ -417,7 +832,7 @@ export async function POST(request: NextRequest) {
 
     Object.entries(proposalData.coverages).forEach(([type, coverage]) => {
       const coverageType = type as CoverageType;
-      const title = COVERAGE_TITLES[coverageType]?.replace(/[^\w\s]/g, '') || 'Coverage';
+      const title = COVERAGE_TITLES[coverageType] || 'Coverage';
       const current = parseFloat(coverage.current_premium?.toString() || '0');
       const proposed = parseFloat(coverage.proposed_premium?.toString() || '0');
 
@@ -425,13 +840,49 @@ export async function POST(request: NextRequest) {
         new TableRow({
           children: [
             new TableCell({
-              children: [new Paragraph(title)],
+              children: [new Paragraph({ children: [new TextRun({ text: title, size: 26 })], spacing: { before: 150, after: 150 } })],
+              borders: {
+                top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+              },
+              margins: {
+                top: convertInchesToTwip(0.1),
+                bottom: convertInchesToTwip(0.1),
+                left: convertInchesToTwip(0.15),
+                right: convertInchesToTwip(0.15),
+              },
             }),
             new TableCell({
-              children: [new Paragraph({ text: `$${current.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, alignment: AlignmentType.RIGHT })],
+              children: [new Paragraph({ children: [new TextRun({ text: `$${current.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 26 })], alignment: AlignmentType.RIGHT, spacing: { before: 150, after: 150 } })],
+              borders: {
+                top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+              },
+              margins: {
+                top: convertInchesToTwip(0.1),
+                bottom: convertInchesToTwip(0.1),
+                left: convertInchesToTwip(0.15),
+                right: convertInchesToTwip(0.15),
+              },
             }),
             new TableCell({
-              children: [new Paragraph({ text: `$${proposed.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, alignment: AlignmentType.RIGHT })],
+              children: [new Paragraph({ children: [new TextRun({ text: `$${proposed.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 26 })], alignment: AlignmentType.RIGHT, spacing: { before: 150, after: 150 } })],
+              borders: {
+                top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+              },
+              margins: {
+                top: convertInchesToTwip(0.1),
+                bottom: convertInchesToTwip(0.1),
+                left: convertInchesToTwip(0.15),
+                right: convertInchesToTwip(0.15),
+              },
             }),
           ],
         })
@@ -443,16 +894,52 @@ export async function POST(request: NextRequest) {
       new TableRow({
         children: [
           new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: 'TOTAL', bold: true })] })],
-            shading: { fill: 'E3F2FD', type: ShadingType.SOLID },
+            children: [new Paragraph({ children: [new TextRun({ text: 'TOTAL', bold: true, size: 30 })], spacing: { before: 200, after: 200 } })],
+            shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
+            borders: {
+              top: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+              bottom: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+              left: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+              right: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+            },
+            margins: {
+              top: convertInchesToTwip(0.15),
+              bottom: convertInchesToTwip(0.15),
+              left: convertInchesToTwip(0.15),
+              right: convertInchesToTwip(0.15),
+            },
           }),
           new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: `$${totalCurrentPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true })], alignment: AlignmentType.RIGHT })],
-            shading: { fill: 'E3F2FD', type: ShadingType.SOLID },
+            children: [new Paragraph({ children: [new TextRun({ text: `$${totalCurrentPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true, size: 30 })], alignment: AlignmentType.RIGHT, spacing: { before: 200, after: 200 } })],
+            shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
+            borders: {
+              top: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+              bottom: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+              left: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+              right: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+            },
+            margins: {
+              top: convertInchesToTwip(0.15),
+              bottom: convertInchesToTwip(0.15),
+              left: convertInchesToTwip(0.15),
+              right: convertInchesToTwip(0.15),
+            },
           }),
           new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: `$${totalProposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true })], alignment: AlignmentType.RIGHT })],
-            shading: { fill: 'E3F2FD', type: ShadingType.SOLID },
+            children: [new Paragraph({ children: [new TextRun({ text: `$${totalProposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true, size: 30 })], alignment: AlignmentType.RIGHT, spacing: { before: 200, after: 200 } })],
+            shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
+            borders: {
+              top: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+              bottom: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+              left: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+              right: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+            },
+            margins: {
+              top: convertInchesToTwip(0.15),
+              bottom: convertInchesToTwip(0.15),
+              left: convertInchesToTwip(0.15),
+              right: convertInchesToTwip(0.15),
+            },
           }),
         ],
       })
@@ -462,37 +949,65 @@ export async function POST(request: NextRequest) {
       new Table({
         rows: summaryRows,
         width: { size: 100, type: WidthType.PERCENTAGE },
-        borders: {
-          top: { style: BorderStyle.SINGLE, size: 1, color: PRIMARY_COLOR },
-          bottom: { style: BorderStyle.SINGLE, size: 1, color: PRIMARY_COLOR },
-          left: { style: BorderStyle.SINGLE, size: 1, color: PRIMARY_COLOR },
-          right: { style: BorderStyle.SINGLE, size: 1, color: PRIMARY_COLOR },
-          insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: 'CCCCCC' },
-          insideVertical: { style: BorderStyle.SINGLE, size: 1, color: 'CCCCCC' },
-        },
       })
     );
 
-    // Savings summary
+    // Savings summary in prominent colored box
     if (savingsAmount !== 0) {
+      const isSavings = savingsAmount > 0;
+      const boxColor = isSavings ? GREEN : RED;
+      const savingsText = isSavings ? 'Total Annual Savings' : 'Total Annual Increase';
+
       sections.push(
         new Paragraph({
-          children: [
-            new TextRun({
-              text: savingsAmount > 0 ? 'Total Annual Savings: ' : 'Total Annual Increase: ',
-              size: 28,
-              bold: true,
-              color: savingsAmount > 0 ? '2E7D32' : 'C62828'
-            }),
-            new TextRun({
-              text: `${savingsAmount > 0 ? '-' : '+'}$${Math.abs(savingsAmount).toLocaleString('en-US', { minimumFractionDigits: 2 })} (${savingsAmount > 0 ? '-' : '+'}${Math.abs(parseFloat(savingsPercentage))}%)`,
-              size: 28,
-              bold: true,
-              color: savingsAmount > 0 ? '2E7D32' : 'C62828'
+          text: '',
+          spacing: { before: 450, after: 250 },
+        }),
+        new Table({
+          rows: [
+            new TableRow({
+              children: [
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [
+                        new TextRun({ text: savingsText, size: 36, bold: true, color: 'FFFFFF' }),
+                      ],
+                      alignment: AlignmentType.CENTER,
+                      spacing: { before: 200, after: 100 },
+                    }),
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `${isSavings ? '-' : '+'}$${Math.abs(savingsAmount).toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+                          size: 56,
+                          bold: true,
+                          color: 'FFFFFF'
+                        }),
+                      ],
+                      alignment: AlignmentType.CENTER,
+                      spacing: { before: 150, after: 100 },
+                    }),
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `(${isSavings ? '-' : '+'}${Math.abs(parseFloat(savingsPercentage))}%)`,
+                          size: 36,
+                          bold: true,
+                          color: 'FFFFFF'
+                        }),
+                      ],
+                      alignment: AlignmentType.CENTER,
+                      spacing: { before: 100, after: 200 },
+                    }),
+                  ],
+                  shading: { fill: boxColor, type: ShadingType.SOLID },
+                  verticalAlign: VerticalAlign.CENTER,
+                }),
+              ],
             }),
           ],
-          alignment: AlignmentType.CENTER,
-          spacing: { before: 400, after: 400 },
+          width: { size: 100, type: WidthType.PERCENTAGE },
         })
       );
     }
@@ -502,8 +1017,16 @@ export async function POST(request: NextRequest) {
     // ===== RECOMMENDATIONS PAGE =====
     sections.push(
       new Paragraph({
-        children: [new TextRun({ text: 'Recommendations & Discussion Points', size: 32, bold: true, color: PRIMARY_COLOR })],
-        spacing: { after: 300 },
+        children: [new TextRun({ text: 'Recommendations & Discussion Points', size: 52, bold: true, color: PRIMARY_COLOR })],
+        spacing: { before: 200, after: 450 },
+        border: {
+          bottom: {
+            color: ACCENT_COLOR,
+            space: 1,
+            style: BorderStyle.SINGLE,
+            size: 24,
+          },
+        },
       })
     );
 
@@ -511,25 +1034,58 @@ export async function POST(request: NextRequest) {
       proposalData.notes.split('\n').filter(line => line.trim()).forEach(note => {
         sections.push(
           new Paragraph({
-            text: `• ${note.trim()}`,
-            spacing: { after: 150 },
+            children: [
+              new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
+              new TextRun({ text: note.trim(), size: 28 }),
+            ],
+            spacing: { before: 200, after: 250 },
           })
         );
       });
+    } else {
+      sections.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
+            new TextRun({ text: 'Review all coverage limits to ensure adequate protection', size: 28 }),
+          ],
+          spacing: { before: 200, after: 250 },
+        }),
+        new Paragraph({
+          children: [
+            new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
+            new TextRun({ text: 'Consider increasing umbrella coverage for additional liability protection', size: 28 }),
+          ],
+          spacing: { before: 200, after: 250 },
+        }),
+        new Paragraph({
+          children: [
+            new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
+            new TextRun({ text: 'Ensure all high-value items are properly scheduled', size: 28 }),
+          ],
+          spacing: { before: 200, after: 250 },
+        })
+      );
     }
 
     sections.push(
       new Paragraph({
-        children: [new TextRun({ text: 'Next Steps', size: 24, bold: true, color: PRIMARY_COLOR })],
-        spacing: { before: 400, after: 200 },
+        children: [new TextRun({ text: 'Next Steps', size: 38, bold: true, color: PRIMARY_COLOR })],
+        spacing: { before: 450, after: 300 },
       }),
       new Paragraph({
-        text: 'Please review this proposal carefully and contact us with any questions. We are happy to discuss any aspect of the coverage or make adjustments as needed. Once you are ready to proceed, we will work quickly to bind coverage and provide you with your policy documents.',
-        spacing: { after: 200 },
+        children: [new TextRun({
+          text: 'Please review this proposal carefully and contact us with any questions. We are happy to discuss any aspect of the coverage or make adjustments as needed. Once you are ready to proceed, we will work quickly to bind coverage and provide you with your policy documents.',
+          size: 28
+        })],
+        spacing: { before: 200, after: 300 },
       }),
       new Paragraph({
-        text: 'Thank you for the opportunity to serve your insurance needs. We look forward to protecting what matters most to you.',
-        spacing: { after: 200 },
+        children: [new TextRun({
+          text: 'Thank you for the opportunity to serve your insurance needs. We look forward to protecting what matters most to you.',
+          size: 28
+        })],
+        spacing: { before: 200, after: 300 },
       })
     );
 
@@ -540,9 +1096,9 @@ export async function POST(request: NextRequest) {
           page: {
             margin: {
               top: convertInchesToTwip(1),
-              right: convertInchesToTwip(0.5),
+              right: convertInchesToTwip(0.75),
               bottom: convertInchesToTwip(1),
-              left: convertInchesToTwip(0.5),
+              left: convertInchesToTwip(0.75),
             },
           },
         },
