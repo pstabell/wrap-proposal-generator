@@ -10,7 +10,7 @@ export default function ProposalGenerator() {
   const [agentInfo, setAgentInfo] = useState<AgentInfo>({
     name: '',
     phone: '',
-    email: ''
+    email: 'sarah.thompson@abcinsurance.com'
   });
 
   const [clientInfo, setClientInfo] = useState<ClientInfo>({
@@ -35,7 +35,7 @@ export default function ProposalGenerator() {
 
   // New state for agency branding
   const [agencyLogo, setAgencyLogo] = useState<string>('');
-  const [agencyName, setAgencyName] = useState<string>('');
+  const [agencyName, setAgencyName] = useState<string>('ABC Insurance Agency');
   const [agentPhoto, setAgentPhoto] = useState<string>('');
 
   // New state for file uploads

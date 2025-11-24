@@ -62,13 +62,15 @@ export function generateProposalHTML(data: ProposalData): string {
     .page {
       width: 8.5in;
       height: 11in;
-      max-height: 11in;
-      padding: 0.75in;
+      padding: 0.5in;
       background: white;
       page-break-after: always;
       page-break-inside: avoid;
       position: relative;
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
+      box-sizing: border-box;
     }
 
     .page:last-child {
@@ -78,11 +80,13 @@ export function generateProposalHTML(data: ProposalData): string {
     .cover-page {
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
       text-align: center;
-      background: linear-gradient(135deg, ${PRIMARY_COLOR} 0%, #004466 100%);
-      color: white;
+      background: white !important;
+      color: ${PRIMARY_COLOR};
+      padding-top: 0.5in;
+      padding-bottom: 0.5in;
     }
 
     .cover-logo {
@@ -153,11 +157,12 @@ export function generateProposalHTML(data: ProposalData): string {
 
     .header {
       border-bottom: 3px solid ${PRIMARY_COLOR};
-      padding-bottom: 20px;
-      margin-bottom: 30px;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-shrink: 0;
     }
 
     .header-content {
@@ -189,15 +194,15 @@ export function generateProposalHTML(data: ProposalData): string {
     }
 
     .section {
-      margin-bottom: 40px;
+      margin-bottom: 20px;
     }
 
     .section-title {
       color: ${PRIMARY_COLOR};
-      font-size: 24px;
+      font-size: 22px;
       font-weight: bold;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
       border-bottom: 2px solid ${ACCENT_COLOR};
     }
 
@@ -287,8 +292,9 @@ export function generateProposalHTML(data: ProposalData): string {
       border: 2px solid ${PRIMARY_COLOR};
       border-radius: 8px;
       padding: 25px;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       page-break-inside: avoid;
+      break-inside: avoid;
     }
 
     .coverage-title {
@@ -365,15 +371,21 @@ export function generateProposalHTML(data: ProposalData): string {
     }
 
     .footer {
-      position: absolute;
-      bottom: 20px;
-      left: 0.75in;
-      right: 0.75in;
+      margin-top: auto;
+      padding-top: 20px;
       text-align: center;
       color: #999;
       font-size: 10px;
-      padding-top: 10px;
       border-top: 1px solid #ddd;
+      flex-shrink: 0;
+    }
+
+    .page-content {
+      flex: 1 1 auto;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
     }
 
     /* Table of Contents Styles */
@@ -433,40 +445,40 @@ export function generateProposalHTML(data: ProposalData): string {
     .disclaimer-box {
       background: #f9f9f9;
       border-left: 4px solid ${PRIMARY_COLOR};
-      padding: 20px;
-      margin: 20px 0;
+      padding: 15px;
+      margin: 15px 0;
       border-radius: 4px;
     }
 
     .disclaimer-box h3 {
       color: ${PRIMARY_COLOR};
-      font-size: 20px;
-      margin-bottom: 15px;
+      font-size: 18px;
+      margin-bottom: 10px;
     }
 
     .disclaimer-box p {
-      line-height: 1.8;
-      font-size: 14px;
-      margin-bottom: 12px;
+      line-height: 1.6;
+      font-size: 13px;
+      margin-bottom: 8px;
     }
 
     /* About Agency Styles */
     .about-section {
-      margin: 30px 0;
+      margin: 20px 0;
     }
 
     .about-section h3 {
       color: ${PRIMARY_COLOR};
-      font-size: 22px;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
+      font-size: 20px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
       border-bottom: 2px solid ${ACCENT_COLOR};
     }
 
     .about-section p, .about-section ul {
-      line-height: 1.8;
-      font-size: 15px;
-      margin-bottom: 15px;
+      line-height: 1.6;
+      font-size: 14px;
+      margin-bottom: 12px;
     }
 
     .about-section ul {
@@ -688,17 +700,18 @@ export function generateProposalHTML(data: ProposalData): string {
     .cover-images {
       display: flex;
       justify-content: center;
-      gap: 20px;
-      margin: 40px 0;
+      gap: 15px;
+      margin: 20px 0;
       flex-wrap: wrap;
     }
 
     .cover-image-item {
-      width: 200px;
-      height: 150px;
+      width: 180px;
+      height: 120px;
       border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      flex-shrink: 0;
     }
 
     .cover-image-item img {
@@ -708,35 +721,43 @@ export function generateProposalHTML(data: ProposalData): string {
     }
 
     .cover-prepared-for {
-      background: rgba(255,255,255,0.15);
-      padding: 30px;
-      border: 2px solid rgba(255,255,255,0.3);
+      background: #f9f9f9;
+      padding: 20px 30px;
+      border: 2px solid ${PRIMARY_COLOR};
       border-radius: 10px;
-      margin: 20px;
+      margin: 15px;
       display: inline-block;
     }
 
     .cover-prepared-label {
-      font-size: 14px;
+      font-size: 12px;
       color: ${ACCENT_COLOR};
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .cover-prepared-name {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: bold;
-      color: white;
+      color: ${PRIMARY_COLOR};
     }
 
     .cover-presented-box {
-      background: rgba(255,255,255,0.15);
-      padding: 25px;
-      border: 2px solid rgba(255,255,255,0.3);
+      background: #f9f9f9;
+      padding: 15px 25px;
+      border: 2px solid ${PRIMARY_COLOR};
       border-radius: 10px;
-      margin: 15px 20px;
+      margin: 10px 20px;
       text-align: left;
+    }
+
+    .cover-title {
+      font-size: 36px;
+      font-weight: bold;
+      margin: 20px 0;
+      letter-spacing: 1px;
+      color: ${PRIMARY_COLOR};
     }
 
     /* Coverage Details Table Styles */
@@ -784,73 +805,64 @@ export function generateProposalHTML(data: ProposalData): string {
 <body>
 
   <!-- Page 1: Cover Page -->
-  <div class="page cover-page">
-    ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="cover-logo" />` : ''}
+  <div class="page" style="background: white !important; background-color: white !important; background-image: none !important; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0.5in; height: 11in; overflow: hidden; box-sizing: border-box;">
+    ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" style="max-width: 200px; max-height: 80px; margin-bottom: 15px; object-fit: contain;" />` : ''}
 
     <!-- Luxury lifestyle images -->
-    <div class="cover-images">
-      <div class="cover-image-item">
-        <img src="https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=400&h=300&fit=crop" alt="Private Jet" style="width: 100%; height: 100%; object-fit: cover;" />
+    <div style="display: flex; justify-content: center; gap: 12px; margin: 15px 0; flex-wrap: wrap;">
+      <div style="width: 160px; height: 100px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.2); flex-shrink: 0;">
+        <img src="/miami-mansion.jpg" alt="Luxury Estate" style="width: 100%; height: 100%; object-fit: cover;" />
       </div>
-      <div class="cover-image-item">
-        <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=300&fit=crop" alt="Luxury Estate" style="width: 100%; height: 100%; object-fit: cover;" />
+      <div style="width: 160px; height: 100px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.2); flex-shrink: 0;">
+        <img src="/yacht.jpg" alt="Luxury Yacht" style="width: 100%; height: 100%; object-fit: cover;" />
       </div>
-      <div class="cover-image-item">
-        <img src="https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=400&h=300&fit=crop" alt="Luxury Yacht" style="width: 100%; height: 100%; object-fit: cover;" />
+      <div style="width: 160px; height: 100px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.2); flex-shrink: 0;">
+        <img src="/g700-jet.jpg" alt="G700 Private Jet" style="width: 100%; height: 100%; object-fit: cover;" />
       </div>
     </div>
 
-    <div class="cover-title">PRIVATE CLIENT INSURANCE PROPOSAL</div>
+    <div style="font-size: 32px; font-weight: bold; margin: 15px 0; letter-spacing: 1px; color: ${PRIMARY_COLOR};">PRIVATE CLIENT INSURANCE PROPOSAL</div>
 
     <!-- Prepared For Box -->
-    <div class="cover-prepared-for">
-      <div class="cover-prepared-label">Prepared For</div>
-      <div class="cover-prepared-name">
+    <div style="background: #f9f9f9; padding: 15px 25px; border: 2px solid ${PRIMARY_COLOR}; border-radius: 10px; margin: 10px; display: inline-block;">
+      <div style="font-size: 11px; color: ${ACCENT_COLOR}; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Prepared For</div>
+      <div style="font-size: 24px; font-weight: bold; color: ${PRIMARY_COLOR};">
         ${clientInfo.firstName} ${clientInfo.lastName}
       </div>
     </div>
 
     <!-- Presented By Box -->
-    <div class="cover-presented-box">
-      <div class="cover-prepared-label">Presented By</div>
-      <div style="font-size: 24px; font-weight: bold; color: white; margin-bottom: 5px;">
+    <div style="background: #f9f9f9; padding: 12px 20px; border: 2px solid ${PRIMARY_COLOR}; border-radius: 10px; margin: 8px 20px; text-align: left;">
+      <div style="font-size: 11px; color: ${ACCENT_COLOR}; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Presented By</div>
+      <div style="font-size: 20px; font-weight: bold; color: ${PRIMARY_COLOR}; margin-bottom: 4px;">
         ${agentInfo.name}
       </div>
-      <div style="font-size: 14px; color: ${ACCENT_COLOR};">
+      <div style="font-size: 13px; color: ${ACCENT_COLOR};">
         ${agentInfo.title || 'Insurance Advisor'}
       </div>
     </div>
 
-    <div class="cover-presented-box">
-      <div class="cover-prepared-label">Date</div>
-      <div style="font-size: 20px; font-weight: bold; color: white;">
+    <div style="background: #f9f9f9; padding: 12px 20px; border: 2px solid ${PRIMARY_COLOR}; border-radius: 10px; margin: 8px 20px; text-align: left;">
+      <div style="font-size: 11px; color: ${ACCENT_COLOR}; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">Date</div>
+      <div style="font-size: 18px; font-weight: bold; color: ${PRIMARY_COLOR};">
         ${formatDate(proposalDate)}
-      </div>
-    </div>
-
-    <div class="cover-agent">
-      ${agentPhoto ? `<img src="${agentPhoto}" alt="Agent Photo" class="agent-photo" />` : ''}
-      <div>
-        ${agentInfo.name}<br>
-        ${agentInfo.phone ? `${agentInfo.phone}` : ''}
-        ${agentInfo.email ? ` | ${agentInfo.email}` : ''}
-        ${agencyName ? `<br>${agencyName || 'Metro Point Insurance'}` : 'Metro Point Insurance'}
       </div>
     </div>
   </div>
 
   <!-- Page 2: Table of Contents -->
   <div class="page">
-    <div class="header">
-      <div class="header-content">
-        <h1>Contents</h1>
-        <div class="date">${formatDate(proposalDate)}</div>
-        ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+    <div class="page-content">
+      <div class="header">
+        <div class="header-content">
+          <h1>Contents</h1>
+          <div class="date">${formatDate(proposalDate)}</div>
+          ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+        </div>
+        ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
       </div>
-      ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
-    </div>
 
-    <div class="toc-section">
+      <div class="toc-section">
       <ul class="toc-list">
         <li class="toc-item">
           <span>Welcome & General Disclaimers</span>
@@ -891,6 +903,7 @@ export function generateProposalHTML(data: ProposalData): string {
           <span class="toc-page-num">${7 + coverageEntries.length}</span>
         </li>
       </ul>
+      </div>
     </div>
 
     <div class="footer">
@@ -900,16 +913,17 @@ export function generateProposalHTML(data: ProposalData): string {
 
   <!-- Page 3: Welcome & General Disclaimers -->
   <div class="page">
-    <div class="header">
-      <div class="header-content">
-        <h1>Welcome</h1>
-        <div class="date">${formatDate(proposalDate)}</div>
-        ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+    <div class="page-content">
+      <div class="header">
+        <div class="header-content">
+          <h1>Welcome</h1>
+          <div class="date">${formatDate(proposalDate)}</div>
+          ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+        </div>
+        ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
       </div>
-      ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
-    </div>
 
-    <div class="disclaimer-box">
+      <div class="disclaimer-box">
       <h3>Welcome</h3>
       <p>Dear ${clientInfo.firstName} ${clientInfo.lastName},</p>
       <p>Thank you for the opportunity to present this comprehensive insurance proposal. We have carefully reviewed your current coverage and identified opportunities to enhance your protection while potentially reducing costs.</p>
@@ -930,6 +944,7 @@ export function generateProposalHTML(data: ProposalData): string {
       <p>${agencyName || 'Metro Point Insurance'} is compensated through commissions paid by insurance carriers for policies placed. Commission rates vary by carrier and coverage type but typically range from 10% to 15% of the premium.</p>
       <p>Our compensation does not affect the premium you pay. Premiums are set by the insurance carriers based on their underwriting guidelines and rate filings.</p>
       <p>We may also receive contingent commissions or bonuses based on overall volume and loss performance with certain carriers. These arrangements do not influence our recommendations, which are based solely on providing you with the best coverage at the most competitive price.</p>
+      </div>
     </div>
 
     <div class="footer">
@@ -939,16 +954,17 @@ export function generateProposalHTML(data: ProposalData): string {
 
   <!-- Page 4: About Agency -->
   <div class="page">
-    <div class="header">
-      <div class="header-content">
-        <h1>About ${agencyName || 'Metro Point Insurance'}</h1>
-        <div class="date">${formatDate(proposalDate)}</div>
-        ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+    <div class="page-content">
+      <div class="header">
+        <div class="header-content">
+          <h1>About ${agencyName || 'Metro Point Insurance'}</h1>
+          <div class="date">${formatDate(proposalDate)}</div>
+          ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+        </div>
+        ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
       </div>
-      ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
-    </div>
 
-    <div class="about-section">
+      <div class="about-section">
       <p>${agencyName || 'Metro Point Insurance'} is a leading independent insurance agency specializing in high-net-worth personal insurance and risk management. With decades of combined experience, our team brings deep expertise in protecting the unique assets and lifestyles of affluent individuals and families.</p>
     </div>
 
@@ -982,6 +998,7 @@ export function generateProposalHTML(data: ProposalData): string {
       <p><strong>Phone:</strong> ${agentInfo.phone || '(555) 123-4567'}</p>
       <p><strong>Email:</strong> ${agentInfo.email || 'info@agency.com'}</p>
       <p><strong>Website:</strong> ${agentInfo.website || 'www.agency.com'}</p>
+      </div>
     </div>
 
     <div class="footer">
@@ -991,16 +1008,17 @@ export function generateProposalHTML(data: ProposalData): string {
 
   <!-- Page 5: Team Page -->
   <div class="page">
-    <div class="header">
-      <div class="header-content">
-        <h1>Your ${agencyName || 'Metro Point Insurance'} Team</h1>
-        <div class="date">${formatDate(proposalDate)}</div>
-        ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+    <div class="page-content">
+      <div class="header">
+        <div class="header-content">
+          <h1>Your ${agencyName || 'Metro Point Insurance'} Team</h1>
+          <div class="date">${formatDate(proposalDate)}</div>
+          ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+        </div>
+        ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
       </div>
-      ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
-    </div>
 
-    <div class="team-grid">
+      <div class="team-grid">
       <div class="team-member">
         ${agentPhoto ? `<img src="${agentPhoto}" alt="${agentInfo.name}" class="team-photo" />` : `
           <div class="team-photo" style="background: linear-gradient(135deg, ${PRIMARY_COLOR} 0%, #004466 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; font-weight: bold;">
@@ -1013,6 +1031,7 @@ export function generateProposalHTML(data: ProposalData): string {
           ${agentInfo.phone ? `<div>${agentInfo.phone}</div>` : ''}
           ${agentInfo.email ? `<div>${agentInfo.email}</div>` : ''}
         </div>
+      </div>
       </div>
     </div>
 
@@ -1030,16 +1049,17 @@ export function generateProposalHTML(data: ProposalData): string {
 
     return `
       <div class="page">
-        <div class="header">
-          <div class="header-content">
-            <h1>${icon} ${template.title.replace(/[^\w\s]/g, '')}</h1>
-            <div class="date">${formatDate(proposalDate)}</div>
-            ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+        <div class="page-content">
+          <div class="header">
+            <div class="header-content">
+              <h1>${icon} ${template.title.replace(/[^\w\s]/g, '')}</h1>
+              <div class="date">${formatDate(proposalDate)}</div>
+              ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+            </div>
+            ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
           </div>
-          ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
-        </div>
 
-        <!-- Policy Info Box with Premium -->
+          <!-- Policy Info Box with Premium -->
         <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 30px;">
           <div style="background: #e3f2fd; border: 2px solid ${PRIMARY_COLOR}; border-radius: 8px; padding: 20px;">
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
@@ -1123,6 +1143,7 @@ export function generateProposalHTML(data: ProposalData): string {
             </div>
           ` : ''}
         </div>
+        </div>
 
         <div class="footer">
           ${agencyName || 'Metro Point Insurance'} | ${template.title.replace(/[^\w\s]/g, '')} | Page ${pageNum}
@@ -1133,16 +1154,17 @@ export function generateProposalHTML(data: ProposalData): string {
 
   <!-- Premium Summary Page -->
   <div class="page">
-    <div class="header">
-      <div class="header-content">
-        <h1>Premium Summary</h1>
-        <div class="date">${formatDate(proposalDate)}</div>
-        ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+    <div class="page-content">
+      <div class="header">
+        <div class="header-content">
+          <h1>Premium Summary</h1>
+          <div class="date">${formatDate(proposalDate)}</div>
+          ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+        </div>
+        ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
       </div>
-      ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
-    </div>
 
-    <table class="premium-summary-table">
+      <table class="premium-summary-table">
       <thead>
         <tr>
           <th style="width: 60px;"></th>
@@ -1192,6 +1214,7 @@ export function generateProposalHTML(data: ProposalData): string {
           (${savingsAmount > 0 ? '-' : '+'}${Math.abs(parseFloat(savingsPercentage))}%)
         </div>
       ` : ''}
+      </div>
     </div>
 
     <div class="footer">
@@ -1201,16 +1224,17 @@ export function generateProposalHTML(data: ProposalData): string {
 
   <!-- Recommendations & Discussion Points -->
   <div class="page">
-    <div class="header">
-      <div class="header-content">
-        <h1>Recommendations & Discussion Points</h1>
-        <div class="date">${formatDate(proposalDate)}</div>
-        ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+    <div class="page-content">
+      <div class="header">
+        <div class="header-content">
+          <h1>Recommendations & Discussion Points</h1>
+          <div class="date">${formatDate(proposalDate)}</div>
+          ${agencyName ? `<div class="agency-name">${agencyName || 'Metro Point Insurance'}</div>` : '<div class="agency-name">Metro Point Insurance</div>'}
+        </div>
+        ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
       </div>
-      ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" class="header-logo" />` : ''}
-    </div>
 
-    <div class="section">
+      <div class="section">
       <h2 class="section-title">Key Recommendations</h2>
 
       ${notes ? `
@@ -1266,6 +1290,7 @@ export function generateProposalHTML(data: ProposalData): string {
         </p>
       </div>
     `}
+    </div>
 
     <div class="footer">
       ${agencyName || 'Metro Point Insurance'} | Recommendations | Page ${7 + coverageEntries.length}
