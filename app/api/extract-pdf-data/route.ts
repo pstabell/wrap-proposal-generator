@@ -85,21 +85,23 @@ Extract ALL of the following fields if present. Return ONLY valid JSON with no a
     {
       "type": "homeowners|condo|wind|auto|umbrella|watercraft|jewelry|cyber|fineart|other",
       "policy_number": "",
+      "property_address": "",
+      "city_state_zip": "",
       "proposed_carrier": "",
       "current_carrier": "",
       "policy_term": "",
       "effective_date": "",
       "proposed_premium": "",
       "current_premium": "",
-      "dwelling_limit": "",
+      "dwelling_coverage": "",
       "other_structures": "",
       "personal_property": "",
       "loss_of_use": "",
       "personal_liability": "",
       "medical_payments": "",
-      "deductible": "",
-      "wind_hail_deductible": "",
-      "address": ""
+      "deductible_other": "",
+      "deductible_hurricane": "",
+      "deductible_wind": ""
     }
   ]
 }
@@ -110,10 +112,10 @@ RULES:
 - Extract carrier name from company logo, letterhead, or "Carrier:", "Company:", "Insurer:" fields
 - For premiums, extract the total annual premium amount (numbers only, no $ or commas)
 - For deductibles, include both the percentage and dollar amount if shown (e.g., "2% ($121,091)")
-- For property address in coverage: Look for "Insured Location", "Property Address", "Risk Address", etc.
-  - If it says "Same as address shown under insured" or "Same as mailing address", use the insured's mailing address from clientInfo
-  - If a specific property address is shown, use that address
-  - Format as full address string (street, city, state zip)
+- For property_address: Look for "Insured Location", "Property Address", "Risk Address", etc.
+  - If it says "Same as address shown under insured" or "Same as mailing address", use the insured's mailing address
+  - If a specific property address is shown, use that street address only
+- For city_state_zip: Extract city, state, and zip from the property address (e.g., "Naples, FL 34102")
 - Leave fields empty ("") if not found in the document.`,
             },
           ],
@@ -188,18 +190,24 @@ RULES:
 
     // Post-process: If property address is missing or says "same as", use client address
     if (mergedData.clientInfo && mergedData.coverages) {
-      const clientAddress = [
-        mergedData.clientInfo.address,
+      const clientStreetAddress = mergedData.clientInfo.address || '';
+      const clientCityStateZip = [
         mergedData.clientInfo.city,
         mergedData.clientInfo.state,
         mergedData.clientInfo.zip
       ].filter(Boolean).join(', ');
 
       for (const coverage of mergedData.coverages) {
-        if (!coverage.address || coverage.address === '' ||
-            coverage.address.toLowerCase().includes('same as') ||
-            coverage.address.toLowerCase().includes('same address')) {
-          coverage.address = clientAddress;
+        // Handle property_address field
+        if (!coverage.property_address || coverage.property_address === '' ||
+            coverage.property_address.toLowerCase().includes('same as') ||
+            coverage.property_address.toLowerCase().includes('same address')) {
+          coverage.property_address = clientStreetAddress;
+        }
+
+        // Handle city_state_zip field
+        if (!coverage.city_state_zip || coverage.city_state_zip === '') {
+          coverage.city_state_zip = clientCityStateZip;
         }
       }
     }
