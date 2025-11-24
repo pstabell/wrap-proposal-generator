@@ -167,9 +167,14 @@ export async function POST(request: NextRequest) {
 
     sections.push(
       new Paragraph({
-        children: [new TextRun({ text: 'PRIVATE CLIENT INSURANCE PROPOSAL', size: 56, bold: true, color: PRIMARY_COLOR })],
+        children: [new TextRun({ text: 'PRIVATE CLIENT', size: 56, bold: true, color: PRIMARY_COLOR })],
         alignment: AlignmentType.CENTER,
-        spacing: { before: 600, after: 400 },
+        spacing: { before: 600, after: 100 },
+      }),
+      new Paragraph({
+        children: [new TextRun({ text: 'INSURANCE PROPOSAL', size: 56, bold: true, color: PRIMARY_COLOR })],
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 400 },
       }),
       new Paragraph({
         children: [
@@ -484,6 +489,7 @@ export async function POST(request: NextRequest) {
     sections.push(
       new Paragraph({
         children: [new TextRun({ text: `Your ${proposalData.agencyName || 'Metro Point Insurance'} Team`, size: 48, bold: true, color: PRIMARY_COLOR })],
+        alignment: AlignmentType.CENTER,
         spacing: { before: 200, after: 400 },
       })
     );
