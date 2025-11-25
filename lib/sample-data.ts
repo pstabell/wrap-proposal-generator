@@ -9,9 +9,9 @@ export const sampleProposalData: ProposalData = {
     name: 'Sarah Thompson',
     title: 'Producing Agent',
     phone: '(239) 555-0123',
-    email: 'sarah.thompson@metropointins.com',
+    email: 'sarah.thompson@abcinsurance.com',
     address: '123 Insurance Plaza, Suite 500, Naples, FL 34102',
-    website: 'www.metropointins.com'
+    website: 'www.abcinsurance.com'
   },
 
   teamMembers: [
@@ -19,19 +19,19 @@ export const sampleProposalData: ProposalData = {
       name: 'Michael Rodriguez',
       title: 'Client Service Representative',
       phone: '(239) 555-0124',
-      email: 'michael.rodriguez@metropointins.com'
+      email: 'michael.rodriguez@abcinsurance.com'
     },
     {
       name: 'Jennifer Collins',
       title: 'Sales Manager',
       phone: '(239) 555-0125',
-      email: 'jennifer.collins@metropointins.com'
+      email: 'jennifer.collins@abcinsurance.com'
     },
     {
       name: 'Patrick Stabell',
       title: 'President',
       phone: '(239) 555-0100',
-      email: 'patrick.stabell@metropointins.com'
+      email: 'patrick.stabell@abcinsurance.com'
     }
   ],
 
