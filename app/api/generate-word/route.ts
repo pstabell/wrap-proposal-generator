@@ -760,8 +760,14 @@ export async function POST(request: NextRequest) {
       // Add main coverage header
       sections.push(...createCoverageHeader(title, false));
 
-      // Premium in prominent colored box with gold styling
+      // Calculate premium comparison
       const proposedPremium = parseFloat(coverage.proposed_premium?.toString() || '0');
+      const currentPremium = parseFloat(coverage.current_premium?.toString() || '0');
+      const premiumDifference = currentPremium - proposedPremium;
+      const hasSavings = premiumDifference > 0;
+      const hasIncrease = premiumDifference < 0;
+
+      // Premium comparison box
       sections.push(
         new Table({
           rows: [
@@ -771,30 +777,294 @@ export async function POST(request: NextRequest) {
                   children: [
                     new Paragraph({
                       children: [
-                        new TextRun({ text: 'Annual Premium: ', size: 36, bold: true, color: 'FFFFFF' }),
+                        new TextRun({ text: 'PROPOSED ANNUAL PREMIUM', size: 28, bold: true, color: 'FFFFFF' }),
+                      ],
+                      alignment: AlignmentType.CENTER,
+                      spacing: { before: 200, after: 100 },
+                    }),
+                    new Paragraph({
+                      children: [
                         new TextRun({ text: `$${proposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 52, bold: true, color: 'FFFFFF' }),
                       ],
                       alignment: AlignmentType.CENTER,
-                      spacing: { before: 300, after: 300 },
+                      spacing: { before: 100, after: 200 },
                     }),
                   ],
                   shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
                   verticalAlign: VerticalAlign.CENTER,
+                  width: { size: currentPremium > 0 ? 50 : 100, type: WidthType.PERCENTAGE },
                   borders: {
                     top: { style: BorderStyle.SINGLE, size: 12, color: ACCENT_COLOR },
                     bottom: { style: BorderStyle.SINGLE, size: 12, color: ACCENT_COLOR },
                     left: { style: BorderStyle.SINGLE, size: 12, color: ACCENT_COLOR },
-                    right: { style: BorderStyle.SINGLE, size: 12, color: ACCENT_COLOR },
+                    right: { style: BorderStyle.SINGLE, size: currentPremium > 0 ? 6 : 12, color: ACCENT_COLOR },
                   },
                 }),
+                ...(currentPremium > 0 ? [
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({ text: 'EXPIRING ANNUAL PREMIUM', size: 28, bold: true, color: PRIMARY_COLOR }),
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { before: 200, after: 100 },
+                      }),
+                      new Paragraph({
+                        children: [
+                          new TextRun({ text: `$${currentPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 48, bold: true, color: PRIMARY_COLOR }),
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { before: 100, after: 200 },
+                      }),
+                    ],
+                    shading: { fill: 'F5F5F5', type: ShadingType.CLEAR },
+                    verticalAlign: VerticalAlign.CENTER,
+                    width: { size: 50, type: WidthType.PERCENTAGE },
+                    borders: {
+                      top: { style: BorderStyle.SINGLE, size: 12, color: ACCENT_COLOR },
+                      bottom: { style: BorderStyle.SINGLE, size: 12, color: ACCENT_COLOR },
+                      left: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
+                      right: { style: BorderStyle.SINGLE, size: 12, color: ACCENT_COLOR },
+                    },
+                  })
+                ] : []),
               ],
             }),
           ],
           width: { size: 100, type: WidthType.PERCENTAGE },
-          margins: {
-            top: convertInchesToTwip(0.2),
-            bottom: convertInchesToTwip(0.2),
-          },
+        }),
+        new Paragraph({
+          text: '',
+          spacing: { after: 300 },
+        })
+      );
+
+      // Show savings/increase if there's a current premium to compare
+      if (currentPremium > 0 && premiumDifference !== 0) {
+        const savingsColor = hasSavings ? GREEN : RED;
+        const savingsLabel = hasSavings ? 'Annual Savings' : 'Annual Increase';
+        const savingsSign = hasSavings ? '-' : '+';
+
+        sections.push(
+          new Table({
+            rows: [
+              new TableRow({
+                children: [
+                  new TableCell({
+                    children: [
+                      new Paragraph({
+                        children: [
+                          new TextRun({ text: savingsLabel + ': ', size: 32, bold: true, color: 'FFFFFF' }),
+                          new TextRun({ text: `${savingsSign}$${Math.abs(premiumDifference).toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 40, bold: true, color: 'FFFFFF' }),
+                          new TextRun({ text: ` (${savingsSign}${Math.abs((premiumDifference / currentPremium) * 100).toFixed(1)}%)`, size: 32, bold: true, color: 'FFFFFF' }),
+                        ],
+                        alignment: AlignmentType.CENTER,
+                        spacing: { before: 250, after: 250 },
+                      }),
+                    ],
+                    shading: { fill: savingsColor, type: ShadingType.CLEAR },
+                    verticalAlign: VerticalAlign.CENTER,
+                    borders: {
+                      top: { style: BorderStyle.SINGLE, size: 8, color: ACCENT_COLOR },
+                      bottom: { style: BorderStyle.SINGLE, size: 8, color: ACCENT_COLOR },
+                      left: { style: BorderStyle.SINGLE, size: 8, color: ACCENT_COLOR },
+                      right: { style: BorderStyle.SINGLE, size: 8, color: ACCENT_COLOR },
+                    },
+                  }),
+                ],
+              }),
+            ],
+            width: { size: 100, type: WidthType.PERCENTAGE },
+          }),
+          new Paragraph({
+            text: '',
+            spacing: { after: 400 },
+          })
+        );
+      }
+
+      // Helper function to collect all relevant fields for this coverage type
+      const getRelevantFields = (cov: any, typeKey: CoverageType) => {
+        const fields: Array<{key: string, label: string}> = [];
+
+        // Universal fields (excluding premiums and carriers which are shown separately)
+        if (cov.policy_number) fields.push({ key: 'policy_number', label: 'Policy Number' });
+        if (cov.policy_term) fields.push({ key: 'policy_term', label: 'Policy Term' });
+
+        // Coverage-type specific fields
+        if (typeKey === 'homeowners' || typeKey === 'condo') {
+          if (cov.property_address) fields.push({ key: 'property_address', label: 'Property Address' });
+          if (cov.city_state_zip) fields.push({ key: 'city_state_zip', label: 'City, State, ZIP' });
+          if (cov.dwelling_coverage) fields.push({ key: 'dwelling_coverage', label: 'Dwelling Coverage' });
+          if (cov.other_structures) fields.push({ key: 'other_structures', label: 'Other Structures' });
+          if (cov.personal_property) fields.push({ key: 'personal_property', label: 'Personal Property' });
+          if (cov.loss_of_use) fields.push({ key: 'loss_of_use', label: 'Loss of Use' });
+          if (cov.personal_liability) fields.push({ key: 'personal_liability', label: 'Personal Liability' });
+          if (cov.medical_payments) fields.push({ key: 'medical_payments', label: 'Medical Payments' });
+          if (cov.deductible_other) fields.push({ key: 'deductible_other', label: 'Deductible - Other Perils' });
+          if (cov.deductible) fields.push({ key: 'deductible', label: 'Deductible' });
+          if (cov.deductible_hurricane) fields.push({ key: 'deductible_hurricane', label: 'Hurricane Deductible' });
+          if (cov.deductible_wind) fields.push({ key: 'deductible_wind', label: 'Wind/Hail Deductible' });
+          if (typeKey === 'condo' && cov.loss_assessment) fields.push({ key: 'loss_assessment', label: 'Loss Assessment' });
+          if (cov.endorsements) fields.push({ key: 'endorsements', label: 'Endorsements' });
+        } else if (typeKey === 'auto') {
+          if (cov.vehicles) fields.push({ key: 'vehicles', label: 'Vehicles Covered' });
+          if (cov.liability_limits) fields.push({ key: 'liability_limits', label: 'Liability Limits' });
+          if (cov.uninsured_motorist) fields.push({ key: 'uninsured_motorist', label: 'Uninsured/Underinsured Motorist' });
+          if (cov.pip_coverage) fields.push({ key: 'pip_coverage', label: 'Personal Injury Protection' });
+          if (cov.additional_pip) fields.push({ key: 'additional_pip', label: 'Additional PIP' });
+          if (cov.rental_reimbursement) fields.push({ key: 'rental_reimbursement', label: 'Rental Reimbursement' });
+          if (cov.full_glass) fields.push({ key: 'full_glass', label: 'Full Glass Coverage' });
+          if (cov.towing_labor) fields.push({ key: 'towing_labor', label: 'Towing & Labor' });
+          if (cov.comprehensive_deductible) fields.push({ key: 'comprehensive_deductible', label: 'Comprehensive Deductible' });
+          if (cov.collision_deductible) fields.push({ key: 'collision_deductible', label: 'Collision Deductible' });
+          if (cov.drivers) fields.push({ key: 'drivers', label: 'Drivers Listed' });
+          if (cov.additional_interests) fields.push({ key: 'additional_interests', label: 'Additional Interests' });
+        } else if (typeKey === 'umbrella') {
+          if (cov.coverage_amount) fields.push({ key: 'coverage_amount', label: 'Coverage Limit' });
+          if (cov.uninsured_motorist) fields.push({ key: 'uninsured_motorist', label: 'Uninsured Motorist' });
+          if (cov.underlying_requirements) fields.push({ key: 'underlying_requirements', label: 'Underlying Requirements' });
+        } else if (typeKey === 'watercraft') {
+          if (cov.vessels) fields.push({ key: 'vessels', label: 'Watercraft Details' });
+          if (cov.liability) fields.push({ key: 'liability', label: 'Liability' });
+          if (cov.uninsured_boaters) fields.push({ key: 'uninsured_boaters', label: 'Uninsured Boaters' });
+          if (cov.medical_payments) fields.push({ key: 'medical_payments', label: 'Medical Payments' });
+          if (cov.personal_effects) fields.push({ key: 'personal_effects', label: 'Personal Effects' });
+          if (cov.trailer_coverage) fields.push({ key: 'trailer_coverage', label: 'Trailer Coverage' });
+          if (cov.emergency_towing) fields.push({ key: 'emergency_towing', label: 'Emergency Towing' });
+          if (cov.search_rescue) fields.push({ key: 'search_rescue', label: 'Search & Rescue' });
+          if (cov.deductible) fields.push({ key: 'deductible', label: 'Deductible' });
+          if (cov.operators) fields.push({ key: 'operators', label: 'Operators' });
+        } else if (typeKey === 'jewelry') {
+          if (cov.property_class) fields.push({ key: 'property_class', label: 'Property Class' });
+          if (cov.total_limit) fields.push({ key: 'total_limit', label: 'Total Limit' });
+          if (cov.scheduled_items) fields.push({ key: 'scheduled_items', label: 'Scheduled Items' });
+        } else if (typeKey === 'wind') {
+          if (cov.property_address) fields.push({ key: 'property_address', label: 'Property Address' });
+          if (cov.coverage_amount) fields.push({ key: 'coverage_amount', label: 'Coverage Amount' });
+          if (cov.deductible) fields.push({ key: 'deductible', label: 'Deductible' });
+          if (cov.special_features) fields.push({ key: 'special_features', label: 'Special Features' });
+        } else if (typeKey === 'cyber') {
+          if (cov.coverage_amount) fields.push({ key: 'coverage_amount', label: 'Coverage Limit' });
+          if (cov.coverage_includes) fields.push({ key: 'coverage_includes', label: 'Coverage Includes' });
+          if (cov.special_features) fields.push({ key: 'special_features', label: 'Special Features' });
+        } else if (typeKey === 'fineart') {
+          if (cov.items_covered) fields.push({ key: 'items_covered', label: 'Items Covered' });
+          if (cov.total_value) fields.push({ key: 'total_value', label: 'Total Value' });
+          if (cov.special_features) fields.push({ key: 'special_features', label: 'Special Features' });
+        } else if (typeKey === 'other') {
+          if (cov.coverage_type) fields.push({ key: 'coverage_type', label: 'Coverage Type' });
+          if (cov.coverage_details) fields.push({ key: 'coverage_details', label: 'Coverage Details' });
+          if (cov.special_features) fields.push({ key: 'special_features', label: 'Special Features' });
+        }
+
+        return fields;
+      };
+
+      const relevantFields = getRelevantFields(coverage, coverageType);
+
+      // PROPOSED/NEW COVERAGE DETAILS (shown first)
+      sections.push(
+        new Paragraph({
+          children: [new TextRun({ text: 'PROPOSED COVERAGE DETAILS', size: 38, bold: true, color: LIGHT_BLUE })],
+          spacing: { before: 300, after: 250 },
+        })
+      );
+
+      const proposedRows: TableRow[] = [];
+
+      // Always show proposed carrier
+      proposedRows.push(
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: 'Carrier', bold: true, size: 26, color: 'FFFFFF' })], spacing: { before: 150, after: 150 } })],
+              shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
+              width: { size: 35, type: WidthType.PERCENTAGE },
+              borders: {
+                top: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
+                bottom: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
+                left: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
+                right: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
+              },
+              margins: {
+                top: convertInchesToTwip(0.15),
+                bottom: convertInchesToTwip(0.15),
+                left: convertInchesToTwip(0.2),
+                right: convertInchesToTwip(0.2),
+              },
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [new TextRun({ text: coverage.proposed_carrier || 'N/A', size: 26, color: PRIMARY_COLOR, bold: true })], spacing: { before: 150, after: 150 } })],
+              width: { size: 65, type: WidthType.PERCENTAGE },
+              borders: {
+                top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+              },
+              margins: {
+                top: convertInchesToTwip(0.15),
+                bottom: convertInchesToTwip(0.15),
+                left: convertInchesToTwip(0.2),
+                right: convertInchesToTwip(0.2),
+              },
+            }),
+          ],
+        })
+      );
+
+      // Add all other fields
+      relevantFields.forEach(({ key, label }) => {
+        const value = coverage[key];
+        if (value) {
+          proposedRows.push(
+            new TableRow({
+              children: [
+                new TableCell({
+                  children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, size: 26, color: 'FFFFFF' })], spacing: { before: 150, after: 150 } })],
+                  shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
+                  width: { size: 35, type: WidthType.PERCENTAGE },
+                  borders: {
+                    top: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
+                    bottom: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
+                    left: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
+                    right: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
+                  },
+                  margins: {
+                    top: convertInchesToTwip(0.15),
+                    bottom: convertInchesToTwip(0.15),
+                    left: convertInchesToTwip(0.2),
+                    right: convertInchesToTwip(0.2),
+                  },
+                }),
+                new TableCell({
+                  children: [new Paragraph({ children: [new TextRun({ text: value.toString(), size: 26, color: PRIMARY_COLOR })], spacing: { before: 150, after: 150 } })],
+                  width: { size: 65, type: WidthType.PERCENTAGE },
+                  borders: {
+                    top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                    bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                    left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                    right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                  },
+                  margins: {
+                    top: convertInchesToTwip(0.15),
+                    bottom: convertInchesToTwip(0.15),
+                    left: convertInchesToTwip(0.2),
+                    right: convertInchesToTwip(0.2),
+                  },
+                }),
+              ],
+            })
+          );
+        }
+      });
+
+      sections.push(
+        new Table({
+          rows: proposedRows,
+          width: { size: 100, type: WidthType.PERCENTAGE },
         }),
         new Paragraph({
           text: '',
@@ -802,39 +1072,86 @@ export async function POST(request: NextRequest) {
         })
       );
 
-      // Coverage details in professional two-column table
-      const coverageRows: TableRow[] = [];
+      // CURRENT/EXPIRING COVERAGE DETAILS (shown second, only if current carrier exists)
+      if (coverage.current_carrier || currentPremium > 0) {
+        sections.push(
+          new Paragraph({
+            children: [new TextRun({ text: 'CURRENT COVERAGE DETAILS (Expiring)', size: 38, bold: true, color: '666666' })],
+            spacing: { before: 300, after: 250 },
+          })
+        );
 
-      // Helper function to add a table row
-      const addTableRow = (label: string, value: string) => {
-        coverageRows.push(
+        const currentRows: TableRow[] = [];
+
+        // Show current carrier
+        if (coverage.current_carrier) {
+          currentRows.push(
+            new TableRow({
+              children: [
+                new TableCell({
+                  children: [new Paragraph({ children: [new TextRun({ text: 'Carrier', bold: true, size: 26, color: 'FFFFFF' })], spacing: { before: 150, after: 150 } })],
+                  shading: { fill: '999999', type: ShadingType.CLEAR },
+                  width: { size: 35, type: WidthType.PERCENTAGE },
+                  borders: {
+                    top: { style: BorderStyle.SINGLE, size: 6, color: '666666' },
+                    bottom: { style: BorderStyle.SINGLE, size: 6, color: '666666' },
+                    left: { style: BorderStyle.SINGLE, size: 6, color: '666666' },
+                    right: { style: BorderStyle.SINGLE, size: 6, color: '666666' },
+                  },
+                  margins: {
+                    top: convertInchesToTwip(0.15),
+                    bottom: convertInchesToTwip(0.15),
+                    left: convertInchesToTwip(0.2),
+                    right: convertInchesToTwip(0.2),
+                  },
+                }),
+                new TableCell({
+                  children: [new Paragraph({ children: [new TextRun({ text: coverage.current_carrier, size: 26, color: '666666', bold: true })], spacing: { before: 150, after: 150 } })],
+                  width: { size: 65, type: WidthType.PERCENTAGE },
+                  shading: { fill: 'F5F5F5', type: ShadingType.CLEAR },
+                  borders: {
+                    top: { style: BorderStyle.SINGLE, size: 4, color: '999999' },
+                    bottom: { style: BorderStyle.SINGLE, size: 4, color: '999999' },
+                    left: { style: BorderStyle.SINGLE, size: 4, color: '999999' },
+                    right: { style: BorderStyle.SINGLE, size: 4, color: '999999' },
+                  },
+                  margins: {
+                    top: convertInchesToTwip(0.15),
+                    bottom: convertInchesToTwip(0.15),
+                    left: convertInchesToTwip(0.2),
+                    right: convertInchesToTwip(0.2),
+                  },
+                }),
+              ],
+            })
+          );
+        }
+
+        // Note about current coverage details
+        currentRows.push(
           new TableRow({
             children: [
               new TableCell({
-                children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, size: 26, color: 'FFFFFF' })], spacing: { before: 150, after: 150 } })],
-                shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
-                width: { size: 40, type: WidthType.PERCENTAGE },
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({
+                        text: 'Note: Current coverage details are based on expiring policy information. Please refer to your existing declarations page for complete details.',
+                        size: 24,
+                        color: '666666',
+                        italics: true
+                      })
+                    ],
+                    spacing: { before: 200, after: 200 }
+                  })
+                ],
+                columnSpan: 2,
+                shading: { fill: 'FFFEF0', type: ShadingType.CLEAR },
                 borders: {
-                  top: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
-                  bottom: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
-                  left: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
-                  right: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
-                },
-                margins: {
-                  top: convertInchesToTwip(0.15),
-                  bottom: convertInchesToTwip(0.15),
-                  left: convertInchesToTwip(0.2),
-                  right: convertInchesToTwip(0.2),
-                },
-              }),
-              new TableCell({
-                children: [new Paragraph({ children: [new TextRun({ text: value, size: 26, color: PRIMARY_COLOR })], spacing: { before: 150, after: 150 } })],
-                width: { size: 60, type: WidthType.PERCENTAGE },
-                borders: {
-                  top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-                  bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-                  left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-                  right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                  top: { style: BorderStyle.SINGLE, size: 4, color: '999999' },
+                  bottom: { style: BorderStyle.SINGLE, size: 4, color: '999999' },
+                  left: { style: BorderStyle.SINGLE, size: 4, color: '999999' },
+                  right: { style: BorderStyle.SINGLE, size: 4, color: '999999' },
                 },
                 margins: {
                   top: convertInchesToTwip(0.15),
@@ -846,93 +1163,10 @@ export async function POST(request: NextRequest) {
             ],
           })
         );
-      };
 
-      // Policy Number
-      if (coverage.policy_number) {
-        addTableRow('Policy Number', coverage.policy_number?.toString() || 'N/A');
-      }
-
-      // Carrier
-      if (coverage.proposed_carrier) {
-        addTableRow('Carrier', coverage.proposed_carrier);
-      }
-
-      // Policy Term
-      if (coverage.policy_term) {
-        addTableRow('Policy Term', coverage.policy_term?.toString() || 'N/A');
-      }
-
-      // Coverage-specific fields based on type
-      if (coverageType === 'homeowners' || coverageType === 'condo') {
-        if (coverage.property_address) addTableRow('Property Address', coverage.property_address.toString());
-        if (coverage.dwelling_coverage) addTableRow('Dwelling Coverage', coverage.dwelling_coverage.toString());
-        if (coverage.other_structures) addTableRow('Other Structures', coverage.other_structures.toString());
-        if (coverage.personal_property) addTableRow('Personal Property', coverage.personal_property.toString());
-        if (coverage.loss_of_use) addTableRow('Loss of Use', coverage.loss_of_use.toString());
-        if (coverage.personal_liability) addTableRow('Personal Liability', coverage.personal_liability.toString());
-        if (coverage.medical_payments) addTableRow('Medical Payments to Others', coverage.medical_payments.toString());
-        if (coverage.deductible) addTableRow('Deductible (Other Perils)', coverage.deductible.toString());
-        if (coverage.hurricane_deductible) addTableRow('Hurricane Deductible', coverage.hurricane_deductible.toString());
-        if (coverage.wind_deductible) addTableRow('Wind Deductible', coverage.wind_deductible.toString());
-        if (coverage.water_backup) addTableRow('Water Backup Coverage', coverage.water_backup.toString());
-        if (coverage.equipment_breakdown) addTableRow('Equipment Breakdown', coverage.equipment_breakdown.toString());
-        if (coverage.identity_theft) addTableRow('Identity Theft', coverage.identity_theft.toString());
-        if (coverage.endorsements) addTableRow('Endorsements', coverage.endorsements.toString());
-      } else if (coverageType === 'auto') {
-        if (coverage.vehicles) addTableRow('Vehicles', coverage.vehicles.toString());
-        if (coverage.liability_limits) addTableRow('Liability Limits', coverage.liability_limits.toString());
-        if (coverage.uninsured_motorist) addTableRow('Uninsured Motorist', coverage.uninsured_motorist.toString());
-        if (coverage.pip_coverage) addTableRow('PIP Coverage', coverage.pip_coverage.toString());
-        if (coverage.additional_pip) addTableRow('Additional PIP', coverage.additional_pip.toString());
-        if (coverage.rental_reimbursement) addTableRow('Rental Reimbursement', coverage.rental_reimbursement.toString());
-        if (coverage.full_glass_coverage) addTableRow('Full Glass Coverage', coverage.full_glass_coverage.toString());
-        if (coverage.towing_labor) addTableRow('Towing & Labor', coverage.towing_labor.toString());
-        if (coverage.comprehensive_deductible) addTableRow('Comprehensive Deductible', coverage.comprehensive_deductible.toString());
-        if (coverage.collision_deductible) addTableRow('Collision Deductible', coverage.collision_deductible.toString());
-        if (coverage.drivers_listed) addTableRow('Drivers Listed', coverage.drivers_listed.toString());
-        if (coverage.additional_interests) addTableRow('Additional Interests', coverage.additional_interests.toString());
-      } else if (coverageType === 'umbrella') {
-        if (coverage.liability_limit) addTableRow('Liability Limit', coverage.liability_limit.toString());
-        if (coverage.underlying_auto_limit) addTableRow('Underlying Auto Limit', coverage.underlying_auto_limit.toString());
-        if (coverage.underlying_home_limit) addTableRow('Underlying Home Limit', coverage.underlying_home_limit.toString());
-      } else if (coverageType === 'watercraft') {
-        if (coverage.vessel_type) addTableRow('Vessel Type', coverage.vessel_type.toString());
-        if (coverage.vessel_value) addTableRow('Vessel Value', coverage.vessel_value.toString());
-        if (coverage.liability_coverage) addTableRow('Liability Coverage', coverage.liability_coverage.toString());
-        if (coverage.physical_damage) addTableRow('Physical Damage', coverage.physical_damage.toString());
-        if (coverage.deductible) addTableRow('Deductible', coverage.deductible.toString());
-      } else if (coverageType === 'jewelry') {
-        if (coverage.items_scheduled) addTableRow('Items Scheduled', coverage.items_scheduled.toString());
-        if (coverage.total_value) addTableRow('Total Value', coverage.total_value.toString());
-        if (coverage.deductible) addTableRow('Deductible', coverage.deductible.toString());
-      } else {
-        // For other coverage types, add all fields dynamically
-        Object.entries(coverage).forEach(([key, value]) => {
-          if (
-            value &&
-            key !== 'policy_number' &&
-            key !== 'proposed_carrier' &&
-            key !== 'current_carrier' &&
-            key !== 'proposed_premium' &&
-            key !== 'current_premium' &&
-            key !== 'policy_term' &&
-            key !== 'effective_date'
-          ) {
-            const label = key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-            addTableRow(label, value.toString());
-          }
-        });
-      }
-
-      if (coverageRows.length > 0) {
         sections.push(
-          new Paragraph({
-            children: [new TextRun({ text: 'Coverage Details', size: 38, bold: true, color: PRIMARY_COLOR })],
-            spacing: { before: 300, after: 250 },
-          }),
           new Table({
-            rows: coverageRows,
+            rows: currentRows,
             width: { size: 100, type: WidthType.PERCENTAGE },
           }),
           new Paragraph({
