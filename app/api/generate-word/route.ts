@@ -167,12 +167,12 @@ export async function POST(request: NextRequest) {
           ],
           width: { size: 100, type: WidthType.PERCENTAGE },
           borders: {
-            top: { style: BorderStyle.SINGLE, size: 6, color: LIGHT_BLUE },
-            bottom: { style: BorderStyle.SINGLE, size: 6, color: LIGHT_BLUE },
-            left: { style: BorderStyle.SINGLE, size: 6, color: LIGHT_BLUE },
-            right: { style: BorderStyle.SINGLE, size: 6, color: LIGHT_BLUE },
-            insideHorizontal: { style: BorderStyle.SINGLE, size: 3, color: LIGHT_BLUE },
-            insideVertical: { style: BorderStyle.SINGLE, size: 3, color: LIGHT_BLUE },
+            top: { style: BorderStyle.SINGLE, size: 12, color: LIGHT_BLUE },
+            bottom: { style: BorderStyle.SINGLE, size: 12, color: LIGHT_BLUE },
+            left: { style: BorderStyle.SINGLE, size: 12, color: LIGHT_BLUE },
+            right: { style: BorderStyle.SINGLE, size: 12, color: LIGHT_BLUE },
+            insideHorizontal: { style: BorderStyle.SINGLE, size: 6, color: LIGHT_BLUE },
+            insideVertical: { style: BorderStyle.SINGLE, size: 6, color: LIGHT_BLUE },
           },
         }),
         new Paragraph({
@@ -1195,7 +1195,7 @@ export async function POST(request: NextRequest) {
           new Paragraph({
             children: [
               new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
-              new TextRun({ text: note.trim(), size: 28 }),
+              new TextRun({ text: note.trim(), size: 28, color: PRIMARY_COLOR }),
             ],
             spacing: { before: 200, after: 250 },
           })
@@ -1206,21 +1206,21 @@ export async function POST(request: NextRequest) {
         new Paragraph({
           children: [
             new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
-            new TextRun({ text: 'Review all coverage limits to ensure adequate protection', size: 28 }),
+            new TextRun({ text: 'Review all coverage limits to ensure adequate protection', size: 28, color: PRIMARY_COLOR }),
           ],
           spacing: { before: 200, after: 250 },
         }),
         new Paragraph({
           children: [
             new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
-            new TextRun({ text: 'Consider increasing umbrella coverage for additional liability protection', size: 28 }),
+            new TextRun({ text: 'Consider increasing umbrella coverage for additional liability protection', size: 28, color: PRIMARY_COLOR }),
           ],
           spacing: { before: 200, after: 250 },
         }),
         new Paragraph({
           children: [
             new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
-            new TextRun({ text: 'Ensure all high-value items are properly scheduled', size: 28 }),
+            new TextRun({ text: 'Ensure all high-value items are properly scheduled', size: 28, color: PRIMARY_COLOR }),
           ],
           spacing: { before: 200, after: 250 },
         })
@@ -1235,14 +1235,16 @@ export async function POST(request: NextRequest) {
       new Paragraph({
         children: [new TextRun({
           text: 'Please review this proposal carefully and contact us with any questions. We are happy to discuss any aspect of the coverage or make adjustments as needed. Once you are ready to proceed, we will work quickly to bind coverage and provide you with your policy documents.',
-          size: 28
+          size: 28,
+          color: PRIMARY_COLOR
         })],
         spacing: { before: 200, after: 300 },
       }),
       new Paragraph({
         children: [new TextRun({
           text: 'Thank you for the opportunity to serve your insurance needs. We look forward to protecting what matters most to you.',
-          size: 28
+          size: 28,
+          color: PRIMARY_COLOR
         })],
         spacing: { before: 200, after: 300 },
       })
