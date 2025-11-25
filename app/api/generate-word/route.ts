@@ -330,7 +330,8 @@ export async function POST(request: NextRequest) {
                   new Paragraph({
                     children: [new TextRun({
                       text: 'Premium quotes are subject to underwriting approval and may change based on final underwriting review, inspection results, or changes in the information provided. All coverage is subject to the terms, conditions, and exclusions of the insurance policy as issued by the carrier.',
-                      size: 28
+                      size: 28,
+                      color: 'FFFFFF'
                     })],
                     spacing: { before: 250, after: 250 },
                   }),
@@ -461,15 +462,15 @@ export async function POST(request: NextRequest) {
                 children: [
                   new Paragraph({
                     children: [
-                      new TextRun({ text: 'Phone: ', bold: true, size: 28 }),
-                      new TextRun({ text: proposalData.agentInfo.phone || '(555) 123-4567', size: 28 }),
+                      new TextRun({ text: 'Phone: ', bold: true, size: 28, color: 'FFFFFF' }),
+                      new TextRun({ text: proposalData.agentInfo.phone || '(555) 123-4567', size: 28, color: 'FFFFFF' }),
                     ],
                     spacing: { before: 150, after: 150 },
                   }),
                   new Paragraph({
                     children: [
-                      new TextRun({ text: 'Email: ', bold: true, size: 28 }),
-                      new TextRun({ text: proposalData.agentInfo.email || 'info@agency.com', size: 28 }),
+                      new TextRun({ text: 'Email: ', bold: true, size: 28, color: 'FFFFFF' }),
+                      new TextRun({ text: proposalData.agentInfo.email || 'info@agency.com', size: 28, color: 'FFFFFF' }),
                     ],
                     spacing: { before: 150, after: 150 },
                   }),
