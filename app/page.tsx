@@ -17,6 +17,7 @@ export default function ProposalGenerator() {
 
   const [teamMembers, setTeamMembers] = useState<AgentInfo[]>([
     { name: '', phone: '', email: '', title: '', photo: '' },
+    { name: '', phone: '', email: '', title: '', photo: '' },
     { name: '', phone: '', email: '', title: '', photo: '' }
   ]);
 
@@ -54,6 +55,7 @@ export default function ProposalGenerator() {
   // State for agent sections expansion
   const [showAgent2, setShowAgent2] = useState(false);
   const [showAgent3, setShowAgent3] = useState(false);
+  const [showAgent4, setShowAgent4] = useState(false);
 
   const coverageTypes: { key: CoverageType; label: string }[] = [
     { key: 'homeowners', label: 'Homeowners Insurance' },
@@ -78,6 +80,7 @@ export default function ProposalGenerator() {
       setTeamMembers(sampleProposalData.teamMembers);
       if (sampleProposalData.teamMembers.length > 0) setShowAgent2(true);
       if (sampleProposalData.teamMembers.length > 1) setShowAgent3(true);
+      if (sampleProposalData.teamMembers.length > 2) setShowAgent4(true);
     }
 
     setClientInfo(sampleProposalData.clientInfo);
@@ -570,10 +573,9 @@ export default function ProposalGenerator() {
                         type="button"
                         onClick={() => {
                           setShowAgent3(false);
-                          setTeamMembers([
-                            teamMembers[0],
-                            { name: '', phone: '', email: '', title: '', photo: '' }
-                          ]);
+                          const newTeamMembers = [...teamMembers];
+                          newTeamMembers[1] = { name: '', phone: '', email: '', title: '', photo: '' };
+                          setTeamMembers(newTeamMembers);
                         }}
                         className="text-red-600 hover:text-red-800 text-sm font-medium"
                       >
@@ -650,6 +652,116 @@ export default function ProposalGenerator() {
                           onFilesSelected={(files) => {
                             const newTeamMembers = [...teamMembers];
                             newTeamMembers[1] = { ...newTeamMembers[1], photo: files[0] || '' };
+                            setTeamMembers(newTeamMembers);
+                          }}
+                          showPreview={true}
+                          maxSizeMB={5}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Agent #4 (Optional) */}
+              <div className="mb-4">
+                {!showAgent4 ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowAgent4(true)}
+                    className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition-colors"
+                  >
+                    + Add Agent #4 (Optional)
+                  </button>
+                ) : (
+                  <div className="bg-gray-50 p-6 rounded-lg border-2 border-gray-300">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-xl font-semibold" style={{ color: '#003B5C' }}>
+                        Agent #4 (Optional)
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowAgent4(false);
+                          const newTeamMembers = [...teamMembers];
+                          newTeamMembers[2] = { name: '', phone: '', email: '', title: '', photo: '' };
+                          setTeamMembers(newTeamMembers);
+                        }}
+                        className="text-red-600 hover:text-red-800 text-sm font-medium"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Name
+                        </label>
+                        <input
+                          type="text"
+                          value={teamMembers[2]?.name || ''}
+                          onChange={(e) => {
+                            const newTeamMembers = [...teamMembers];
+                            newTeamMembers[2] = { ...newTeamMembers[2], name: e.target.value };
+                            setTeamMembers(newTeamMembers);
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Title
+                        </label>
+                        <input
+                          type="text"
+                          value={teamMembers[2]?.title || ''}
+                          onChange={(e) => {
+                            const newTeamMembers = [...teamMembers];
+                            newTeamMembers[2] = { ...newTeamMembers[2], title: e.target.value };
+                            setTeamMembers(newTeamMembers);
+                          }}
+                          placeholder="e.g., President"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Phone
+                        </label>
+                        <input
+                          type="tel"
+                          value={teamMembers[2]?.phone || ''}
+                          onChange={(e) => {
+                            const newTeamMembers = [...teamMembers];
+                            newTeamMembers[2] = { ...newTeamMembers[2], phone: e.target.value };
+                            setTeamMembers(newTeamMembers);
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Email
+                        </label>
+                        <input
+                          type="email"
+                          value={teamMembers[2]?.email || ''}
+                          onChange={(e) => {
+                            const newTeamMembers = [...teamMembers];
+                            newTeamMembers[2] = { ...newTeamMembers[2], email: e.target.value };
+                            setTeamMembers(newTeamMembers);
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <FileUpload
+                          label="Agent Photo"
+                          accept="image/*"
+                          fileType="image"
+                          onFilesSelected={(files) => {
+                            const newTeamMembers = [...teamMembers];
+                            newTeamMembers[2] = { ...newTeamMembers[2], photo: files[0] || '' };
                             setTeamMembers(newTeamMembers);
                           }}
                           showPreview={true}

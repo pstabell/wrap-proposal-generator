@@ -26,6 +26,12 @@ export const sampleProposalData: ProposalData = {
       title: 'Sales Manager',
       phone: '(239) 555-0125',
       email: 'jennifer.collins@metropointins.com'
+    },
+    {
+      name: 'Patrick Stabell',
+      title: 'President',
+      phone: '(239) 555-0100',
+      email: 'patrick.stabell@metropointins.com'
     }
   ],
 
