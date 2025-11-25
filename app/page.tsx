@@ -673,25 +673,16 @@ export default function ProposalGenerator() {
               />
             </section>
 
-            {/* Submit Buttons */}
-            <div className="flex justify-center gap-4 pt-6">
-              <button
-                type="submit"
-                disabled={isGenerating || selectedCoverages.size === 0}
-                className="px-8 py-3 text-white font-semibold rounded-md shadow-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ backgroundColor: '#003B5C' }}
-              >
-                {isGenerating ? 'Generating PDF...' : 'Generate PDF Proposal'}
-              </button>
-
+            {/* Submit Button */}
+            <div className="flex justify-center pt-6">
               <button
                 type="button"
                 onClick={handleGenerateWord}
                 disabled={isGenerating || selectedCoverages.size === 0}
                 className="px-8 py-3 text-white font-semibold rounded-md shadow-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ backgroundColor: '#D4AF37' }}
+                style={{ backgroundColor: '#003B5C' }}
               >
-                {isGenerating ? 'Generating Word...' : 'Generate Word Document'}
+                {isGenerating ? 'Generating Document...' : 'Generate Proposal Document'}
               </button>
             </div>
           </form>
