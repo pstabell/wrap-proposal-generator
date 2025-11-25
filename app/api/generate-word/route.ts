@@ -711,7 +711,7 @@ export async function POST(request: NextRequest) {
       // Add main coverage header
       sections.push(...createCoverageHeader(title, false));
 
-      // Premium in prominent colored box
+      // Premium in prominent colored box with gold styling
       const proposedPremium = parseFloat(coverage.proposed_premium?.toString() || '0');
       sections.push(
         new Table({
@@ -722,15 +722,21 @@ export async function POST(request: NextRequest) {
                   children: [
                     new Paragraph({
                       children: [
-                        new TextRun({ text: 'Annual Premium: ', size: 36, bold: true, color: 'FFFFFF' }),
-                        new TextRun({ text: `$${proposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 52, bold: true, color: 'FFFFFF' }),
+                        new TextRun({ text: 'Annual Premium: ', size: 36, bold: true, color: ACCENT_COLOR }),
+                        new TextRun({ text: `$${proposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 52, bold: true, color: ACCENT_COLOR }),
                       ],
                       alignment: AlignmentType.CENTER,
                       spacing: { before: 300, after: 300 },
                     }),
                   ],
-                  shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
+                  shading: { fill: 'FFFFFF', type: ShadingType.CLEAR },
                   verticalAlign: VerticalAlign.CENTER,
+                  borders: {
+                    top: { style: BorderStyle.SINGLE, size: 12, color: ACCENT_COLOR },
+                    bottom: { style: BorderStyle.SINGLE, size: 12, color: ACCENT_COLOR },
+                    left: { style: BorderStyle.SINGLE, size: 12, color: ACCENT_COLOR },
+                    right: { style: BorderStyle.SINGLE, size: 12, color: ACCENT_COLOR },
+                  },
                 }),
               ],
             }),
@@ -873,7 +879,7 @@ export async function POST(request: NextRequest) {
       if (coverageRows.length > 0) {
         sections.push(
           new Paragraph({
-            children: [new TextRun({ text: 'Coverage Details', size: 38, bold: true, color: ACCENT_COLOR })],
+            children: [new TextRun({ text: 'Coverage Details', size: 38, bold: true, color: PRIMARY_COLOR })],
             spacing: { before: 300, after: 250 },
           }),
           new Table({
