@@ -359,9 +359,9 @@ export async function POST(request: NextRequest) {
       sections.push(
         new Paragraph({
           children: [
-            new TextRun({ text: item.title, size: 30, bold: true }),
+            new TextRun({ text: item.title, size: 30, bold: true, color: PRIMARY_COLOR }),
             new TextRun({ text: '\t', size: 30 }),
-            new TextRun({ text: item.page.toString(), size: 30, bold: true }),
+            new TextRun({ text: item.page.toString(), size: 30, bold: true, color: ACCENT_COLOR }),
           ],
           spacing: { before: 150, after: 200 },
           tabStops: [{
