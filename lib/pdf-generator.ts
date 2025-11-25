@@ -812,8 +812,8 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
 <body>
 
   <!-- Page 1: Cover Page -->
-  <div class="page" style="background: white !important; background-color: white !important; background-image: none !important; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0.5in; height: 10.5in; box-sizing: border-box;">
-    ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" style="max-width: 200px; max-height: 100px; margin-bottom: 30px; margin-top: 20px; object-fit: contain;" />` : ''}
+  <div class="page" style="background: white !important; background-color: white !important; background-image: none !important; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0in 0.35in 0.35in 0.35in; height: 10.5in; box-sizing: border-box;">
+    ${agencyLogo ? `<img src="${agencyLogo}" alt="Agency Logo" style="max-width: 200px; max-height: 100px; margin-bottom: 30px; margin-top: 0px; object-fit: contain;" />` : ''}
 
     <div style="font-size: 36px; font-weight: bold; margin: 30px 0; letter-spacing: 1px; color: ${PRIMARY_COLOR};">PRIVATE CLIENT INSURANCE PROPOSAL</div>
 
