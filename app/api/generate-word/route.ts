@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
                   new ImageRun({
                     data: buffer,
                     transformation: {
-                      width: 200,
+                      width: 215,
                       height: 180,
                     },
                   }),
@@ -149,10 +149,10 @@ export async function POST(request: NextRequest) {
             ],
             verticalAlign: VerticalAlign.CENTER,
             margins: {
-              top: convertInchesToTwip(0.05),
-              bottom: convertInchesToTwip(0.05),
-              left: convertInchesToTwip(0.05),
-              right: convertInchesToTwip(0.05),
+              top: convertInchesToTwip(0),
+              bottom: convertInchesToTwip(0),
+              left: convertInchesToTwip(0),
+              right: convertInchesToTwip(0),
             },
           })
         );
