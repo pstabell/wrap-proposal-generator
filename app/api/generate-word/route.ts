@@ -4,7 +4,7 @@ import { ProposalData, CoverageType } from '@/types';
 
 const PRIMARY_COLOR = '003B5C';
 const ACCENT_COLOR = 'D4AF37';
-const LIGHT_BLUE = '4A90E2'; // Changed to a more visible blue
+const LIGHT_BLUE = '5B9BD5'; // Microsoft Office blue - very visible
 const GREEN = '2E7D32';
 const RED = 'C62828';
 
