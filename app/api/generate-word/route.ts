@@ -4,7 +4,7 @@ import { ProposalData, CoverageType } from '@/types';
 
 const PRIMARY_COLOR = '003B5C';
 const ACCENT_COLOR = 'D4AF37';
-const LIGHT_BLUE = 'E3F2FD';
+const LIGHT_BLUE = '4A90E2'; // Changed to a more visible blue
 const GREEN = '2E7D32';
 const RED = 'C62828';
 
@@ -563,8 +563,8 @@ export async function POST(request: NextRequest) {
                   children: [
                     new Paragraph({
                       children: [
-                        new TextRun({ text: 'Annual Premium: ', size: 36, bold: true, color: PRIMARY_COLOR }),
-                        new TextRun({ text: `$${proposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 52, bold: true, color: PRIMARY_COLOR }),
+                        new TextRun({ text: 'Annual Premium: ', size: 36, bold: true, color: 'FFFFFF' }),
+                        new TextRun({ text: `$${proposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 52, bold: true, color: 'FFFFFF' }),
                       ],
                       alignment: AlignmentType.CENTER,
                       spacing: { before: 300, after: 300 },
@@ -597,7 +597,7 @@ export async function POST(request: NextRequest) {
           new TableRow({
             children: [
               new TableCell({
-                children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, size: 26 })], spacing: { before: 150, after: 150 } })],
+                children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, size: 26, color: 'FFFFFF' })], spacing: { before: 150, after: 150 } })],
                 shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
                 width: { size: 40, type: WidthType.PERCENTAGE },
                 borders: {
@@ -744,7 +744,7 @@ export async function POST(request: NextRequest) {
       new TableRow({
         children: [
           new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: 'Coverage Type', bold: true, size: 28, color: PRIMARY_COLOR })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
+            children: [new Paragraph({ children: [new TextRun({ text: 'Coverage Type', bold: true, size: 28, color: 'FFFFFF' })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
             shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
             verticalAlign: VerticalAlign.CENTER,
             borders: {
@@ -755,7 +755,7 @@ export async function POST(request: NextRequest) {
             },
           }),
           new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: 'Expiring Premium', bold: true, size: 28, color: PRIMARY_COLOR })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
+            children: [new Paragraph({ children: [new TextRun({ text: 'Expiring Premium', bold: true, size: 28, color: 'FFFFFF' })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
             shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
             verticalAlign: VerticalAlign.CENTER,
             borders: {
@@ -766,7 +766,7 @@ export async function POST(request: NextRequest) {
             },
           }),
           new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: 'Renewal Premium', bold: true, size: 28, color: PRIMARY_COLOR })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
+            children: [new Paragraph({ children: [new TextRun({ text: 'Renewal Premium', bold: true, size: 28, color: 'FFFFFF' })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
             shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
             verticalAlign: VerticalAlign.CENTER,
             borders: {
@@ -844,7 +844,7 @@ export async function POST(request: NextRequest) {
       new TableRow({
         children: [
           new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: 'TOTAL', bold: true, size: 30 })], spacing: { before: 200, after: 200 } })],
+            children: [new Paragraph({ children: [new TextRun({ text: 'TOTAL', bold: true, size: 30, color: 'FFFFFF' })], spacing: { before: 200, after: 200 } })],
             shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
             borders: {
               top: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
@@ -860,7 +860,7 @@ export async function POST(request: NextRequest) {
             },
           }),
           new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: `$${totalCurrentPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true, size: 30 })], alignment: AlignmentType.RIGHT, spacing: { before: 200, after: 200 } })],
+            children: [new Paragraph({ children: [new TextRun({ text: `$${totalCurrentPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true, size: 30, color: 'FFFFFF' })], alignment: AlignmentType.RIGHT, spacing: { before: 200, after: 200 } })],
             shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
             borders: {
               top: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
@@ -876,7 +876,7 @@ export async function POST(request: NextRequest) {
             },
           }),
           new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: `$${totalProposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true, size: 30 })], alignment: AlignmentType.RIGHT, spacing: { before: 200, after: 200 } })],
+            children: [new Paragraph({ children: [new TextRun({ text: `$${totalProposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true, size: 30, color: 'FFFFFF' })], alignment: AlignmentType.RIGHT, spacing: { before: 200, after: 200 } })],
             shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
             borders: {
               top: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
