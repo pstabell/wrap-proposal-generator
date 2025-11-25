@@ -356,13 +356,22 @@ export async function POST(request: NextRequest) {
     );
 
     tocItems.forEach(item => {
+      // Separate emoji icon from text to preserve icon colors in TOC
+      const emojiMatch = item.title.match(/^([\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}])\s*/u);
+      const emoji = emojiMatch ? emojiMatch[0] : '';
+      const textOnly = emoji ? item.title.substring(emoji.length) : item.title;
+
+      const children = [];
+      if (emoji) {
+        children.push(new TextRun({ text: emoji, size: 30, bold: true }));
+      }
+      children.push(new TextRun({ text: textOnly, size: 30, bold: true, color: PRIMARY_COLOR }));
+      children.push(new TextRun({ text: '\t', size: 30 }));
+      children.push(new TextRun({ text: item.page.toString(), size: 30, bold: true, color: ACCENT_COLOR }));
+
       sections.push(
         new Paragraph({
-          children: [
-            new TextRun({ text: item.title, size: 30, bold: true, color: PRIMARY_COLOR }),
-            new TextRun({ text: '\t', size: 30 }),
-            new TextRun({ text: item.page.toString(), size: 30, bold: true, color: ACCENT_COLOR }),
-          ],
+          children,
           spacing: { before: 150, after: 200 },
           tabStops: [{
             type: 'right',
