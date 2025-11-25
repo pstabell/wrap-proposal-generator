@@ -647,79 +647,144 @@ export async function POST(request: NextRequest) {
       }),
       new Paragraph({
         text: '',
-        spacing: { after: 200 },
+        spacing: { after: 300 },
       })
     );
 
-    // Function to add team member details
-    const addTeamMember = async (member: any, isFirst: boolean = false) => {
+    // Function to create a team member cell
+    const createTeamMemberCell = async (member: any): Promise<TableCell> => {
+      const cellChildren: any[] = [];
+
       // Add member photo if available
       if (member.photo) {
         const photoBuffer = await fetchImageAsBuffer(member.photo);
         if (photoBuffer) {
-          sections.push(
+          cellChildren.push(
             new Paragraph({
               children: [
                 new ImageRun({
                   data: photoBuffer,
                   transformation: {
-                    width: 150,
-                    height: 150,
+                    width: 120,
+                    height: 120,
                   },
                 }),
               ],
               alignment: AlignmentType.CENTER,
-              spacing: { before: isFirst ? 300 : 400, after: 300 },
+              spacing: { before: 200, after: 200 },
             })
           );
         }
       }
 
-      sections.push(
+      // Add name
+      cellChildren.push(
         new Paragraph({
-          children: [new TextRun({ text: member.name, size: 38, bold: true, color: PRIMARY_COLOR })],
+          children: [new TextRun({ text: member.name, size: 32, bold: true, color: PRIMARY_COLOR })],
           alignment: AlignmentType.CENTER,
-          spacing: { before: member.photo ? 0 : (isFirst ? 300 : 400), after: 150 },
-        }),
-        new Paragraph({
-          children: [new TextRun({ text: member.title || 'Insurance Advisor', size: 30, color: ACCENT_COLOR, bold: true })],
-          alignment: AlignmentType.CENTER,
-          spacing: { after: 300 },
+          spacing: { before: member.photo ? 100 : 200, after: 100 },
         })
       );
 
+      // Add title
+      cellChildren.push(
+        new Paragraph({
+          children: [new TextRun({ text: member.title || 'Insurance Advisor', size: 26, color: ACCENT_COLOR, bold: true })],
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 200 },
+        })
+      );
+
+      // Add phone
       if (member.phone) {
-        sections.push(
+        cellChildren.push(
           new Paragraph({
-            children: [new TextRun({ text: member.phone, size: 28, color: PRIMARY_COLOR })],
+            children: [new TextRun({ text: member.phone, size: 24, color: PRIMARY_COLOR })],
             alignment: AlignmentType.CENTER,
-            spacing: { after: 150 },
+            spacing: { after: 100 },
           })
         );
       }
 
+      // Add email
       if (member.email) {
-        sections.push(
+        cellChildren.push(
           new Paragraph({
-            children: [new TextRun({ text: member.email, size: 28, color: PRIMARY_COLOR })],
+            children: [new TextRun({ text: member.email, size: 24, color: PRIMARY_COLOR })],
             alignment: AlignmentType.CENTER,
-            spacing: { after: 300 },
+            spacing: { after: 200 },
           })
         );
       }
+
+      return new TableCell({
+        children: cellChildren,
+        width: { size: 50, type: WidthType.PERCENTAGE },
+        verticalAlign: VerticalAlign.TOP,
+        borders: {
+          top: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
+          bottom: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
+          left: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
+          right: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
+        },
+        margins: {
+          top: convertInchesToTwip(0.2),
+          bottom: convertInchesToTwip(0.2),
+          left: convertInchesToTwip(0.15),
+          right: convertInchesToTwip(0.15),
+        },
+      });
     };
 
-    // Add primary agent
-    await addTeamMember(proposalData.agentInfo, true);
-
-    // Add additional team members if available
+    // Collect all team members (primary agent + additional team members)
+    const allTeamMembers = [proposalData.agentInfo];
     if (proposalData.teamMembers && proposalData.teamMembers.length > 0) {
-      for (const teamMember of proposalData.teamMembers) {
-        await addTeamMember(teamMember, false);
-      }
+      allTeamMembers.push(...proposalData.teamMembers);
     }
 
-    sections.push(new Paragraph({ text: '', pageBreakBefore: true }));
+    // Create 2x2 grid (supports up to 4 team members)
+    const teamRows: TableRow[] = [];
+
+    // Process team members in pairs for 2-column layout
+    for (let i = 0; i < allTeamMembers.length; i += 2) {
+      const leftMember = allTeamMembers[i];
+      const rightMember = allTeamMembers[i + 1];
+
+      const rowCells: TableCell[] = [];
+
+      // Left cell
+      rowCells.push(await createTeamMemberCell(leftMember));
+
+      // Right cell (or empty cell if no member)
+      if (rightMember) {
+        rowCells.push(await createTeamMemberCell(rightMember));
+      } else {
+        // Empty cell to complete the row
+        rowCells.push(
+          new TableCell({
+            children: [new Paragraph({ text: '' })],
+            width: { size: 50, type: WidthType.PERCENTAGE },
+            borders: {
+              top: { style: BorderStyle.NONE, size: 0 },
+              bottom: { style: BorderStyle.NONE, size: 0 },
+              left: { style: BorderStyle.NONE, size: 0 },
+              right: { style: BorderStyle.NONE, size: 0 },
+            },
+          })
+        );
+      }
+
+      teamRows.push(new TableRow({ children: rowCells }));
+    }
+
+    // Add team grid table
+    sections.push(
+      new Table({
+        rows: teamRows,
+        width: { size: 100, type: WidthType.PERCENTAGE },
+      }),
+      new Paragraph({ text: '', pageBreakBefore: true })
+    );
 
     // Helper function to create coverage header (used for continuation pages)
     const createCoverageHeader = (title: string, isContinuation: boolean = false) => {
