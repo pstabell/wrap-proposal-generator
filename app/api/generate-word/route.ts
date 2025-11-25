@@ -96,73 +96,82 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Add 3 uploaded images in a bordered table if available
-    if (proposalData.uploadedFiles?.currentDecPages && proposalData.uploadedFiles.currentDecPages.length > 0) {
-      const imageBuffers: Buffer[] = [];
-      const imagesToShow = proposalData.uploadedFiles.currentDecPages.slice(0, 3);
+    // Add 3 default sample images (mansion, yacht, jet) - always display these
+    const defaultImagePaths = [
+      '/images/miami-mansion.jpg',
+      '/images/yacht.jpg',
+      '/images/g700-jet.jpg'
+    ];
 
-      for (const imageUrl of imagesToShow) {
-        const buffer = await fetchImageAsBuffer(imageUrl);
-        if (buffer) {
-          imageBuffers.push(buffer);
-        }
+    const imageBuffers: Buffer[] = [];
+
+    // Get base URL from request
+    const host = request.headers.get('host') || 'localhost:3000';
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const baseUrl = `${protocol}://${host}`;
+
+    for (const imagePath of defaultImagePaths) {
+      const imageUrl = `${baseUrl}${imagePath}`;
+      const buffer = await fetchImageAsBuffer(imageUrl);
+      if (buffer) {
+        imageBuffers.push(buffer);
       }
+    }
 
-      if (imageBuffers.length > 0) {
-        const imageCells: TableCell[] = [];
+    if (imageBuffers.length > 0) {
+      const imageCells: TableCell[] = [];
 
-        imageBuffers.forEach(buffer => {
-          imageCells.push(
-            new TableCell({
-              children: [
-                new Paragraph({
-                  children: [
-                    new ImageRun({
-                      data: buffer,
-                      transformation: {
-                        width: 150,
-                        height: 150,
-                      },
-                    }),
-                  ],
-                  alignment: AlignmentType.CENTER,
-                  spacing: { before: 100, after: 100 },
-                }),
-              ],
-              verticalAlign: VerticalAlign.CENTER,
-              margins: {
-                top: convertInchesToTwip(0.1),
-                bottom: convertInchesToTwip(0.1),
-                left: convertInchesToTwip(0.1),
-                right: convertInchesToTwip(0.1),
-              },
-            })
-          );
-        });
-
-        sections.push(
-          new Table({
-            rows: [
-              new TableRow({
-                children: imageCells,
+      imageBuffers.forEach(buffer => {
+        imageCells.push(
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [
+                  new ImageRun({
+                    data: buffer,
+                    transformation: {
+                      width: 150,
+                      height: 150,
+                    },
+                  }),
+                ],
+                alignment: AlignmentType.CENTER,
+                spacing: { before: 100, after: 100 },
               }),
             ],
-            width: { size: 100, type: WidthType.PERCENTAGE },
-            borders: {
-              top: { style: BorderStyle.SINGLE, size: 6, color: PRIMARY_COLOR },
-              bottom: { style: BorderStyle.SINGLE, size: 6, color: PRIMARY_COLOR },
-              left: { style: BorderStyle.SINGLE, size: 6, color: PRIMARY_COLOR },
-              right: { style: BorderStyle.SINGLE, size: 6, color: PRIMARY_COLOR },
-              insideHorizontal: { style: BorderStyle.SINGLE, size: 3, color: PRIMARY_COLOR },
-              insideVertical: { style: BorderStyle.SINGLE, size: 3, color: PRIMARY_COLOR },
+            verticalAlign: VerticalAlign.CENTER,
+            margins: {
+              top: convertInchesToTwip(0.1),
+              bottom: convertInchesToTwip(0.1),
+              left: convertInchesToTwip(0.1),
+              right: convertInchesToTwip(0.1),
             },
-          }),
-          new Paragraph({
-            text: '',
-            spacing: { after: 400 },
           })
         );
-      }
+      });
+
+      sections.push(
+        new Table({
+          rows: [
+            new TableRow({
+              children: imageCells,
+            }),
+          ],
+          width: { size: 100, type: WidthType.PERCENTAGE },
+          borders: {
+            top: { style: BorderStyle.SINGLE, size: 6, color: PRIMARY_COLOR },
+            bottom: { style: BorderStyle.SINGLE, size: 6, color: PRIMARY_COLOR },
+            left: { style: BorderStyle.SINGLE, size: 6, color: PRIMARY_COLOR },
+            right: { style: BorderStyle.SINGLE, size: 6, color: PRIMARY_COLOR },
+            insideHorizontal: { style: BorderStyle.SINGLE, size: 3, color: PRIMARY_COLOR },
+            insideVertical: { style: BorderStyle.SINGLE, size: 3, color: PRIMARY_COLOR },
+          },
+        }),
+        new Paragraph({
+          text: '',
+          spacing: { after: 400 },
+        })
+      );
     }
 
     sections.push(
