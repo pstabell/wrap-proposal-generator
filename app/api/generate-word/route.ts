@@ -756,14 +756,14 @@ export async function POST(request: NextRequest) {
           new TableRow({
             children: [
               new TableCell({
-                children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, size: 26, color: 'FFFFFF' })], spacing: { before: 150, after: 150 } })],
+                children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, size: 26, color: ACCENT_COLOR })], spacing: { before: 150, after: 150 } })],
                 shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
                 width: { size: 40, type: WidthType.PERCENTAGE },
                 borders: {
-                  top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-                  bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-                  left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-                  right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                  top: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
+                  bottom: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
+                  left: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
+                  right: { style: BorderStyle.SINGLE, size: 6, color: ACCENT_COLOR },
                 },
                 margins: {
                   top: convertInchesToTwip(0.15),
@@ -873,7 +873,7 @@ export async function POST(request: NextRequest) {
       if (coverageRows.length > 0) {
         sections.push(
           new Paragraph({
-            children: [new TextRun({ text: 'Coverage Details', size: 38, bold: true, color: PRIMARY_COLOR })],
+            children: [new TextRun({ text: 'Coverage Details', size: 38, bold: true, color: ACCENT_COLOR })],
             spacing: { before: 300, after: 250 },
           }),
           new Table({
@@ -885,10 +885,6 @@ export async function POST(request: NextRequest) {
             spacing: { after: 200 },
           })
         );
-
-        // Add continuation header after coverage details (appears on page 2+ of this coverage)
-        // This helps identify which coverage we're viewing if it spans multiple pages
-        sections.push(...createCoverageHeader(title, true));
       }
 
       sections.push(new Paragraph({ text: '', pageBreakBefore: true }));
