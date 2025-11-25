@@ -138,21 +138,21 @@ export async function POST(request: NextRequest) {
                   new ImageRun({
                     data: buffer,
                     transformation: {
-                      width: 150,
-                      height: 150,
+                      width: 200,
+                      height: 200,
                     },
                   }),
                 ],
                 alignment: AlignmentType.CENTER,
-                spacing: { before: 100, after: 100 },
+                spacing: { before: 0, after: 0 },
               }),
             ],
             verticalAlign: VerticalAlign.CENTER,
             margins: {
-              top: convertInchesToTwip(0.1),
-              bottom: convertInchesToTwip(0.1),
-              left: convertInchesToTwip(0.1),
-              right: convertInchesToTwip(0.1),
+              top: convertInchesToTwip(0.05),
+              bottom: convertInchesToTwip(0.05),
+              left: convertInchesToTwip(0.05),
+              right: convertInchesToTwip(0.05),
             },
           })
         );
@@ -201,7 +201,7 @@ export async function POST(request: NextRequest) {
               new TableCell({
                 children: [
                   new Paragraph({
-                    children: [new TextRun({ text: 'Prepared For', size: 20, color: ACCENT_COLOR, allCaps: true, bold: true })],
+                    children: [new TextRun({ text: 'Prepared For', size: 20, color: PRIMARY_COLOR, allCaps: true, bold: true })],
                     alignment: AlignmentType.CENTER,
                     spacing: { before: 100, after: 50 },
                   }),
@@ -240,7 +240,7 @@ export async function POST(request: NextRequest) {
               new TableCell({
                 children: [
                   new Paragraph({
-                    children: [new TextRun({ text: 'Presented By', size: 20, color: ACCENT_COLOR, allCaps: true, bold: true })],
+                    children: [new TextRun({ text: 'Presented By', size: 20, color: PRIMARY_COLOR, allCaps: true, bold: true })],
                     alignment: AlignmentType.CENTER,
                     spacing: { before: 100, after: 50 },
                   }),
@@ -279,7 +279,7 @@ export async function POST(request: NextRequest) {
               new TableCell({
                 children: [
                   new Paragraph({
-                    children: [new TextRun({ text: 'Date', size: 20, color: ACCENT_COLOR, allCaps: true, bold: true })],
+                    children: [new TextRun({ text: 'Date', size: 20, color: PRIMARY_COLOR, allCaps: true, bold: true })],
                     alignment: AlignmentType.CENTER,
                     spacing: { before: 100, after: 50 },
                   }),
@@ -984,7 +984,7 @@ export async function POST(request: NextRequest) {
         new TableRow({
           children: [
             new TableCell({
-              children: [new Paragraph({ children: [new TextRun({ text: title, size: 26 })], spacing: { before: 150, after: 150 } })],
+              children: [new Paragraph({ children: [new TextRun({ text: title, size: 26, color: PRIMARY_COLOR })], spacing: { before: 150, after: 150 } })],
               borders: {
                 top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
                 bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
@@ -999,7 +999,7 @@ export async function POST(request: NextRequest) {
               },
             }),
             new TableCell({
-              children: [new Paragraph({ children: [new TextRun({ text: `$${current.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 26 })], alignment: AlignmentType.RIGHT, spacing: { before: 150, after: 150 } })],
+              children: [new Paragraph({ children: [new TextRun({ text: `$${current.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 26, color: PRIMARY_COLOR })], alignment: AlignmentType.RIGHT, spacing: { before: 150, after: 150 } })],
               borders: {
                 top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
                 bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
@@ -1014,7 +1014,7 @@ export async function POST(request: NextRequest) {
               },
             }),
             new TableCell({
-              children: [new Paragraph({ children: [new TextRun({ text: `$${proposed.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 26 })], alignment: AlignmentType.RIGHT, spacing: { before: 150, after: 150 } })],
+              children: [new Paragraph({ children: [new TextRun({ text: `$${proposed.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 26, color: PRIMARY_COLOR })], alignment: AlignmentType.RIGHT, spacing: { before: 150, after: 150 } })],
               borders: {
                 top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
                 bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
