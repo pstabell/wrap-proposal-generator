@@ -206,7 +206,9 @@ export default function ProposalGenerator() {
     try {
       // Filter out empty team members
       const filteredTeamMembers = teamMembers.filter(member =>
-        member.name.trim() !== '' || member.email.trim() !== '' || member.phone.trim() !== ''
+        member.name.trim() !== '' ||
+        (member.email && member.email.trim() !== '') ||
+        (member.phone && member.phone.trim() !== '')
       );
 
       const proposalData: ProposalData = {
@@ -260,7 +262,9 @@ export default function ProposalGenerator() {
     try {
       // Filter out empty team members
       const filteredTeamMembers = teamMembers.filter(member =>
-        member.name.trim() !== '' || member.email.trim() !== '' || member.phone.trim() !== ''
+        member.name.trim() !== '' ||
+        (member.email && member.email.trim() !== '') ||
+        (member.phone && member.phone.trim() !== '')
       );
 
       const proposalData: ProposalData = {
