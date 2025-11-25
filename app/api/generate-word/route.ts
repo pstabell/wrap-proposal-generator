@@ -442,10 +442,10 @@ export async function POST(request: NextRequest) {
                 ],
                 shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
                 borders: {
-                  left: { style: BorderStyle.SINGLE, size: 16, color: PRIMARY_COLOR },
-                  top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-                  bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-                  right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                  left: { style: BorderStyle.SINGLE, size: 16, color: ACCENT_COLOR },
+                  top: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
+                  bottom: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
+                  right: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
                 },
                 margins: {
                   top: convertInchesToTwip(0.2),
@@ -593,10 +593,10 @@ export async function POST(request: NextRequest) {
                 ],
                 shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
                 borders: {
-                  top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-                  bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-                  left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-                  right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+                  top: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
+                  bottom: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
+                  left: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
+                  right: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
                 },
                 margins: {
                   top: convertInchesToTwip(0.2),
@@ -682,10 +682,18 @@ export async function POST(request: NextRequest) {
 
     // Helper function to create coverage header (used for continuation pages)
     const createCoverageHeader = (title: string, isContinuation: boolean = false) => {
-      const displayTitle = isContinuation ? `${title} (Cont'd)` : title;
+      // Separate emoji icon from text to preserve icon colors
+      const emojiMatch = title.match(/^([\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}])\s*/u);
+      const emoji = emojiMatch ? emojiMatch[0] : '';
+      const textOnly = emoji ? title.substring(emoji.length) : title;
+      const displayText = isContinuation ? `${textOnly} (Cont'd)` : textOnly;
+
       return [
         new Paragraph({
-          children: [new TextRun({ text: displayTitle, size: isContinuation ? 36 : 52, bold: true, color: PRIMARY_COLOR })],
+          children: [
+            ...(emoji ? [new TextRun({ text: emoji, size: isContinuation ? 36 : 52, bold: true })] : []),
+            new TextRun({ text: displayText, size: isContinuation ? 36 : 52, bold: true, color: PRIMARY_COLOR })
+          ],
           spacing: { before: isContinuation ? 100 : 200, after: isContinuation ? 100 : 200 },
           border: {
             bottom: {
@@ -762,7 +770,7 @@ export async function POST(request: NextRequest) {
           new TableRow({
             children: [
               new TableCell({
-                children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, size: 26, color: ACCENT_COLOR })], spacing: { before: 150, after: 150 } })],
+                children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, size: 26, color: 'FFFFFF' })], spacing: { before: 150, after: 150 } })],
                 shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
                 width: { size: 40, type: WidthType.PERCENTAGE },
                 borders: {
@@ -779,7 +787,7 @@ export async function POST(request: NextRequest) {
                 },
               }),
               new TableCell({
-                children: [new Paragraph({ children: [new TextRun({ text: value, size: 26 })], spacing: { before: 150, after: 150 } })],
+                children: [new Paragraph({ children: [new TextRun({ text: value, size: 26, color: PRIMARY_COLOR })], spacing: { before: 150, after: 150 } })],
                 width: { size: 60, type: WidthType.PERCENTAGE },
                 borders: {
                   top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
@@ -925,10 +933,10 @@ export async function POST(request: NextRequest) {
             shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
             verticalAlign: VerticalAlign.CENTER,
             borders: {
-              top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-              bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-              left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-              right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+              top: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
+              bottom: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
+              left: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
+              right: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
             },
           }),
           new TableCell({
@@ -936,10 +944,10 @@ export async function POST(request: NextRequest) {
             shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
             verticalAlign: VerticalAlign.CENTER,
             borders: {
-              top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-              bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-              left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-              right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+              top: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
+              bottom: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
+              left: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
+              right: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
             },
           }),
           new TableCell({
@@ -947,10 +955,10 @@ export async function POST(request: NextRequest) {
             shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
             verticalAlign: VerticalAlign.CENTER,
             borders: {
-              top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-              bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-              left: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
-              right: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
+              top: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
+              bottom: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
+              left: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
+              right: { style: BorderStyle.SINGLE, size: 4, color: ACCENT_COLOR },
             },
           }),
         ],
@@ -1024,10 +1032,10 @@ export async function POST(request: NextRequest) {
             children: [new Paragraph({ children: [new TextRun({ text: 'TOTAL', bold: true, size: 30, color: 'FFFFFF' })], spacing: { before: 200, after: 200 } })],
             shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
             borders: {
-              top: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
-              bottom: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
-              left: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
-              right: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+              top: { style: BorderStyle.SINGLE, size: 8, color: ACCENT_COLOR },
+              bottom: { style: BorderStyle.SINGLE, size: 8, color: ACCENT_COLOR },
+              left: { style: BorderStyle.SINGLE, size: 8, color: ACCENT_COLOR },
+              right: { style: BorderStyle.SINGLE, size: 8, color: ACCENT_COLOR },
             },
             margins: {
               top: convertInchesToTwip(0.15),
@@ -1040,10 +1048,10 @@ export async function POST(request: NextRequest) {
             children: [new Paragraph({ children: [new TextRun({ text: `$${totalCurrentPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true, size: 30, color: 'FFFFFF' })], alignment: AlignmentType.RIGHT, spacing: { before: 200, after: 200 } })],
             shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
             borders: {
-              top: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
-              bottom: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
-              left: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
-              right: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+              top: { style: BorderStyle.SINGLE, size: 8, color: ACCENT_COLOR },
+              bottom: { style: BorderStyle.SINGLE, size: 8, color: ACCENT_COLOR },
+              left: { style: BorderStyle.SINGLE, size: 8, color: ACCENT_COLOR },
+              right: { style: BorderStyle.SINGLE, size: 8, color: ACCENT_COLOR },
             },
             margins: {
               top: convertInchesToTwip(0.15),
@@ -1056,10 +1064,10 @@ export async function POST(request: NextRequest) {
             children: [new Paragraph({ children: [new TextRun({ text: `$${totalProposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true, size: 30, color: 'FFFFFF' })], alignment: AlignmentType.RIGHT, spacing: { before: 200, after: 200 } })],
             shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
             borders: {
-              top: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
-              bottom: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
-              left: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
-              right: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+              top: { style: BorderStyle.SINGLE, size: 8, color: ACCENT_COLOR },
+              bottom: { style: BorderStyle.SINGLE, size: 8, color: ACCENT_COLOR },
+              left: { style: BorderStyle.SINGLE, size: 8, color: ACCENT_COLOR },
+              right: { style: BorderStyle.SINGLE, size: 8, color: ACCENT_COLOR },
             },
             margins: {
               top: convertInchesToTwip(0.15),
