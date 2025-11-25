@@ -10,8 +10,15 @@ export default function ProposalGenerator() {
   const [agentInfo, setAgentInfo] = useState<AgentInfo>({
     name: '',
     phone: '',
-    email: 'sarah.thompson@abcinsurance.com'
+    email: 'sarah.thompson@abcinsurance.com',
+    title: '',
+    photo: ''
   });
+
+  const [teamMembers, setTeamMembers] = useState<AgentInfo[]>([
+    { name: '', phone: '', email: '', title: '', photo: '' },
+    { name: '', phone: '', email: '', title: '', photo: '' }
+  ]);
 
   const [clientInfo, setClientInfo] = useState<ClientInfo>({
     firstName: '',
@@ -44,6 +51,10 @@ export default function ProposalGenerator() {
     newProposals: []
   });
 
+  // State for agent sections expansion
+  const [showAgent2, setShowAgent2] = useState(false);
+  const [showAgent3, setShowAgent3] = useState(false);
+
   const coverageTypes: { key: CoverageType; label: string }[] = [
     { key: 'homeowners', label: 'Homeowners Insurance' },
     { key: 'condo', label: 'Condo Insurance' },
@@ -61,6 +72,14 @@ export default function ProposalGenerator() {
     // Load all sample data
     setAgencyName(sampleProposalData.agencyName || '');
     setAgentInfo(sampleProposalData.agentInfo);
+
+    // Load team members
+    if (sampleProposalData.teamMembers && sampleProposalData.teamMembers.length > 0) {
+      setTeamMembers(sampleProposalData.teamMembers);
+      if (sampleProposalData.teamMembers.length > 0) setShowAgent2(true);
+      if (sampleProposalData.teamMembers.length > 1) setShowAgent3(true);
+    }
+
     setClientInfo(sampleProposalData.clientInfo);
     setProposalDate(sampleProposalData.proposalDate);
     setExecutiveSummary(sampleProposalData.executiveSummary || '');
@@ -185,9 +204,15 @@ export default function ProposalGenerator() {
     setIsGenerating(true);
 
     try {
+      // Filter out empty team members
+      const filteredTeamMembers = teamMembers.filter(member =>
+        member.name.trim() !== '' || member.email.trim() !== '' || member.phone.trim() !== ''
+      );
+
       const proposalData: ProposalData = {
         proposalDate,
         agentInfo,
+        teamMembers: filteredTeamMembers.length > 0 ? filteredTeamMembers : undefined,
         clientInfo,
         coverages: coverageData,
         executiveSummary,
@@ -233,9 +258,15 @@ export default function ProposalGenerator() {
     setIsGenerating(true);
 
     try {
+      // Filter out empty team members
+      const filteredTeamMembers = teamMembers.filter(member =>
+        member.name.trim() !== '' || member.email.trim() !== '' || member.phone.trim() !== ''
+      );
+
       const proposalData: ProposalData = {
         proposalDate,
         agentInfo,
+        teamMembers: filteredTeamMembers.length > 0 ? filteredTeamMembers : undefined,
         clientInfo,
         coverages: coverageData,
         executiveSummary,
@@ -319,16 +350,6 @@ export default function ProposalGenerator() {
                   />
                 </div>
                 <div>
-                  <FileUpload
-                    label="Agent Photo"
-                    accept="image/*"
-                    fileType="image"
-                    onFilesSelected={(files) => setAgentPhoto(files[0] || '')}
-                    showPreview={true}
-                    maxSizeMB={5}
-                  />
-                </div>
-                <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Agency Name
                   </label>
@@ -336,7 +357,7 @@ export default function ProposalGenerator() {
                     type="text"
                     value={agencyName}
                     onChange={(e) => setAgencyName(e.target.value)}
-                    placeholder="Metro Point Insurance"
+                    placeholder="ABC Insurance Agency"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
                   />
                 </div>
@@ -346,55 +367,308 @@ export default function ProposalGenerator() {
             {/* Agent Information */}
             <section>
               <h2 className="text-2xl font-semibold mb-4" style={{ color: '#003B5C' }}>
-                Agent Information
+                Your Team
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Agent Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={agentInfo.name}
-                    onChange={(e) => setAgentInfo({ ...agentInfo, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
-                  />
+
+              {/* Agent #1 (Primary - Always Shown) */}
+              <div className="bg-blue-50 p-6 rounded-lg border-2 border-blue-200 mb-4">
+                <h3 className="text-xl font-semibold mb-4" style={{ color: '#003B5C' }}>
+                  Agent #1 (Primary Agent) *
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={agentInfo.name}
+                      onChange={(e) => setAgentInfo({ ...agentInfo, name: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      value={agentInfo.title}
+                      onChange={(e) => setAgentInfo({ ...agentInfo, title: e.target.value })}
+                      placeholder="e.g., Producing Agent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Phone
+                    </label>
+                    <input
+                      type="tel"
+                      value={agentInfo.phone}
+                      onChange={(e) => setAgentInfo({ ...agentInfo, phone: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={agentInfo.email}
+                      onChange={(e) => setAgentInfo({ ...agentInfo, email: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <FileUpload
+                      label="Agent Photo"
+                      accept="image/*"
+                      fileType="image"
+                      onFilesSelected={(files) => setAgentInfo({ ...agentInfo, photo: files[0] || '' })}
+                      showPreview={true}
+                      maxSizeMB={5}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone
-                  </label>
-                  <input
-                    type="tel"
-                    value={agentInfo.phone}
-                    onChange={(e) => setAgentInfo({ ...agentInfo, phone: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={agentInfo.email}
-                    onChange={(e) => setAgentInfo({ ...agentInfo, email: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Proposal Date *
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={proposalDate}
-                    onChange={(e) => setProposalDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
-                  />
-                </div>
+              </div>
+
+              {/* Agent #2 (Optional) */}
+              <div className="mb-4">
+                {!showAgent2 ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowAgent2(true)}
+                    className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition-colors"
+                  >
+                    + Add Agent #2 (Optional)
+                  </button>
+                ) : (
+                  <div className="bg-gray-50 p-6 rounded-lg border-2 border-gray-300">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-xl font-semibold" style={{ color: '#003B5C' }}>
+                        Agent #2 (Optional)
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowAgent2(false);
+                          setTeamMembers([
+                            { name: '', phone: '', email: '', title: '', photo: '' },
+                            teamMembers[1]
+                          ]);
+                        }}
+                        className="text-red-600 hover:text-red-800 text-sm font-medium"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Name
+                        </label>
+                        <input
+                          type="text"
+                          value={teamMembers[0]?.name || ''}
+                          onChange={(e) => {
+                            const newTeamMembers = [...teamMembers];
+                            newTeamMembers[0] = { ...newTeamMembers[0], name: e.target.value };
+                            setTeamMembers(newTeamMembers);
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Title
+                        </label>
+                        <input
+                          type="text"
+                          value={teamMembers[0]?.title || ''}
+                          onChange={(e) => {
+                            const newTeamMembers = [...teamMembers];
+                            newTeamMembers[0] = { ...newTeamMembers[0], title: e.target.value };
+                            setTeamMembers(newTeamMembers);
+                          }}
+                          placeholder="e.g., Client Service Representative"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Phone
+                        </label>
+                        <input
+                          type="tel"
+                          value={teamMembers[0]?.phone || ''}
+                          onChange={(e) => {
+                            const newTeamMembers = [...teamMembers];
+                            newTeamMembers[0] = { ...newTeamMembers[0], phone: e.target.value };
+                            setTeamMembers(newTeamMembers);
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Email
+                        </label>
+                        <input
+                          type="email"
+                          value={teamMembers[0]?.email || ''}
+                          onChange={(e) => {
+                            const newTeamMembers = [...teamMembers];
+                            newTeamMembers[0] = { ...newTeamMembers[0], email: e.target.value };
+                            setTeamMembers(newTeamMembers);
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <FileUpload
+                          label="Agent Photo"
+                          accept="image/*"
+                          fileType="image"
+                          onFilesSelected={(files) => {
+                            const newTeamMembers = [...teamMembers];
+                            newTeamMembers[0] = { ...newTeamMembers[0], photo: files[0] || '' };
+                            setTeamMembers(newTeamMembers);
+                          }}
+                          showPreview={true}
+                          maxSizeMB={5}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Agent #3 (Optional) */}
+              <div className="mb-4">
+                {!showAgent3 ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowAgent3(true)}
+                    className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition-colors"
+                  >
+                    + Add Agent #3 (Optional)
+                  </button>
+                ) : (
+                  <div className="bg-gray-50 p-6 rounded-lg border-2 border-gray-300">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-xl font-semibold" style={{ color: '#003B5C' }}>
+                        Agent #3 (Optional)
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowAgent3(false);
+                          setTeamMembers([
+                            teamMembers[0],
+                            { name: '', phone: '', email: '', title: '', photo: '' }
+                          ]);
+                        }}
+                        className="text-red-600 hover:text-red-800 text-sm font-medium"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Name
+                        </label>
+                        <input
+                          type="text"
+                          value={teamMembers[1]?.name || ''}
+                          onChange={(e) => {
+                            const newTeamMembers = [...teamMembers];
+                            newTeamMembers[1] = { ...newTeamMembers[1], name: e.target.value };
+                            setTeamMembers(newTeamMembers);
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Title
+                        </label>
+                        <input
+                          type="text"
+                          value={teamMembers[1]?.title || ''}
+                          onChange={(e) => {
+                            const newTeamMembers = [...teamMembers];
+                            newTeamMembers[1] = { ...newTeamMembers[1], title: e.target.value };
+                            setTeamMembers(newTeamMembers);
+                          }}
+                          placeholder="e.g., Sales Manager"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Phone
+                        </label>
+                        <input
+                          type="tel"
+                          value={teamMembers[1]?.phone || ''}
+                          onChange={(e) => {
+                            const newTeamMembers = [...teamMembers];
+                            newTeamMembers[1] = { ...newTeamMembers[1], phone: e.target.value };
+                            setTeamMembers(newTeamMembers);
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Email
+                        </label>
+                        <input
+                          type="email"
+                          value={teamMembers[1]?.email || ''}
+                          onChange={(e) => {
+                            const newTeamMembers = [...teamMembers];
+                            newTeamMembers[1] = { ...newTeamMembers[1], email: e.target.value };
+                            setTeamMembers(newTeamMembers);
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <FileUpload
+                          label="Agent Photo"
+                          accept="image/*"
+                          fileType="image"
+                          onFilesSelected={(files) => {
+                            const newTeamMembers = [...teamMembers];
+                            newTeamMembers[1] = { ...newTeamMembers[1], photo: files[0] || '' };
+                            setTeamMembers(newTeamMembers);
+                          }}
+                          showPreview={true}
+                          maxSizeMB={5}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Proposal Date */}
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Proposal Date *
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={proposalDate}
+                  onChange={(e) => setProposalDate(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                />
               </div>
             </section>
 
