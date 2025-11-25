@@ -651,51 +651,75 @@ export async function POST(request: NextRequest) {
       })
     );
 
-    // Add agent photo if available
-    if (proposalData.agentPhoto) {
-      const agentPhotoBuffer = await fetchImageAsBuffer(proposalData.agentPhoto);
-      if (agentPhotoBuffer) {
+    // Function to add team member details
+    const addTeamMember = async (member: any, isFirst: boolean = false) => {
+      // Add member photo if available
+      if (member.photo) {
+        const photoBuffer = await fetchImageAsBuffer(member.photo);
+        if (photoBuffer) {
+          sections.push(
+            new Paragraph({
+              children: [
+                new ImageRun({
+                  data: photoBuffer,
+                  transformation: {
+                    width: 150,
+                    height: 150,
+                  },
+                }),
+              ],
+              alignment: AlignmentType.CENTER,
+              spacing: { before: isFirst ? 300 : 400, after: 300 },
+            })
+          );
+        }
+      }
+
+      sections.push(
+        new Paragraph({
+          children: [new TextRun({ text: member.name, size: 38, bold: true, color: PRIMARY_COLOR })],
+          alignment: AlignmentType.CENTER,
+          spacing: { before: member.photo ? 0 : (isFirst ? 300 : 400), after: 150 },
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: member.title || 'Insurance Advisor', size: 30, color: ACCENT_COLOR, bold: true })],
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 300 },
+        })
+      );
+
+      if (member.phone) {
         sections.push(
           new Paragraph({
-            children: [
-              new ImageRun({
-                data: agentPhotoBuffer,
-                transformation: {
-                  width: 150,
-                  height: 150,
-                },
-              }),
-            ],
+            children: [new TextRun({ text: member.phone, size: 28, color: PRIMARY_COLOR })],
             alignment: AlignmentType.CENTER,
-            spacing: { before: 300, after: 300 },
+            spacing: { after: 150 },
           })
         );
       }
+
+      if (member.email) {
+        sections.push(
+          new Paragraph({
+            children: [new TextRun({ text: member.email, size: 28, color: PRIMARY_COLOR })],
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 300 },
+          })
+        );
+      }
+    };
+
+    // Add primary agent
+    await addTeamMember(proposalData.agentInfo, true);
+
+    // Add additional team members if available
+    if (proposalData.teamMembers && proposalData.teamMembers.length > 0) {
+      for (const teamMember of proposalData.teamMembers) {
+        await addTeamMember(teamMember, false);
+      }
     }
 
-    sections.push(
-      new Paragraph({
-        children: [new TextRun({ text: proposalData.agentInfo.name, size: 38, bold: true, color: PRIMARY_COLOR })],
-        alignment: AlignmentType.CENTER,
-        spacing: { before: 300, after: 150 },
-      }),
-      new Paragraph({
-        children: [new TextRun({ text: proposalData.agentInfo.title || 'Insurance Advisor', size: 30, color: ACCENT_COLOR, bold: true })],
-        alignment: AlignmentType.CENTER,
-        spacing: { after: 300 },
-      }),
-      new Paragraph({
-        children: [new TextRun({ text: proposalData.agentInfo.phone || '', size: 28, color: PRIMARY_COLOR })],
-        alignment: AlignmentType.CENTER,
-        spacing: { after: 150 },
-      }),
-      new Paragraph({
-        children: [new TextRun({ text: proposalData.agentInfo.email || '', size: 28, color: PRIMARY_COLOR })],
-        alignment: AlignmentType.CENTER,
-        spacing: { after: 300 },
-      }),
-      new Paragraph({ text: '', pageBreakBefore: true })
-    );
+    sections.push(new Paragraph({ text: '', pageBreakBefore: true }));
 
     // Helper function to create coverage header (used for continuation pages)
     const createCoverageHeader = (title: string, isContinuation: boolean = false) => {

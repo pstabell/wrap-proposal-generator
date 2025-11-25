@@ -49,6 +49,7 @@ export interface ProposalData {
   proposalDate: string;
   clientInfo: ClientInfo;
   agentInfo: AgentInfo;
+  teamMembers?: AgentInfo[]; // Additional team members beyond primary agent
   coverages: {
     [key: string]: Coverage;
   };
