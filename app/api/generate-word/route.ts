@@ -6,7 +6,7 @@ import { ProposalData, CoverageType } from '@/types';
 
 const PRIMARY_COLOR = '003B5C';
 const ACCENT_COLOR = 'D4AF37';
-const LIGHT_BLUE = 'ADD8E6'; // Light blue - should be very visible in Word
+const LIGHT_BLUE = '0066CC'; // Dark blue with crisp contrast for white text
 const GREEN = '2E7D32';
 const RED = 'C62828';
 
