@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
                     data: buffer,
                     transformation: {
                       width: 200,
-                      height: 200,
+                      height: 180,
                     },
                   }),
                 ],
@@ -402,27 +402,30 @@ export async function POST(request: NextRequest) {
         spacing: { after: 200 },
       }),
       new Paragraph({
-        children: [new TextRun({ text: `Dear ${proposalData.clientInfo.firstName} ${proposalData.clientInfo.lastName},`, size: 30, bold: true })],
+        children: [new TextRun({ text: `Dear ${proposalData.clientInfo.firstName} ${proposalData.clientInfo.lastName},`, size: 30, bold: true, color: PRIMARY_COLOR })],
         spacing: { before: 300, after: 250 },
       }),
       new Paragraph({
         children: [new TextRun({
           text: 'Thank you for the opportunity to present this comprehensive insurance proposal. We have carefully reviewed your current coverage and identified opportunities to enhance your protection while potentially reducing costs.',
-          size: 28
+          size: 28,
+          color: PRIMARY_COLOR
         })],
         spacing: { before: 150, after: 250 },
       }),
       new Paragraph({
         children: [new TextRun({
           text: 'This proposal reflects our commitment to providing you with the highest level of service and the most competitive options available in the marketplace. Our team has leveraged our relationships with leading carriers to secure quotes that offer superior coverage at competitive premiums.',
-          size: 28
+          size: 28,
+          color: PRIMARY_COLOR
         })],
         spacing: { before: 150, after: 250 },
       }),
       new Paragraph({
         children: [new TextRun({
           text: 'We look forward to discussing this proposal with you and answering any questions you may have.',
-          size: 28
+          size: 28,
+          color: PRIMARY_COLOR
         })],
         spacing: { before: 150, after: 450 },
       })
@@ -475,21 +478,24 @@ export async function POST(request: NextRequest) {
       new Paragraph({
         children: [new TextRun({
           text: `${proposalData.agencyName || 'Metro Point Insurance'} is compensated through commissions paid by insurance carriers for policies placed. Commission rates vary by carrier and coverage type but typically range from 10% to 15% of the premium.`,
-          size: 28
+          size: 28,
+          color: PRIMARY_COLOR
         })],
         spacing: { before: 150, after: 250 },
       }),
       new Paragraph({
         children: [new TextRun({
           text: 'Our compensation does not affect the premium you pay. Premiums are set by the insurance carriers based on their underwriting guidelines and rate filings.',
-          size: 28
+          size: 28,
+          color: PRIMARY_COLOR
         })],
         spacing: { before: 150, after: 250 },
       }),
       new Paragraph({
         children: [new TextRun({
           text: 'We may also receive contingent commissions or bonuses based on overall volume and loss performance with certain carriers. These arrangements do not influence our recommendations, which are based solely on providing you with the best coverage at the most competitive price.',
-          size: 28
+          size: 28,
+          color: PRIMARY_COLOR
         })],
         spacing: { before: 150, after: 250 },
       }),
@@ -517,7 +523,8 @@ export async function POST(request: NextRequest) {
       new Paragraph({
         children: [new TextRun({
           text: `${proposalData.agencyName || 'Metro Point Insurance'} is a leading independent insurance agency specializing in high-net-worth personal insurance and risk management. With decades of combined experience, our team brings deep expertise in protecting the unique assets and lifestyles of affluent individuals and families.`,
-          size: 28
+          size: 28,
+          color: PRIMARY_COLOR
         })],
         spacing: { before: 300, after: 400 },
       }),
@@ -528,7 +535,8 @@ export async function POST(request: NextRequest) {
       new Paragraph({
         children: [new TextRun({
           text: 'As an independent agency, we work with multiple top-rated insurance carriers, providing you with the best coverage at competitive prices. We have the flexibility to shop the market on your behalf and negotiate optimal terms.',
-          size: 28
+          size: 28,
+          color: PRIMARY_COLOR
         })],
         spacing: { before: 150, after: 400 },
       }),
@@ -539,35 +547,35 @@ export async function POST(request: NextRequest) {
       new Paragraph({
         children: [
           new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
-          new TextRun({ text: 'Independent representation with access to multiple A-rated carriers', size: 28 }),
+          new TextRun({ text: 'Independent representation with access to multiple A-rated carriers', size: 28, color: PRIMARY_COLOR }),
         ],
         spacing: { before: 150, after: 200 },
       }),
       new Paragraph({
         children: [
           new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
-          new TextRun({ text: 'Specialized expertise in high-net-worth personal insurance', size: 28 }),
+          new TextRun({ text: 'Specialized expertise in high-net-worth personal insurance', size: 28, color: PRIMARY_COLOR }),
         ],
         spacing: { before: 150, after: 200 },
       }),
       new Paragraph({
         children: [
           new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
-          new TextRun({ text: 'Personalized service with dedicated account management', size: 28 }),
+          new TextRun({ text: 'Personalized service with dedicated account management', size: 28, color: PRIMARY_COLOR }),
         ],
         spacing: { before: 150, after: 200 },
       }),
       new Paragraph({
         children: [
           new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
-          new TextRun({ text: 'Comprehensive risk assessment and coverage analysis', size: 28 }),
+          new TextRun({ text: 'Comprehensive risk assessment and coverage analysis', size: 28, color: PRIMARY_COLOR }),
         ],
         spacing: { before: 150, after: 200 },
       }),
       new Paragraph({
         children: [
           new TextRun({ text: '✓ ', size: 32, color: ACCENT_COLOR, bold: true }),
-          new TextRun({ text: 'Claims advocacy and support when you need it most', size: 28 }),
+          new TextRun({ text: 'Claims advocacy and support when you need it most', size: 28, color: PRIMARY_COLOR }),
         ],
         spacing: { before: 150, after: 450 },
       })
@@ -677,12 +685,12 @@ export async function POST(request: NextRequest) {
         spacing: { after: 300 },
       }),
       new Paragraph({
-        children: [new TextRun({ text: proposalData.agentInfo.phone || '', size: 28 })],
+        children: [new TextRun({ text: proposalData.agentInfo.phone || '', size: 28, color: PRIMARY_COLOR })],
         alignment: AlignmentType.CENTER,
         spacing: { after: 150 },
       }),
       new Paragraph({
-        children: [new TextRun({ text: proposalData.agentInfo.email || '', size: 28 })],
+        children: [new TextRun({ text: proposalData.agentInfo.email || '', size: 28, color: PRIMARY_COLOR })],
         alignment: AlignmentType.CENTER,
         spacing: { after: 300 },
       }),
