@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, convertInchesToTwip, ShadingType, VerticalAlign, ImageRun } from 'docx';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, convertInchesToTwip, ShadingType, VerticalAlign, ImageRun, Footer, PageNumber, NumberFormat } from 'docx';
 import { ProposalData, CoverageType } from '@/types';
 
 // Note: For solid color fills, use ShadingType.CLEAR (not SOLID which doesn't exist)
@@ -11,16 +11,16 @@ const GREEN = '2E7D32';
 const RED = 'C62828';
 
 const COVERAGE_TITLES: Record<CoverageType, string> = {
-  homeowners: 'Homeowners Insurance',
-  condo: 'Condo Insurance',
-  wind: 'Wind Insurance',
-  auto: 'Auto Insurance',
-  umbrella: 'Umbrella Insurance',
-  watercraft: 'Watercraft Insurance',
-  jewelry: 'Jewelry Insurance',
-  cyber: 'Cyber Insurance',
-  fineart: 'Fine Art Insurance',
-  other: 'Other Coverage',
+  homeowners: '🏠 Homeowners Insurance',
+  condo: '🏢 Condo Insurance',
+  wind: '💨 Wind Insurance',
+  auto: '🚗 Auto Insurance',
+  umbrella: '☂️ Umbrella Insurance',
+  watercraft: '⛵ Watercraft Insurance',
+  jewelry: '💎 Jewelry Insurance',
+  cyber: '🔒 Cyber Insurance',
+  fineart: '🎨 Fine Art Insurance',
+  other: '📄 Other Coverage',
 };
 
 // Helper function to fetch images from URLs and convert to buffer
@@ -93,6 +93,11 @@ export async function POST(request: NextRequest) {
             ],
             alignment: AlignmentType.CENTER,
             spacing: { before: 400, after: 200 },
+          }),
+          // Add blank spacing row between logo and photos
+          new Paragraph({
+            text: '',
+            spacing: { after: 400 },
           })
         );
       }
@@ -161,12 +166,12 @@ export async function POST(request: NextRequest) {
           ],
           width: { size: 100, type: WidthType.PERCENTAGE },
           borders: {
-            top: { style: BorderStyle.SINGLE, size: 6, color: PRIMARY_COLOR },
-            bottom: { style: BorderStyle.SINGLE, size: 6, color: PRIMARY_COLOR },
-            left: { style: BorderStyle.SINGLE, size: 6, color: PRIMARY_COLOR },
-            right: { style: BorderStyle.SINGLE, size: 6, color: PRIMARY_COLOR },
-            insideHorizontal: { style: BorderStyle.SINGLE, size: 3, color: PRIMARY_COLOR },
-            insideVertical: { style: BorderStyle.SINGLE, size: 3, color: PRIMARY_COLOR },
+            top: { style: BorderStyle.SINGLE, size: 6, color: LIGHT_BLUE },
+            bottom: { style: BorderStyle.SINGLE, size: 6, color: LIGHT_BLUE },
+            left: { style: BorderStyle.SINGLE, size: 6, color: LIGHT_BLUE },
+            right: { style: BorderStyle.SINGLE, size: 6, color: LIGHT_BLUE },
+            insideHorizontal: { style: BorderStyle.SINGLE, size: 3, color: LIGHT_BLUE },
+            insideVertical: { style: BorderStyle.SINGLE, size: 3, color: LIGHT_BLUE },
           },
         }),
         new Paragraph({
@@ -187,52 +192,126 @@ export async function POST(request: NextRequest) {
         alignment: AlignmentType.CENTER,
         spacing: { after: 400 },
       }),
-      new Paragraph({
-        children: [
-          new TextRun({ text: 'Prepared For', size: 28, color: ACCENT_COLOR, allCaps: true, bold: true }),
-        ],
-        alignment: AlignmentType.CENTER,
-        spacing: { before: 400, after: 150 },
-      }),
-      new Paragraph({
-        children: [
-          new TextRun({ text: `${proposalData.clientInfo.firstName} ${proposalData.clientInfo.lastName}`, size: 40, bold: true, color: PRIMARY_COLOR }),
-        ],
-        alignment: AlignmentType.CENTER,
-        spacing: { after: 400 },
-      }),
-      new Paragraph({
-        children: [
-          new TextRun({ text: 'Presented By', size: 28, color: ACCENT_COLOR, allCaps: true, bold: true }),
-        ],
-        alignment: AlignmentType.CENTER,
-        spacing: { after: 150 },
-      }),
-      new Paragraph({
-        children: [
-          new TextRun({ text: proposalData.agentInfo.name, size: 36, bold: true, color: PRIMARY_COLOR }),
-        ],
-        alignment: AlignmentType.CENTER,
-        spacing: { after: 400 },
-      }),
-      new Paragraph({
-        children: [
-          new TextRun({ text: 'Date', size: 28, color: ACCENT_COLOR, allCaps: true, bold: true }),
-        ],
-        alignment: AlignmentType.CENTER,
-        spacing: { after: 150 },
-      }),
-      new Paragraph({
-        children: [
-          new TextRun({
-            text: new Date(proposalData.proposalDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-            size: 32,
-            bold: true,
-            color: PRIMARY_COLOR
+      // Prepared For Box
+      new Table({
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [new TextRun({ text: 'Prepared For', size: 20, color: ACCENT_COLOR, allCaps: true, bold: true })],
+                    alignment: AlignmentType.CENTER,
+                    spacing: { before: 100, after: 50 },
+                  }),
+                  new Paragraph({
+                    children: [new TextRun({ text: `${proposalData.clientInfo.firstName} ${proposalData.clientInfo.lastName}`, size: 36, bold: true, color: PRIMARY_COLOR })],
+                    alignment: AlignmentType.CENTER,
+                    spacing: { before: 50, after: 100 },
+                  }),
+                ],
+                shading: { fill: 'F9F9F9', type: ShadingType.CLEAR },
+                borders: {
+                  top: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+                  bottom: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+                  left: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+                  right: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+                },
+                margins: {
+                  top: convertInchesToTwip(0.15),
+                  bottom: convertInchesToTwip(0.15),
+                  left: convertInchesToTwip(0.3),
+                  right: convertInchesToTwip(0.3),
+                },
+              }),
+            ],
           }),
         ],
+        width: { size: 50, type: WidthType.PERCENTAGE },
         alignment: AlignmentType.CENTER,
-        spacing: { after: 400 },
+      }),
+      new Paragraph({ text: '', spacing: { after: 200 } }),
+      // Presented By Box
+      new Table({
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [new TextRun({ text: 'Presented By', size: 20, color: ACCENT_COLOR, allCaps: true, bold: true })],
+                    alignment: AlignmentType.CENTER,
+                    spacing: { before: 100, after: 50 },
+                  }),
+                  new Paragraph({
+                    children: [new TextRun({ text: proposalData.agentInfo.name, size: 32, bold: true, color: PRIMARY_COLOR })],
+                    alignment: AlignmentType.CENTER,
+                    spacing: { before: 50, after: 100 },
+                  }),
+                ],
+                shading: { fill: 'F9F9F9', type: ShadingType.CLEAR },
+                borders: {
+                  top: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+                  bottom: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+                  left: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+                  right: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+                },
+                margins: {
+                  top: convertInchesToTwip(0.15),
+                  bottom: convertInchesToTwip(0.15),
+                  left: convertInchesToTwip(0.3),
+                  right: convertInchesToTwip(0.3),
+                },
+              }),
+            ],
+          }),
+        ],
+        width: { size: 50, type: WidthType.PERCENTAGE },
+        alignment: AlignmentType.CENTER,
+      }),
+      new Paragraph({ text: '', spacing: { after: 200 } }),
+      // Date Box
+      new Table({
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                children: [
+                  new Paragraph({
+                    children: [new TextRun({ text: 'Date', size: 20, color: ACCENT_COLOR, allCaps: true, bold: true })],
+                    alignment: AlignmentType.CENTER,
+                    spacing: { before: 100, after: 50 },
+                  }),
+                  new Paragraph({
+                    children: [new TextRun({
+                      text: new Date(proposalData.proposalDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+                      size: 28,
+                      bold: true,
+                      color: PRIMARY_COLOR
+                    })],
+                    alignment: AlignmentType.CENTER,
+                    spacing: { before: 50, after: 100 },
+                  }),
+                ],
+                shading: { fill: 'F9F9F9', type: ShadingType.CLEAR },
+                borders: {
+                  top: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+                  bottom: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+                  left: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+                  right: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
+                },
+                margins: {
+                  top: convertInchesToTwip(0.15),
+                  bottom: convertInchesToTwip(0.15),
+                  left: convertInchesToTwip(0.3),
+                  right: convertInchesToTwip(0.3),
+                },
+              }),
+            ],
+          }),
+        ],
+        width: { size: 50, type: WidthType.PERCENTAGE },
+        alignment: AlignmentType.CENTER,
       }),
       new Paragraph({ text: '', pageBreakBefore: true })
     );
@@ -241,7 +320,19 @@ export async function POST(request: NextRequest) {
     sections.push(
       new Paragraph({
         children: [new TextRun({ text: 'Contents', size: 48, bold: true, color: PRIMARY_COLOR })],
-        spacing: { before: 200, after: 500 },
+        spacing: { before: 200, after: 200 },
+        border: {
+          bottom: {
+            color: ACCENT_COLOR,
+            space: 1,
+            style: BorderStyle.SINGLE,
+            size: 12,
+          },
+        },
+      }),
+      new Paragraph({
+        text: '',
+        spacing: { after: 300 },
       })
     );
 
@@ -286,7 +377,19 @@ export async function POST(request: NextRequest) {
     sections.push(
       new Paragraph({
         children: [new TextRun({ text: 'Welcome', size: 48, bold: true, color: PRIMARY_COLOR })],
-        spacing: { before: 200, after: 400 },
+        spacing: { before: 200, after: 200 },
+        border: {
+          bottom: {
+            color: ACCENT_COLOR,
+            space: 1,
+            style: BorderStyle.SINGLE,
+            size: 12,
+          },
+        },
+      }),
+      new Paragraph({
+        text: '',
+        spacing: { after: 200 },
       }),
       new Paragraph({
         children: [new TextRun({ text: `Dear ${proposalData.clientInfo.firstName} ${proposalData.clientInfo.lastName},`, size: 30, bold: true })],
@@ -387,7 +490,19 @@ export async function POST(request: NextRequest) {
     sections.push(
       new Paragraph({
         children: [new TextRun({ text: `About ${proposalData.agencyName || 'Metro Point Insurance'}`, size: 48, bold: true, color: PRIMARY_COLOR })],
-        spacing: { before: 200, after: 400 },
+        spacing: { before: 200, after: 200 },
+        border: {
+          bottom: {
+            color: ACCENT_COLOR,
+            space: 1,
+            style: BorderStyle.SINGLE,
+            size: 12,
+          },
+        },
+      }),
+      new Paragraph({
+        text: '',
+        spacing: { after: 200 },
       }),
       new Paragraph({
         children: [new TextRun({
@@ -502,7 +617,19 @@ export async function POST(request: NextRequest) {
       new Paragraph({
         children: [new TextRun({ text: `Your ${proposalData.agencyName || 'Metro Point Insurance'} Team`, size: 48, bold: true, color: PRIMARY_COLOR })],
         alignment: AlignmentType.CENTER,
-        spacing: { before: 200, after: 400 },
+        spacing: { before: 200, after: 200 },
+        border: {
+          bottom: {
+            color: ACCENT_COLOR,
+            space: 1,
+            style: BorderStyle.SINGLE,
+            size: 12,
+          },
+        },
+      }),
+      new Paragraph({
+        text: '',
+        spacing: { after: 200 },
       })
     );
 
@@ -560,7 +687,19 @@ export async function POST(request: NextRequest) {
       sections.push(
         new Paragraph({
           children: [new TextRun({ text: title, size: 52, bold: true, color: PRIMARY_COLOR })],
-          spacing: { before: 200, after: 400 },
+          spacing: { before: 200, after: 200 },
+          border: {
+            bottom: {
+              color: ACCENT_COLOR,
+              space: 1,
+              style: BorderStyle.SINGLE,
+              size: 12,
+            },
+          },
+        }),
+        new Paragraph({
+          text: '',
+          spacing: { after: 200 },
         })
       );
 
@@ -747,7 +886,19 @@ export async function POST(request: NextRequest) {
     sections.push(
       new Paragraph({
         children: [new TextRun({ text: 'Premium Summary', size: 52, bold: true, color: PRIMARY_COLOR })],
-        spacing: { before: 200, after: 450 },
+        spacing: { before: 200, after: 200 },
+        border: {
+          bottom: {
+            color: ACCENT_COLOR,
+            space: 1,
+            style: BorderStyle.SINGLE,
+            size: 12,
+          },
+        },
+      }),
+      new Paragraph({
+        text: '',
+        spacing: { after: 250 },
       })
     );
 
@@ -980,7 +1131,19 @@ export async function POST(request: NextRequest) {
     sections.push(
       new Paragraph({
         children: [new TextRun({ text: 'Recommendations & Discussion Points', size: 52, bold: true, color: PRIMARY_COLOR })],
-        spacing: { before: 200, after: 450 },
+        spacing: { before: 200, after: 200 },
+        border: {
+          bottom: {
+            color: ACCENT_COLOR,
+            space: 1,
+            style: BorderStyle.SINGLE,
+            size: 12,
+          },
+        },
+      }),
+      new Paragraph({
+        text: '',
+        spacing: { after: 250 },
       })
     );
 
@@ -1054,7 +1217,32 @@ export async function POST(request: NextRequest) {
               bottom: convertInchesToTwip(1),
               left: convertInchesToTwip(0.75),
             },
+            pageNumbers: {
+              start: 1,
+              formatType: NumberFormat.DECIMAL,
+            },
           },
+        },
+        footers: {
+          default: new Footer({
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({
+                    text: `${proposalData.agencyName || 'ABC Insurance Agency'} | WRAP Proposal | Page `,
+                    size: 20,
+                    color: '666666',
+                  }),
+                  new TextRun({
+                    children: [PageNumber.CURRENT],
+                    size: 20,
+                    color: '666666',
+                  }),
+                ],
+                alignment: AlignmentType.CENTER,
+              }),
+            ],
+          }),
         },
         children: sections,
       }],
