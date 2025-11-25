@@ -6,7 +6,7 @@ import { ProposalData, CoverageType } from '@/types';
 
 const PRIMARY_COLOR = '003B5C';
 const ACCENT_COLOR = 'D4AF37';
-const LIGHT_BLUE = '0066CC'; // Dark blue with crisp contrast for white text
+const LIGHT_BLUE = '3B82F6'; // Tailwind blue-500 - matches web page
 const GREEN = '2E7D32';
 const RED = 'C62828';
 
@@ -507,8 +507,8 @@ export async function POST(request: NextRequest) {
     );
 
     // Add agent photo if available
-    if (proposalData.agentInfo.photo) {
-      const agentPhotoBuffer = await fetchImageAsBuffer(proposalData.agentInfo.photo);
+    if (proposalData.agentPhoto) {
+      const agentPhotoBuffer = await fetchImageAsBuffer(proposalData.agentPhoto);
       if (agentPhotoBuffer) {
         sections.push(
           new Paragraph({
