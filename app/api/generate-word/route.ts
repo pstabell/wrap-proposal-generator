@@ -722,14 +722,14 @@ export async function POST(request: NextRequest) {
                   children: [
                     new Paragraph({
                       children: [
-                        new TextRun({ text: 'Annual Premium: ', size: 36, bold: true, color: ACCENT_COLOR }),
-                        new TextRun({ text: `$${proposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 52, bold: true, color: ACCENT_COLOR }),
+                        new TextRun({ text: 'Annual Premium: ', size: 36, bold: true, color: 'FFFFFF' }),
+                        new TextRun({ text: `$${proposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, size: 52, bold: true, color: 'FFFFFF' }),
                       ],
                       alignment: AlignmentType.CENTER,
                       spacing: { before: 300, after: 300 },
                     }),
                   ],
-                  shading: { fill: 'FFFFFF', type: ShadingType.CLEAR },
+                  shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
                   verticalAlign: VerticalAlign.CENTER,
                   borders: {
                     top: { style: BorderStyle.SINGLE, size: 12, color: ACCENT_COLOR },
