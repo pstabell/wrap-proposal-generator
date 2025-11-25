@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, convertInchesToTwip, ShadingType, VerticalAlign, ImageRun } from 'docx';
 import { ProposalData, CoverageType } from '@/types';
 
+// Note: For solid color fills, use ShadingType.CLEAR (not SOLID which doesn't exist)
+
 const PRIMARY_COLOR = '003B5C';
 const ACCENT_COLOR = 'D4AF37';
 const LIGHT_BLUE = 'ADD8E6'; // Light blue - should be very visible in Word
@@ -333,7 +335,7 @@ export async function POST(request: NextRequest) {
                     spacing: { before: 250, after: 250 },
                   }),
                 ],
-                shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
+                shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
                 borders: {
                   left: { style: BorderStyle.SINGLE, size: 16, color: PRIMARY_COLOR },
                   top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
@@ -472,7 +474,7 @@ export async function POST(request: NextRequest) {
                     spacing: { before: 150, after: 150 },
                   }),
                 ],
-                shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
+                shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
                 borders: {
                   top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
                   bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
@@ -579,7 +581,7 @@ export async function POST(request: NextRequest) {
                       spacing: { before: 300, after: 300 },
                     }),
                   ],
-                  shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
+                  shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
                   verticalAlign: VerticalAlign.CENTER,
                 }),
               ],
@@ -607,7 +609,7 @@ export async function POST(request: NextRequest) {
             children: [
               new TableCell({
                 children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, size: 26, color: 'FFFFFF' })], spacing: { before: 150, after: 150 } })],
-                shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
+                shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
                 width: { size: 40, type: WidthType.PERCENTAGE },
                 borders: {
                   top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
@@ -754,7 +756,7 @@ export async function POST(request: NextRequest) {
         children: [
           new TableCell({
             children: [new Paragraph({ children: [new TextRun({ text: 'Coverage Type', bold: true, size: 28, color: 'FFFFFF' })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
-            shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
+            shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
             verticalAlign: VerticalAlign.CENTER,
             borders: {
               top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
@@ -765,7 +767,7 @@ export async function POST(request: NextRequest) {
           }),
           new TableCell({
             children: [new Paragraph({ children: [new TextRun({ text: 'Expiring Premium', bold: true, size: 28, color: 'FFFFFF' })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
-            shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
+            shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
             verticalAlign: VerticalAlign.CENTER,
             borders: {
               top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
@@ -776,7 +778,7 @@ export async function POST(request: NextRequest) {
           }),
           new TableCell({
             children: [new Paragraph({ children: [new TextRun({ text: 'Renewal Premium', bold: true, size: 28, color: 'FFFFFF' })], alignment: AlignmentType.CENTER, spacing: { before: 200, after: 200 } })],
-            shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
+            shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
             verticalAlign: VerticalAlign.CENTER,
             borders: {
               top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
@@ -854,7 +856,7 @@ export async function POST(request: NextRequest) {
         children: [
           new TableCell({
             children: [new Paragraph({ children: [new TextRun({ text: 'TOTAL', bold: true, size: 30, color: 'FFFFFF' })], spacing: { before: 200, after: 200 } })],
-            shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
+            shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
             borders: {
               top: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
               bottom: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
@@ -870,7 +872,7 @@ export async function POST(request: NextRequest) {
           }),
           new TableCell({
             children: [new Paragraph({ children: [new TextRun({ text: `$${totalCurrentPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true, size: 30, color: 'FFFFFF' })], alignment: AlignmentType.RIGHT, spacing: { before: 200, after: 200 } })],
-            shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
+            shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
             borders: {
               top: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
               bottom: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
@@ -886,7 +888,7 @@ export async function POST(request: NextRequest) {
           }),
           new TableCell({
             children: [new Paragraph({ children: [new TextRun({ text: `$${totalProposedPremium.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true, size: 30, color: 'FFFFFF' })], alignment: AlignmentType.RIGHT, spacing: { before: 200, after: 200 } })],
-            shading: { fill: LIGHT_BLUE, type: ShadingType.SOLID },
+            shading: { fill: LIGHT_BLUE, type: ShadingType.CLEAR },
             borders: {
               top: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
               bottom: { style: BorderStyle.SINGLE, size: 8, color: PRIMARY_COLOR },
@@ -960,7 +962,7 @@ export async function POST(request: NextRequest) {
                       spacing: { before: 100, after: 200 },
                     }),
                   ],
-                  shading: { fill: boxColor, type: ShadingType.SOLID },
+                  shading: { fill: boxColor, type: ShadingType.CLEAR },
                   verticalAlign: VerticalAlign.CENTER,
                 }),
               ],
