@@ -3,7 +3,7 @@ import { ProposalData, Coverage } from '@/types';
 export const sampleProposalData: ProposalData = {
   proposalDate: new Date().toISOString().split('T')[0],
 
-  agencyName: 'Metro Point Insurance',
+  agencyName: 'ABC Insurance Agency, LLC',
 
   agentInfo: {
     name: 'Sarah Thompson',
