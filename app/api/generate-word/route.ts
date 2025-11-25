@@ -6,7 +6,7 @@ import { ProposalData, CoverageType } from '@/types';
 
 const PRIMARY_COLOR = '003B5C';
 const ACCENT_COLOR = 'D4AF37';
-const LIGHT_BLUE = '3B82F6'; // Tailwind blue-500 - matches web page
+const LIGHT_BLUE = '003B5C'; // Dark navy blue - matches web page section headings
 const GREEN = '2E7D32';
 const RED = 'C62828';
 
