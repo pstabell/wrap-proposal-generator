@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, convertInchesToTwip, ShadingType, VerticalAlign, ImageRun, Footer, PageNumber, NumberFormat } from 'docx';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, convertInchesToTwip, ShadingType, VerticalAlign, ImageRun, Footer, Header, PageNumber, NumberFormat } from 'docx';
 import { ProposalData, CoverageType } from '@/types';
 
 // Note: For solid color fills, use ShadingType.CLEAR (not SOLID which doesn't exist)
@@ -72,7 +72,8 @@ export async function POST(request: NextRequest) {
       : '0.0';
 
     // Create Word document sections
-    const sections: any[] = [];
+    const mainSections: any[] = []; // Array of section objects for the document
+    const sections: any[] = []; // Array of paragraphs/tables for the current section
 
     // ===== COVER PAGE =====
 
@@ -679,29 +680,36 @@ export async function POST(request: NextRequest) {
       new Paragraph({ text: '', pageBreakBefore: true })
     );
 
-    // ===== COVERAGE PAGES =====
-    Object.entries(proposalData.coverages).forEach(([type, coverage]) => {
-      const coverageType = type as CoverageType;
-      const title = COVERAGE_TITLES[coverageType] || 'Coverage';
-
-      sections.push(
+    // Helper function to create coverage header (used for continuation pages)
+    const createCoverageHeader = (title: string, isContinuation: boolean = false) => {
+      const displayTitle = isContinuation ? `${title} (Cont'd)` : title;
+      return [
         new Paragraph({
-          children: [new TextRun({ text: title, size: 52, bold: true, color: PRIMARY_COLOR })],
-          spacing: { before: 200, after: 200 },
+          children: [new TextRun({ text: displayTitle, size: isContinuation ? 36 : 52, bold: true, color: PRIMARY_COLOR })],
+          spacing: { before: isContinuation ? 100 : 200, after: isContinuation ? 100 : 200 },
           border: {
             bottom: {
               color: ACCENT_COLOR,
               space: 1,
               style: BorderStyle.SINGLE,
-              size: 12,
+              size: isContinuation ? 6 : 12,
             },
           },
         }),
         new Paragraph({
           text: '',
-          spacing: { after: 200 },
+          spacing: { after: isContinuation ? 100 : 200 },
         })
-      );
+      ];
+    };
+
+    // ===== COVERAGE PAGES =====
+    Object.entries(proposalData.coverages).forEach(([type, coverage]) => {
+      const coverageType = type as CoverageType;
+      const title = COVERAGE_TITLES[coverageType] || 'Coverage';
+
+      // Add main coverage header
+      sections.push(...createCoverageHeader(title, false));
 
       // Premium in prominent colored box
       const proposedPremium = parseFloat(coverage.proposed_premium?.toString() || '0');
@@ -877,6 +885,10 @@ export async function POST(request: NextRequest) {
             spacing: { after: 200 },
           })
         );
+
+        // Add continuation header after coverage details (appears on page 2+ of this coverage)
+        // This helps identify which coverage we're viewing if it spans multiple pages
+        sections.push(...createCoverageHeader(title, true));
       }
 
       sections.push(new Paragraph({ text: '', pageBreakBefore: true }));
