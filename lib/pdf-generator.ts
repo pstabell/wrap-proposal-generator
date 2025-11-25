@@ -68,7 +68,7 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
       width: 8.5in;
       min-height: 10in;
       max-height: 10.5in;
-      padding: 0.5in 0.5in 0.6in 0.5in;
+      padding: 0in 0.5in 0.6in 0.5in;
       background: white;
       page-break-after: always;
       page-break-inside: avoid;
@@ -90,7 +90,7 @@ export function generateProposalHTML(data: ProposalData, baseUrl: string = ''): 
       text-align: center;
       background: white !important;
       color: ${PRIMARY_COLOR};
-      padding-top: 0.5in;
+      padding-top: 0in;
       padding-bottom: 0.5in;
     }
 
