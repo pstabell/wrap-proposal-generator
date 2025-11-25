@@ -201,7 +201,7 @@ export async function POST(request: NextRequest) {
               new TableCell({
                 children: [
                   new Paragraph({
-                    children: [new TextRun({ text: 'Prepared For', size: 20, color: PRIMARY_COLOR, allCaps: true, bold: true })],
+                    children: [new TextRun({ text: 'Prepared For', size: 20, color: ACCENT_COLOR, allCaps: true, bold: true })],
                     alignment: AlignmentType.CENTER,
                     spacing: { before: 100, after: 50 },
                   }),
@@ -240,7 +240,7 @@ export async function POST(request: NextRequest) {
               new TableCell({
                 children: [
                   new Paragraph({
-                    children: [new TextRun({ text: 'Presented By', size: 20, color: PRIMARY_COLOR, allCaps: true, bold: true })],
+                    children: [new TextRun({ text: 'Presented By', size: 20, color: ACCENT_COLOR, allCaps: true, bold: true })],
                     alignment: AlignmentType.CENTER,
                     spacing: { before: 100, after: 50 },
                   }),
@@ -279,7 +279,7 @@ export async function POST(request: NextRequest) {
               new TableCell({
                 children: [
                   new Paragraph({
-                    children: [new TextRun({ text: 'Date', size: 20, color: PRIMARY_COLOR, allCaps: true, bold: true })],
+                    children: [new TextRun({ text: 'Date', size: 20, color: ACCENT_COLOR, allCaps: true, bold: true })],
                     alignment: AlignmentType.CENTER,
                     spacing: { before: 100, after: 50 },
                   }),
@@ -980,11 +980,22 @@ export async function POST(request: NextRequest) {
       const current = parseFloat(coverage.current_premium?.toString() || '0');
       const proposed = parseFloat(coverage.proposed_premium?.toString() || '0');
 
+      // Separate emoji icon from text to preserve icon colors
+      const emojiMatch = title.match(/^([\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}])\s*/u);
+      const emoji = emojiMatch ? emojiMatch[0] : '';
+      const textOnly = emoji ? title.substring(emoji.length) : title;
+
+      const titleChildren = [];
+      if (emoji) {
+        titleChildren.push(new TextRun({ text: emoji, size: 26 }));
+      }
+      titleChildren.push(new TextRun({ text: textOnly, size: 26, color: PRIMARY_COLOR }));
+
       summaryRows.push(
         new TableRow({
           children: [
             new TableCell({
-              children: [new Paragraph({ children: [new TextRun({ text: title, size: 26, color: PRIMARY_COLOR })], spacing: { before: 150, after: 150 } })],
+              children: [new Paragraph({ children: titleChildren, spacing: { before: 150, after: 150 } })],
               borders: {
                 top: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
                 bottom: { style: BorderStyle.SINGLE, size: 4, color: PRIMARY_COLOR },
