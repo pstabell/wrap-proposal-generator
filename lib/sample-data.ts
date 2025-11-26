@@ -28,10 +28,10 @@ export const sampleProposalData: ProposalData = {
       email: 'jennifer.collins@abcinsurance.com'
     },
     {
-      name: 'Patrick Stabell',
+      name: 'David Anderson',
       title: 'President',
       phone: '(239) 555-0100',
-      email: 'patrick.stabell@abcinsurance.com'
+      email: 'david.anderson@abcinsurance.com'
     }
   ],
 
