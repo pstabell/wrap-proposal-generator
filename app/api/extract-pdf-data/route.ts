@@ -100,7 +100,32 @@ Extract ALL of the following fields if present. Return ONLY valid JSON with no a
       "medical_payments": "",
       "deductible_other": "",
       "deductible_hurricane": "",
-      "deductible_wind": ""
+      "deductible_wind": "",
+      "deductible": "",
+      "endorsements": "",
+      "loss_assessment": "",
+      "coverage_amount": "",
+      "special_features": "",
+      "vehicles": "",
+      "liability_limits": "",
+      "uninsured_motorist": "",
+      "pip_coverage": "",
+      "additional_pip": "",
+      "rental_reimbursement": "",
+      "full_glass": "",
+      "towing_labor": "",
+      "comprehensive_deductible": "",
+      "collision_deductible": "",
+      "drivers": "",
+      "additional_interests": "",
+      "underlying_requirements": "",
+      "boat_info": "",
+      "hull_value": "",
+      "navigation_limits": "",
+      "items_covered": "",
+      "appraisal_info": "",
+      "cyber_coverage_details": "",
+      "coverage_details": ""
     }
   ]
 }
@@ -113,6 +138,13 @@ RULES:
   - If it says "Same as address shown under insured" or "Same as mailing address", use the insured's mailing address
   - If a specific property address is shown, use that street address only
 - For city_state_zip: Extract city, state, and zip from the property address (e.g., "Naples, FL 34102")
+- For vehicles (auto policies): List each vehicle on a new line with format: "Year Make Model | VIN: xxxxx | Value: $xxxxx"
+- For drivers (auto policies): List each named driver on a new line
+- For liability_limits: Extract combined single limit or split limits (e.g., "$500,000" or "$250,000/$500,000")
+- For coverage amounts: Include $ and commas (e.g., "$6,054,560")
+- For endorsements: List each endorsement or rider on a new line
+- For boat_info (watercraft): Include year, make, model, length, and any identifying info
+- For items_covered (jewelry/valuables): List each scheduled item with description and value
 - Leave fields empty ("") if not found in the document.`,
             },
           ],
