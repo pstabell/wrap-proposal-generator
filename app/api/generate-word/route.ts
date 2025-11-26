@@ -1192,6 +1192,61 @@ export async function POST(request: NextRequest) {
           );
         }
 
+        // Add all current coverage detail fields
+        Object.entries(coverage).forEach(([key, value]) => {
+          if (
+            value &&
+            key !== 'current_carrier' &&
+            key !== 'current_premium' &&
+            key !== 'proposed_carrier' &&
+            key !== 'proposed_premium' &&
+            key !== 'policy_number' &&
+            key !== 'policy_term' &&
+            key !== 'effective_date'
+          ) {
+            const label = key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+            currentRows.push(
+              new TableRow({
+                children: [
+                  new TableCell({
+                    children: [new Paragraph({ children: [new TextRun({ text: label, size: 24, color: '666666' })], spacing: { before: 120, after: 120 } })],
+                    width: { size: 35, type: WidthType.PERCENTAGE },
+                    shading: { fill: 'F5F5F5', type: ShadingType.CLEAR },
+                    borders: {
+                      top: { style: BorderStyle.SINGLE, size: 2, color: 'CCCCCC' },
+                      bottom: { style: BorderStyle.SINGLE, size: 2, color: 'CCCCCC' },
+                      left: { style: BorderStyle.SINGLE, size: 2, color: 'CCCCCC' },
+                      right: { style: BorderStyle.SINGLE, size: 2, color: 'CCCCCC' },
+                    },
+                    margins: {
+                      top: convertInchesToTwip(0.1),
+                      bottom: convertInchesToTwip(0.1),
+                      left: convertInchesToTwip(0.2),
+                      right: convertInchesToTwip(0.2),
+                    },
+                  }),
+                  new TableCell({
+                    children: [new Paragraph({ children: [new TextRun({ text: String(value), size: 24, color: '333333' })], spacing: { before: 120, after: 120 } })],
+                    width: { size: 65, type: WidthType.PERCENTAGE },
+                    borders: {
+                      top: { style: BorderStyle.SINGLE, size: 2, color: 'CCCCCC' },
+                      bottom: { style: BorderStyle.SINGLE, size: 2, color: 'CCCCCC' },
+                      left: { style: BorderStyle.SINGLE, size: 2, color: 'CCCCCC' },
+                      right: { style: BorderStyle.SINGLE, size: 2, color: 'CCCCCC' },
+                    },
+                    margins: {
+                      top: convertInchesToTwip(0.1),
+                      bottom: convertInchesToTwip(0.1),
+                      left: convertInchesToTwip(0.2),
+                      right: convertInchesToTwip(0.2),
+                    },
+                  }),
+                ],
+              })
+            );
+          }
+        });
+
         // Note about current coverage details
         currentRows.push(
           new TableRow({
