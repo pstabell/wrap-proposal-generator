@@ -820,7 +820,7 @@ export default function ProposalGenerator() {
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Address *
+                    Mailing Address *
                   </label>
                   <input
                     type="text"
