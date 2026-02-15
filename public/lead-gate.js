@@ -40,53 +40,57 @@
                     background: rgba(0, 59, 92, 0.95);
                     z-index: 99999;
                     display: flex;
-                    align-items: center;
+                    align-items: flex-start;
                     justify-content: center;
                     font-family: system-ui, -apple-system, sans-serif;
+                    overflow-y: auto;
+                    padding: 20px 0;
+                    box-sizing: border-box;
                 }
                 #wrap-gate-modal {
                     background: white;
                     border-radius: 12px;
-                    padding: 40px;
+                    padding: 24px;
                     max-width: 480px;
                     width: 90%;
                     box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+                    margin: auto;
                 }
                 #wrap-gate-modal h2 {
                     color: #003B5C;
                     margin: 0 0 8px 0;
-                    font-size: 28px;
+                    font-size: 24px;
                 }
                 #wrap-gate-modal p {
                     color: #666;
-                    margin: 0 0 24px 0;
-                    font-size: 16px;
+                    margin: 0 0 16px 0;
+                    font-size: 15px;
                 }
                 #wrap-gate-modal .benefits {
                     background: #f8f9fa;
                     border-radius: 8px;
-                    padding: 16px;
-                    margin-bottom: 24px;
+                    padding: 12px 16px;
+                    margin-bottom: 16px;
                 }
                 #wrap-gate-modal .benefits li {
                     color: #333;
-                    margin: 8px 0;
-                    font-size: 14px;
+                    margin: 4px 0;
+                    font-size: 13px;
                 }
                 #wrap-gate-modal label {
                     display: block;
                     color: #333;
-                    font-size: 14px;
+                    font-size: 13px;
                     font-weight: 500;
-                    margin-bottom: 6px;
+                    margin-bottom: 4px;
                 }
                 #wrap-gate-modal input, #wrap-gate-modal select {
                     width: 100%;
-                    padding: 12px;
+                    padding: 10px;
                     border: 1px solid #ddd;
                     border-radius: 6px;
                     font-size: 16px;
-                    margin-bottom: 16px;
+                    margin-bottom: 12px;
                     box-sizing: border-box;
                 }
                 #wrap-gate-modal input:focus, #wrap-gate-modal select:focus {
