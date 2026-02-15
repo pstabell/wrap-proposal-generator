@@ -200,19 +200,52 @@
             };
 
             try {
-                const response = await fetch(`${CONFIG.supabaseUrl}/rest/v1/contacts`, {
+                // 1. Upsert contact (update if email exists, insert if not)
+                const contactResponse = await fetch(`${CONFIG.supabaseUrl}/rest/v1/contacts?on_conflict=email`, {
                     method: 'POST',
                     headers: {
                         'apikey': CONFIG.supabaseKey,
                         'Authorization': `Bearer ${CONFIG.supabaseKey}`,
                         'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
+                        'Prefer': 'return=representation,resolution=merge-duplicates'
                     },
                     body: JSON.stringify(data)
                 });
 
-                if (!response.ok && response.status !== 409) {
-                    throw new Error('Failed to save contact');
+                let contactId = null;
+                if (contactResponse.ok) {
+                    const contacts = await contactResponse.json();
+                    if (contacts && contacts.length > 0) {
+                        contactId = contacts[0].id;
+                    }
+                }
+
+                // 2. Enroll in AMS-AGENCY drip campaign (if we got a contact ID)
+                if (contactId) {
+                    const enrollmentData = {
+                        contact_id: contactId,
+                        campaign_id: 'ams-agency-drip',
+                        campaign_name: 'AMS Agency Software Solutions',
+                        status: 'active',
+                        current_step: 1,
+                        total_steps: 5,
+                        source: 'wrap-tool',
+                        source_detail: data.source_detail,
+                        emails_sent: 0,
+                        emails_opened: 0,
+                        emails_clicked: 0
+                    };
+
+                    await fetch(`${CONFIG.supabaseUrl}/rest/v1/campaign_enrollments`, {
+                        method: 'POST',
+                        headers: {
+                            'apikey': CONFIG.supabaseKey,
+                            'Authorization': `Bearer ${CONFIG.supabaseKey}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify(enrollmentData)
+                    });
                 }
 
                 // Success - grant access and remove modal
