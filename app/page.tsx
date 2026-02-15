@@ -5,8 +5,12 @@ import { ProposalData, CoverageType, AgentInfo, ClientInfo, Coverage, UploadedFi
 import { coverageTemplates } from '@/lib/coverage-templates';
 import { sampleProposalData } from '@/lib/sample-data';
 import FileUpload from '@/components/FileUpload';
+import LeadGate from '@/components/LeadGate';
+import { useLeadGate } from '@/hooks/useLeadGate';
 
 export default function ProposalGenerator() {
+  const { hasAccess, grantAccess, isChecking } = useLeadGate();
+
   const [agentInfo, setAgentInfo] = useState<AgentInfo>({
     name: '',
     phone: '',
@@ -312,6 +316,27 @@ export default function ProposalGenerator() {
       setIsGenerating(false);
     }
   };
+
+  // Show loading state while checking access
+  if (isChecking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#003B5C' }}>
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-lg">Loading WRAP Proposal Generator...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show lead gate if no access
+  if (!hasAccess) {
+    return (
+      <div className="min-h-screen" style={{ backgroundColor: '#003B5C' }}>
+        <LeadGate onAccessGranted={grantAccess} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
