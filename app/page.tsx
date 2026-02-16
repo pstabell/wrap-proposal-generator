@@ -5,8 +5,13 @@ import { ProposalData, CoverageType, AgentInfo, ClientInfo, Coverage, UploadedFi
 import { coverageTemplates } from '@/lib/coverage-templates';
 import { sampleProposalData } from '@/lib/sample-data';
 import FileUpload from '@/components/FileUpload';
+import LeadGate from '@/components/LeadGate';
 
 export default function ProposalGenerator() {
+  // Lead gate state
+  const [hasAccess, setHasAccess] = useState(false);
+  const leadGateEnabled = process.env.NEXT_PUBLIC_LEAD_GATE_ENABLED === 'true';
+
   const [agentInfo, setAgentInfo] = useState<AgentInfo>({
     name: '',
     phone: '',
@@ -314,7 +319,12 @@ export default function ProposalGenerator() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <>
+      <LeadGate 
+        onAccessGranted={() => setHasAccess(true)}
+        enabled={leadGateEnabled && !hasAccess}
+      />
+      <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           {/* Header */}
@@ -1087,5 +1097,6 @@ export default function ProposalGenerator() {
         </div>
       </div>
     </div>
+    </>
   );
 }
