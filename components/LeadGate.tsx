@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
 
 interface LeadGateProps {
   onAccessGranted: () => void;
@@ -183,160 +182,160 @@ export default function LeadGate({ onAccessGranted, enabled = true }: LeadGatePr
   }
 
   return (
-    <div className=\"fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4\">
-      <div className=\"bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto\">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
         {showSuccess ? (
           // Success State
-          <div className=\"p-8 text-center\">
-            <div className=\"w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4\">
-              <svg className=\"w-8 h-8 text-green-600\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\">
-                <path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth={2} d=\"M5 13l4 4L19 7\" />
+          <div className="p-8 text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 className=\"text-xl font-bold text-gray-900 mb-2\">Welcome to WRAP!</h3>
-            <p className=\"text-gray-600\">Your access has been activated. Loading the proposal tool...</p>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Welcome to WRAP!</h3>
+            <p className="text-gray-600">Your access has been activated. Loading the proposal tool...</p>
           </div>
         ) : (
           // Form State
           <>
-            <div className=\"p-6 border-b border-gray-200\">
-              <div className=\"text-center\">
-                <h2 className=\"text-2xl font-bold text-gray-900 mb-2\">Access WRAP Proposal Generator</h2>
-                <p className=\"text-gray-600\">Create professional insurance proposals in minutes</p>
+            <div className="p-6 border-b border-gray-200">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Access WRAP Proposal Generator</h2>
+                <p className="text-gray-600">Create professional insurance proposals in minutes</p>
               </div>
               
-              <div className=\"mt-4 space-y-2\">
-                <div className=\"flex items-center text-sm text-gray-600\">
-                  <span className=\"text-blue-500 mr-2\">⚡</span>
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center text-sm text-gray-600">
+                  <span className="text-blue-500 mr-2">⚡</span>
                   10-minute proposals instead of 2 hours
                 </div>
-                <div className=\"flex items-center text-sm text-gray-600\">
-                  <span className=\"text-blue-500 mr-2\">🏢</span>
+                <div className="flex items-center text-sm text-gray-600">
+                  <span className="text-blue-500 mr-2">🏢</span>
                   Professional documents with your branding
                 </div>
-                <div className=\"flex items-center text-sm text-gray-600\">
-                  <span className=\"text-blue-500 mr-2\">💰</span>
+                <div className="flex items-center text-sm text-gray-600">
+                  <span className="text-blue-500 mr-2">💰</span>
                   10 coverage types with automatic savings calculations
                 </div>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className=\"p-6 space-y-4\">
-              <div className=\"grid grid-cols-2 gap-4\">
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor=\"firstName\" className=\"block text-sm font-medium text-gray-700 mb-1\">
+                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
                     First Name *
                   </label>
                   <input
-                    type=\"text\"
-                    id=\"firstName\"
-                    name=\"firstName\"
+                    type="text"
+                    id="firstName"
+                    name="firstName"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    className=\"w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent\"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     disabled={isSubmitting}
                   />
                 </div>
                 <div>
-                  <label htmlFor=\"lastName\" className=\"block text-sm font-medium text-gray-700 mb-1\">
+                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
                     Last Name *
                   </label>
                   <input
-                    type=\"text\"
-                    id=\"lastName\"
-                    name=\"lastName\"
+                    type="text"
+                    id="lastName"
+                    name="lastName"
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    className=\"w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent\"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     disabled={isSubmitting}
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor=\"email\" className=\"block text-sm font-medium text-gray-700 mb-1\">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                   Email Address *
                 </label>
                 <input
-                  type=\"email\"
-                  id=\"email\"
-                  name=\"email\"
+                  type="email"
+                  id="email"
+                  name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className=\"w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent\"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={isSubmitting}
                 />
               </div>
 
               <div>
-                <label htmlFor=\"agencyName\" className=\"block text-sm font-medium text-gray-700 mb-1\">
+                <label htmlFor="agencyName" className="block text-sm font-medium text-gray-700 mb-1">
                   Agency Name *
                 </label>
                 <input
-                  type=\"text\"
-                  id=\"agencyName\"
-                  name=\"agencyName\"
+                  type="text"
+                  id="agencyName"
+                  name="agencyName"
                   value={formData.agencyName}
                   onChange={handleInputChange}
-                  placeholder=\"e.g., ABC Insurance Agency\"
-                  className=\"w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent\"
+                  placeholder="e.g., ABC Insurance Agency"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={isSubmitting}
                 />
               </div>
 
               <div>
-                <label htmlFor=\"phone\" className=\"block text-sm font-medium text-gray-700 mb-1\">
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
                   Phone Number
                 </label>
                 <input
-                  type=\"tel\"
-                  id=\"phone\"
-                  name=\"phone\"
+                  type="tel"
+                  id="phone"
+                  name="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  placeholder=\"(239) 555-1234\"
-                  className=\"w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent\"
+                  placeholder="(239) 555-1234"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={isSubmitting}
                 />
               </div>
 
               <div>
-                <label htmlFor=\"howDidYouFindUs\" className=\"block text-sm font-medium text-gray-700 mb-1\">
+                <label htmlFor="howDidYouFindUs" className="block text-sm font-medium text-gray-700 mb-1">
                   How did you find us? *
                 </label>
                 <select
-                  id=\"howDidYouFindUs\"
-                  name=\"howDidYouFindUs\"
+                  id="howDidYouFindUs"
+                  name="howDidYouFindUs"
                   value={formData.howDidYouFindUs}
                   onChange={handleInputChange}
-                  className=\"w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent\"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={isSubmitting}
                 >
-                  <option value=\"\">Please select...</option>
-                  <option value=\"Google\">Google</option>
-                  <option value=\"Social Media\">Social Media</option>
-                  <option value=\"Referral\">Referral</option>
-                  <option value=\"Chamber Event\">Chamber Event</option>
-                  <option value=\"Other\">Other</option>
+                  <option value="">Please select...</option>
+                  <option value="Google">Google</option>
+                  <option value="Social Media">Social Media</option>
+                  <option value="Referral">Referral</option>
+                  <option value="Chamber Event">Chamber Event</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
 
               {error && (
-                <div className=\"p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm\">
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                   {error}
                 </div>
               )}
 
               <button
-                type=\"submit\"
+                type="submit"
                 disabled={isSubmitting}
-                className=\"w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors\"
+                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
               >
                 {isSubmitting ? (
-                  <span className=\"flex items-center justify-center\">
-                    <svg className=\"animate-spin -ml-1 mr-3 h-5 w-5 text-white\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\">
-                      <circle className=\"opacity-25\" cx=\"12\" cy=\"12\" r=\"10\" stroke=\"currentColor\" strokeWidth=\"4\"></circle>
-                      <path className=\"opacity-75\" fill=\"currentColor\" d=\"M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z\"></path>
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                     Creating your access...
                   </span>
@@ -346,8 +345,8 @@ export default function LeadGate({ onAccessGranted, enabled = true }: LeadGatePr
               </button>
             </form>
 
-            <div className=\"px-6 pb-6 text-center text-xs text-gray-500\">
-              <p className=\"font-semibold mb-1\">100% Free to Use • No credit card required • Instant access</p>
+            <div className="px-6 pb-6 text-center text-xs text-gray-500">
+              <p className="font-semibold mb-1">100% Free to Use • No credit card required • Instant access</p>
               <p>Your information is secure and will only be used to provide valuable insurance software updates.</p>
             </div>
           </>
