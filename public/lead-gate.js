@@ -220,31 +220,18 @@
                     }
                 }
 
-                // 2. Enroll in AMS-AGENCY drip campaign (if we got a contact ID)
+                // 2. Enroll in AMS-AGENCY drip campaign via server-side API (bypasses RLS)
                 if (contactId) {
-                    const enrollmentData = {
-                        contact_id: contactId,
-                        campaign_id: 'ams-agency-drip',
-                        campaign_name: 'AMS Agency Software Solutions',
-                        status: 'active',
-                        current_step: 1,
-                        total_steps: 5,
-                        source: 'wrap-tool',
-                        source_detail: data.source_detail,
-                        emails_sent: 0,
-                        emails_opened: 0,
-                        emails_clicked: 0
-                    };
-
-                    await fetch(`${CONFIG.supabaseUrl}/rest/v1/campaign_enrollments`, {
+                    await fetch('/api/enroll', {
                         method: 'POST',
-                        headers: {
-                            'apikey': CONFIG.supabaseKey,
-                            'Authorization': `Bearer ${CONFIG.supabaseKey}`,
-                            'Content-Type': 'application/json',
-                            'Prefer': 'return=minimal'
-                        },
-                        body: JSON.stringify(enrollmentData)
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contact_id: contactId,
+                            campaign_id: 'ams-agency-drip',
+                            campaign_name: 'AMS Agency Software Solutions',
+                            source: 'wrap-tool',
+                            source_detail: data.source_detail
+                        })
                     });
                 }
 
