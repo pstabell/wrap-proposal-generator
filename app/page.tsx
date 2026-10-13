@@ -1094,6 +1094,15 @@ export default function ProposalGenerator() {
           <p className="mt-1" style={{ color: '#D4AF37' }}>
             Professional WRAP Proposals Made Easy
           </p>
+          <p className="mt-3">
+            <a
+              href="https://agenient.com/products/wrap-proposal-generator"
+              className="underline hover:opacity-80"
+              style={{ color: '#003B5C' }}
+            >
+              How the WRAP insurance proposal generator works, with FAQ
+            </a>
+          </p>
         </div>
       </div>
     </div>

@@ -13,9 +13,29 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// SEO 2026-10-13: the tool's home page stays indexable (it was indexed and ranking); the product page on
+// agenient.com is the long-form description and is linked from the footer. /api/ is disallowed in robots.ts.
+const TITLE = "WRAP Insurance Proposal Generator | Free for Agents";
+const DESCRIPTION =
+  "Free insurance proposal generator for high-net-worth agents. Upload dec pages and carrier quotes, compare expiring vs. renewal premiums, and export a branded Word proposal.";
+
 export const metadata: Metadata = {
-  title: "WRAP Proposal Generator",
-  description: "Create professional WRAP insurance proposals in minutes",
+  metadataBase: new URL("https://wrap.metropointtech.com"),
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: "WRAP Proposal Generator",
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "https://wrap.metropointtech.com/",
+  },
+  twitter: {
+    card: "summary",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export default function RootLayout({
