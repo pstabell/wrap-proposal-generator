@@ -1,7 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { guardPublicRoute, isOwnBlobUrl, looksLikePdf, MAX_PDF_BYTES } from '@/lib/request-guard';
+
+const MAX_FILES = 8;
+
+type PdfInput = { url: string; type: 'current' | 'proposed' };
+
+/** Accept only our own Blob-store PDF URLs with a fixed document type. */
+function parsePdfFiles(raw: unknown): PdfInput[] | null {
+  if (!Array.isArray(raw) || raw.length === 0 || raw.length > MAX_FILES) return null;
+  const out: PdfInput[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== 'object') return null;
+    const { url, type } = item as { url?: unknown; type?: unknown };
+    if (type !== 'current' && type !== 'proposed') return null;
+    if (!isOwnBlobUrl(url)) return null;
+    out.push({ url, type });
+  }
+  return out;
+}
+
+/** Fetch a PDF from our Blob store with size and magic-number checks. */
+async function fetchPdf(url: string): Promise<ArrayBuffer | null> {
+  const res = await fetch(url, { redirect: 'error' });
+  if (!res.ok) return null;
+  const len = Number(res.headers.get('content-length') || '0');
+  if (len > MAX_PDF_BYTES) return null;
+  const buf = await res.arrayBuffer();
+  if (buf.byteLength === 0 || buf.byteLength > MAX_PDF_BYTES) return null;
+  if (!looksLikePdf(new Uint8Array(buf, 0, Math.min(8, buf.byteLength)))) return null;
+  return buf;
+}
 
 export async function POST(request: NextRequest) {
+  const blocked = guardPublicRoute(request, 'extract', 10, 10 * 60 * 1000);
+  if (blocked) return blocked;
+
   try {
     // Check if API key is configured
     const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -12,11 +46,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { pdfFiles } = await request.json();
+    const body = await request.json().catch(() => ({}));
+    const rawFiles = (body as { pdfFiles?: unknown }).pdfFiles;
 
-    if (!pdfFiles || !Array.isArray(pdfFiles) || pdfFiles.length === 0) {
+    if (!Array.isArray(rawFiles) || rawFiles.length === 0) {
       return NextResponse.json(
         { error: 'No PDF files provided' },
+        { status: 400 }
+      );
+    }
+
+    const pdfFiles = parsePdfFiles(rawFiles);
+    if (!pdfFiles) {
+      return NextResponse.json(
+        { error: `Invalid PDF list (up to ${MAX_FILES} uploaded PDFs)` },
         { status: 400 }
       );
     }
@@ -31,14 +74,13 @@ export async function POST(request: NextRequest) {
 
     for (const pdfFile of pdfFiles) {
       const { url: pdfUrl, type: documentType } = pdfFile;
-      const pdfResponse = await fetch(pdfUrl);
+      const pdfBuffer = await fetchPdf(pdfUrl).catch(() => null);
 
-      if (!pdfResponse.ok) {
-        console.error(`Failed to fetch PDF from ${pdfUrl}`);
+      if (!pdfBuffer) {
+        console.error(`Failed to fetch a valid PDF from ${pdfUrl}`);
         continue;
       }
 
-      const pdfBuffer = await pdfResponse.arrayBuffer();
       const pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
 
       // Use Claude to extract data from the PDF
