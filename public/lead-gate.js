@@ -6,8 +6,6 @@
     'use strict';
     
     const CONFIG = {
-        supabaseUrl: "https://qgtjpdviboxxlrivwcan.supabase.co",
-        supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFndGpwZHZpYm94eGxyaXZ3Y2FuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyNzc0MzIsImV4cCI6MjA4NDg1MzQzMn0.c4HugHTbj1FJ79pLnJ3an45Kg9nOjGDNmH00pv0foJA",
         cookieName: 'wrap_access',
         cookieDays: 30
     };
@@ -192,31 +190,22 @@
                 email: form.email.value.trim(),
                 company: form.agency.value.trim() || null,
                 phone: form.phone.value.trim() || null,
-                source: 'wrap-tool',
-                source_detail: form.source.value || null,
-                type: 'prospect',
-                tags: ['wrap-user'],
-                notes: 'Lead from WRAP Proposal Generator tool'
+                source_detail: form.source.value || null
             };
 
             try {
-                // 1. Upsert contact (update if email exists, insert if not)
-                const contactResponse = await fetch(`${CONFIG.supabaseUrl}/rest/v1/contacts?on_conflict=email`, {
+                // 1. Save the contact via the server-side lead API (same origin)
+                const contactResponse = await fetch('/api/lead', {
                     method: 'POST',
-                    headers: {
-                        'apikey': CONFIG.supabaseKey,
-                        'Authorization': `Bearer ${CONFIG.supabaseKey}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=representation,resolution=merge-duplicates'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
 
                 let contactId = null;
                 if (contactResponse.ok) {
-                    const contacts = await contactResponse.json();
-                    if (contacts && contacts.length > 0) {
-                        contactId = contacts[0].id;
+                    const result = await contactResponse.json();
+                    if (result && result.id) {
+                        contactId = result.id;
                     }
                 }
 
